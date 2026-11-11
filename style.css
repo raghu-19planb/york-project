@@ -50,6 +50,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 .bar-side { display: flex; align-items: center; gap: 18px; font-size: 0.92rem; }
 .bar nav { display: flex; flex-wrap: wrap; gap: 0 20px; }
 .bar nav a { padding: 8px 0; border-bottom: 1px solid var(--ink); }
+/* The game and 3D pages carry the site menu, a breadcrumb back to the home page, and links on to the other pieces. */
+.menu { display: flex; flex-wrap: wrap; gap: 0 20px; font-size: 0.95rem; }
+.menu a { padding: 8px 0 6px; border-bottom: 1px solid transparent; }
+.menu a:hover { border-bottom-color: var(--ink); }
+.menu a[aria-current] { border-bottom-color: var(--red); font-weight: 600; }
+.menu span { color: var(--muted); font-size: 0.8rem; margin-right: 2px; }
+.crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; padding: 10px 0 0; font-size: 0.86rem; color: var(--muted); }
+.crumbs a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); padding: 4px 0 2px; }
+.crumbs a:hover { border-bottom-color: var(--ink); }
+.pager { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0 28px; max-width: 1080px; margin: 34px auto 0; padding: 0 24px; }
+.wrap .pager { max-width: none; padding: 0; margin-top: 56px; }
+.pager a { display: flex; flex-direction: column; gap: 3px; padding: 14px 0 18px; border-top: 1px solid var(--rule); text-decoration: none; }
+.pager a:hover { border-top-color: var(--ink); }
+.pager a b { font: 550 1.25rem var(--display); letter-spacing: -0.03em; }
+.pager a .kicker { color: var(--muted); margin-bottom: 4px; }
+.pager a span:last-child { font-size: 0.9rem; color: var(--muted); }
+@media (max-width: 640px) {
+  .menu { gap: 0 14px; font-size: 0.9rem; width: 100%; }
+  .menu a { padding: 10px 0 8px; }
+  .pager { grid-template-columns: 1fr 1fr; gap: 0 16px; padding: 0 16px; }
+}
 .pill { display: inline-flex; align-items: center; gap: 10px; font: 500 0.9rem var(--body); color: var(--ink); background: transparent; border: 1px solid var(--ink); border-radius: 99px; padding: 9px 18px 9px 16px; cursor: pointer; min-height: 40px; }
 .pill .glyph { width: 9px; height: 11px; border-left: 3px solid currentColor; border-right: 3px solid currentColor; }
 html.still .pill .glyph { width: 0; height: 0; border: 6px solid transparent; border-left: 9px solid currentColor; border-right: 0; }
@@ -358,7 +379,7 @@ body.game footer { margin-top: 48px; }
 @media (max-width: 640px) and (orientation: portrait) { .stage { width: 100%; aspect-ratio: 1 / 1; } }
 /* Phone on its side: the game takes the whole screen. */
 @media (max-height: 500px) and (orientation: landscape) {
-  body.game .bar, body.game .help { display: none; }
+  body.game .bar, body.game .crumbs, body.game .help { display: none; } /* the menu is still below the game, in the links under it */
   .stage { margin-top: 0; border: 0; width: min(100%, calc(100vh * 16 / 9)); width: min(100%, calc(100dvh * 16 / 9)); }
   .hud { padding: 6px max(8px, env(safe-area-inset-right)) 6px max(8px, env(safe-area-inset-left)); }
   .hud .year { font-size: 1.5rem; }

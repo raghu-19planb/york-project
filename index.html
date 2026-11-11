@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111g">
+<link rel="stylesheet" href="style.css?v=20261111h">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -210,26 +210,26 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261111g"></script>
-<script src="world.js?v=20261111g"></script>
-<script src="scenery.js?v=20261111g"></script>
-<script src="references.js?v=20261111g"></script>
-<script src="draw.js?v=20261111g"></script>
-<script src="site.js?v=20261111g"></script>
-<script src="data/boundaries.js?v=20261111g"></script>
-<script src="data/history.js?v=20261111g"></script>
-<script src="data/today.js?v=20261111g"></script>
-<script src="data/shoreline.js?v=20261111g"></script>
-<script src="data/buildings.js?v=20261111g"></script>
+<script src="records.js?v=20261111h"></script>
+<script src="world.js?v=20261111h"></script>
+<script src="scenery.js?v=20261111h"></script>
+<script src="references.js?v=20261111h"></script>
+<script src="draw.js?v=20261111h"></script>
+<script src="site.js?v=20261111h"></script>
+<script src="data/boundaries.js?v=20261111h"></script>
+<script src="data/history.js?v=20261111h"></script>
+<script src="data/today.js?v=20261111h"></script>
+<script src="data/shoreline.js?v=20261111h"></script>
+<script src="data/buildings.js?v=20261111h"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
 // The film is 3D; if the 3D library or WebGL is unavailable, the flat film in redrawn.js takes over.
-import('./redrawn3d.js?v=20261111g').catch(() => {
+import('./redrawn3d.js?v=20261111h').catch(() => {
   document.getElementById('film').classList.add('flat');
-  const s = document.createElement('script'); s.src = 'redrawn.js?v=20261111g'; document.body.append(s);
+  const s = document.createElement('script'); s.src = 'redrawn.js?v=20261111h'; document.body.append(s);
 });
-import('./shore.js?v=20261111g').catch(() => { document.getElementById('glfail').hidden = false; });
-import('./hero3d.js?v=20261111g').catch(() => {});
+import('./shore.js?v=20261111h').catch(() => { document.getElementById('glfail').hidden = false; });
+import('./hero3d.js?v=20261111h').catch(() => {});
 </script>
 </body>
 </html>
