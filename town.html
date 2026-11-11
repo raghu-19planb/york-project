@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111o">
+<link rel="stylesheet" href="style.css?v=20261111q">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -63,7 +63,7 @@
   </div>
   <div class="views cards" id="town-eras" role="group" aria-label="Jump to a moment"></div>
   <div class="about" id="w17-about" aria-live="polite"></div>
-  <p class="help" style="padding:0">The timelapse runs from 1700 to 1850 and starts again. Drag the year, or pick a moment, to stop it · drag the picture to orbit · scroll or pinch to zoom · Play picks it up again</p>
+  <p class="help" style="padding:0">The timelapse runs from 1700 to 1850 and starts again, and the camera goes to wherever the change is. Drag the year, or pick a moment, to stop it · drag the picture to take the camera yourself · scroll or pinch to zoom · Play picks it up again</p>
 
   <section class="notes">
     <div class="sec-head"><h2>One camera, five moments</h2></div>
@@ -82,7 +82,8 @@
       <li><span class="mono">Real</span><span>The lighthouse on Gibraltar Point: begun in 1808, lit in 1809, 52 feet tall and raised to 82 in 1832, a six-sided stone tower (<a href="https://en.wikipedia.org/wiki/Gibraltar_Point_Lighthouse" target="_blank" rel="noopener">Wikipedia</a>). It is placed at its recorded position.</span></li>
       <li><span class="mono">Mixed</span><span>The number of people. The counts used are 3 in 1793, about 240 in 1799, about 500 in 1808, 720 in 1813, 1,600 in 1825, 2,860 in 1830, 5,500 in 1832, 9,250 in 1834 and about 30,000 in 1851, from the two Wikipedia pages above. Those pages also give 600 for 1796 and 1,460 for 1812, which do not fit the others and are left out. Between counts the model fills in smoothly.</span></li>
       <li><span class="mono">Mixed</span><span>Where the named places stand. Fort York and Fort Rouillé are at their sites; the parliament is on the east side of the first town plot, the market and the church near King and Church streets. Their shapes are simple stand-ins: no plan or picture of any of them was used.</span></li>
-      <li><span class="mono">Drawn</span><span>Every ordinary house. There are <span id="town-count"></span> of them, one for about every <span id="town-per"></span> people, and each goes up in the year the population reaches it. Early ones are low and of wood; later ones are more often brick, and taller along the main streets. Where each stands is not from any map.</span></li>
+      <li><span class="mono">Mixed</span><span>Eight buildings that still stand: The Grange (1817), the Bank of Upper Canada (1827), Osgoode Hall (1832), Little Trinity (1843), the city hall on Front Street (1844), the Church of the Holy Trinity (1847), St Michael’s Cathedral (1848) and St Lawrence Hall (1850). Their years and addresses are from <a href="https://en.wikipedia.org/wiki/List_of_oldest_buildings_and_structures_in_Toronto" target="_blank" rel="noopener">Wikipedia’s list of the oldest buildings in Toronto</a>. Each is placed at its address today by eye, good to about a block. Their shapes only say what kind of building each is.</span></li>
+      <li><span class="mono">Drawn</span><span>Every ordinary house. There are <span id="town-count"></span> of them by 1850, and each goes up as the population grows. A small town still has to be seen, so one drawn house stands for about <span id="town-per-early"></span> people in 1800 and about <span id="town-per"></span> in 1850. Early ones are low and of wood; later ones are more often brick, and taller along the main streets. Where each stands is not from any map.</span></li>
       <li><span class="mono">Drawn</span><span>The streets, as a regular grid turned the way Front Street runs. The first town was ten blocks and did follow a grid, but the real streets were not this even. Yonge Street is drawn running north from the 1790s.</span></li>
       <li><span class="mono">Drawn</span><span>How fast the forest was cut. The first two steps follow the record (ten blocks in 1793, west to Peter Street in 1797); after that the clearing is drawn to keep ahead of the houses. <span id="town-trees"></span> trees stand in 1700 on ground that is bare by 1850.</span></li>
       <li><span class="mono">Drawn</span><span>The wharves and the ships: how many there were in each year, and where. Buildings, like everything in this world, are drawn 1.5 times life size so they can be seen from the air.</span></li>
@@ -106,9 +107,9 @@
   </footer>
 </div>
 
-<script src="data/history.js?v=20261111o"></script>
-<script src="data/terrain.js?v=20261111o"></script>
-<script type="module" src="world1700.js?v=20261111o"></script>
+<script src="data/history.js?v=20261111q"></script>
+<script src="data/terrain.js?v=20261111q"></script>
+<script type="module" src="world1700.js?v=20261111q"></script>
 <script>
 // The five pictures: one camera, a different year. And the counts in the notes, read from the model itself.
 (function () {
@@ -129,7 +130,7 @@
   var t = setInterval(function () {
     var w = window.YP && window.YP.w17; if (!w || !w.town || !w.town.houses) return; clearInterval(t);
     document.getElementById('town-count').textContent = w.town.houses(1850).toLocaleString('en-CA');
-    document.getElementById('town-per').textContent = w.town.PER.toFixed(1);
+    document.getElementById('town-per').textContent = Math.round(w.town.perAt(1850)); document.getElementById('town-per-early').textContent = Math.round(w.town.perAt(1800));
     document.getElementById('town-trees').textContent = (window.YP.w17townTrees || 0).toLocaleString('en-CA');
   }, 300);
   setTimeout(function () { if (!window.YP || !window.YP.w17) document.getElementById('w17-fail').hidden = false; }, 9000);

@@ -26,6 +26,9 @@ const PHONE = matchMedia('(max-width: 820px), (pointer: coarse)').matches;
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// The painted look (paint.js), loaded with this file's own cache stamp so the two can never be out of step.
+const { makePaint } = await import('./paint.js' + new URL(import.meta.url).search);
+const paint = makePaint(THREE, renderer, { across: PHONE ? 700 : 1000 }); // the sky is the page behind the canvas, so the paint keeps what is see-through
 
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0xefe8d8, 900, 2600);
@@ -702,7 +705,7 @@ const col = new THREE.Color();
 let lead = 370; // how far ahead of the ride the camera sits
 function resize() {
   const w = stage.clientWidth, h = stage.clientHeight;
-  renderer.setSize(w, h, false);
+  renderer.setSize(w, h, false); paint.resize(w, h);
   const aspect = w / h;
   camera.aspect = aspect;
   // On a tall or square stage (a phone held upright) keep a fixed width of track in view:
@@ -785,7 +788,7 @@ YP.view = {
     if (banner.hidden === !!show) banner.hidden = !show;
     if (show && banner.textContent !== S.banner.text) banner.textContent = S.banner.text;
 
-    renderer.render(scene, camera);
+    paint.render(scene, camera);
   }
 };
 document.getElementById('c').style.visibility = 'hidden'; // 3D is up: retire the 2D canvas

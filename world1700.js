@@ -26,11 +26,12 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const YP = window.YP, T = YP.TERRAIN, H = YP.HISTORY;
 const stage = document.getElementById('w17'), canvas = document.getElementById('w17-gl');
 const EX = 2.5, BIG = 1.5; // vertical stretch; size of trees, canoes and people against life
-const PHONE = matchMedia('(max-width: 820px), (pointer: coarse)').matches;
+const PHONE = !new URLSearchParams(location.search).has('full') && matchMedia('(max-width: 820px), (pointer: coarse)').matches; // add ?full to the address to see the full version on a small or touch screen
 const hash = (i, s) => { const x = Math.sin(i * 127.1 + (s || 0) * 311.7 + 74.7) * 43758.5453; return x - Math.floor(x); };
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const still = () => document.documentElement.classList.contains('still');
@@ -40,6 +41,10 @@ try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDraw
 catch (e) { document.getElementById('w17-fail').hidden = false; throw e; }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
+// The painted look (paint.js), loaded with this file's own cache stamp so the two can never be out of step.
+const { makePaint } = await import('./paint.js' + new URL(import.meta.url).search);
+const paint = makePaint(THREE, renderer, { across: PHONE ? 700 : 1000, aces: true, exposure: 1.2 });
+const PAINTED = document.body.dataset.world === 'town'; // only the timelapse is painted; the c.1700 world is drawn plainly so its real surfaces show // the film curve is applied in the paint, with the same exposure
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const HAZE = new THREE.Color('#f3e9d6'), ZENITH = new THREE.Color('#c3d3d9'); // a warm, bright haze: late-summer light, not a clear blue day
@@ -208,6 +213,47 @@ const slopeAt = n => {
   return s;
 };
 const isSand = n => T.kind[n] === '0' && !lone[n] && hs[n] < 2.6 && nearWater[n];
+// ---------- photographed surfaces and plants ----------
+// Sand, forest floor and bark are photographs, and the fern is a scanned plant, all from Poly Haven
+// (polyhaven.com, public domain, CC0); the files are in assets/polyhaven/ and listed in references.js. They give
+// the ground and the trunks the small detail a drawn colour cannot. What kind of sand, soil, bark or fern grew at
+// this place is not known from them: they are stand-ins for texture, not evidence of species.
+const REAL = 'assets/polyhaven/', realReady = { value: 0 };
+let realLeft = 0;
+const texLoader = new THREE.TextureLoader();
+const photo = (file, colour, rx, ry) => {
+  realLeft++;
+  const t = texLoader.load(REAL + file, () => { if (--realLeft === 0) realReady.value = 1; });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = 8; if (colour) t.colorSpace = THREE.SRGBColorSpace; if (rx) t.repeat.set(rx, ry || rx);
+  return t;
+};
+const PH = {
+  sand: photo('coast_sand_01/textures/coast_sand_01_diff_1k.jpg', true), sandN: photo('coast_sand_01/textures/coast_sand_01_nor_gl_1k.jpg'),
+  soil: photo('forrest_ground_01/textures/forrest_ground_01_diff_1k.jpg', true), soilN: photo('forrest_ground_01/textures/forrest_ground_01_nor_gl_1k.jpg'),
+  bark: photo('bark_brown_02/textures/bark_brown_02_diff_1k.jpg', true, 2, 3), barkN: photo('bark_brown_02/textures/bark_brown_02_nor_gl_1k.jpg', false, 2, 3)
+};
+// The ground keeps the colours worked out for it above and takes its fine detail from the photographs: each
+// photograph is divided by its own average, so it adds grain, pebbles and leaf litter without changing the tone.
+function groundMaterial() {
+  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 });
+  m.onBeforeCompile = sh => {
+    Object.assign(sh.uniforms, { tSand: { value: PH.sand }, tSoil: { value: PH.soil }, tSandN: { value: PH.sandN }, tSoilN: { value: PH.soilN }, uReady: realReady });
+    sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nattribute float aSand; varying float vSand; varying vec3 vWp;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvSand = aSand; vWp = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nuniform sampler2D tSand, tSoil, tSandN, tSoilN; uniform float uReady; varying float vSand; varying vec3 vWp;')
+      .replace('#include <map_fragment>', `#include <map_fragment>
+        vec2 gu = vWp.xz; float close = 1.0 - smoothstep(220.0, 1500.0, length(vViewPosition));
+        vec3 soA = max(texture2D(tSoil, gu / 6.0, 10.0).rgb, vec3(0.02)), saA = max(texture2D(tSand, gu / 5.0, 10.0).rgb, vec3(0.02));
+        vec3 fine = mix(texture2D(tSoil, gu / 6.0).rgb / soA, texture2D(tSand, gu / 5.0).rgb / saA, vSand);
+        vec3 wide = mix(texture2D(tSoil, gu / 47.0).rgb / soA, texture2D(tSand, gu / 41.0).rgb / saA, vSand); // larger patches, so the repeat does not show
+        diffuseColor.rgb *= mix(vec3(1.0), fine * mix(vec3(1.0), wide, 0.5), uReady * (0.3 + 0.7 * close));`)
+      .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
+        vec3 nt = mix(texture2D(tSoilN, gu / 6.0).xyz, texture2D(tSandN, gu / 5.0).xyz, vSand) * 2.0 - 1.0;
+        normal = normalize(normal + mat3(viewMatrix) * vec3(nt.x, 0.0, -nt.y) * (1.2 * close * uReady));`);
+  };
+  m.customProgramCacheKey = () => 'ground-photo';
+  return m;
+}
 const SITE = { x: (-79.494 - T.origin.lon) * Math.cos(T.origin.lat * Math.PI / 180) * 111320, y: (43.657 - T.origin.lat) * 110574 }; // Baby Point
 const openness = (x, y) => clamp((1 - (((x + 6850) / 800) ** 2 + ((y - 1350) / 900) ** 2)) * 2.2, 0, 1); // High Park, where black oak savannah survives: 1 at its heart, 0 outside
 const savannah = (x, y) => openness(x, y) > 0.5;
@@ -239,7 +285,7 @@ function clearYear(x, y, rough) { // the year the forest at this point was cut; 
 }
 const townTrees = [];
 {
-  const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), uv = new Float32Array(N * 2), c = new THREE.Color(), c2 = new THREE.Color();
+  const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), uv = new Float32Array(N * 2), sandy = new Float32Array(N), c = new THREE.Color(), c2 = new THREE.Color();
   for (let j = 0; j < maskNy; j++) for (let i = 0; i < maskNx; i++) {
     const n = j * maskNx + i, k = T.kind[n], h = hs[n], x = box.x0 + i * maskCell, y = box.y0 + j * maskCell;
     pos[n * 3] = x; pos[n * 3 + 1] = h * EX; pos[n * 3 + 2] = -y; uv[n * 2] = x / 17; uv[n * 2 + 1] = y / 17;
@@ -257,6 +303,7 @@ const townTrees = [];
       c.offsetHSL((hash(n, 6) - 0.5) * 0.02, 0, (hash(n, 5) - 0.5) * 0.05);
     }
     col[n * 3] = c.r; col[n * 3 + 1] = c.g; col[n * 3 + 2] = c.b;
+    sandy[n] = k === '0' && (h < 0.5 || isSand(n)) ? 1 : k === '1' ? 1 : 0; // beaches, the bar and the bed of the lake and rivers are sand; the rest is forest floor
   }
   const idx = new Uint32Array((maskNx - 1) * (maskNy - 1) * 6);
   let q = 0;
@@ -268,9 +315,10 @@ const townTrees = [];
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
   geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  geo.setAttribute('aSand', new THREE.BufferAttribute(sandy, 1));
   geo.setIndex(new THREE.BufferAttribute(idx, 1));
   geo.computeVertexNormals();
-  const ground = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, map: grain, bumpMap: grain, bumpScale: 0.5, roughness: 1, metalness: 0 }));
+  const ground = new THREE.Mesh(geo, groundMaterial());
   ground.receiveShadow = true; scene.add(ground); scene.userData.ground = ground;
 }
 
@@ -408,22 +456,56 @@ const lump = (r, detail, sd, sx, sy, sz, ox, oy, oz) => { // a ball pushed in an
   }
   g.computeVertexNormals(); return g;
 };
+// One sheet for every crown. Its bottom-left corner is solid leaf, for the mass inside a crown; the rest is nine
+// sprays of leaves on nothing, for the cut-out cards that stand at the crown's surface.
+const leafSheet = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d');
+  g.fillStyle = '#b4b4b4'; g.fillRect(0, 384, 128, 128);
+  for (let i = 0; i < 500; i++) { g.fillStyle = rnd() < 0.5 ? 'rgba(40,50,25,0.5)' : 'rgba(255,255,240,0.5)'; g.beginPath(); g.ellipse(rnd() * 128, 384 + rnd() * 128, 2 + rnd() * 4, 1 + rnd() * 2, rnd() * 3, 0, 7); g.fill(); }
+  for (let cell = 0; cell < 9; cell++) {
+    const cx = 128 + (cell % 3) * 128 + 64, cy = Math.floor(cell / 3) * 128 + 64;
+    for (let i = 0; i < 46; i++) { // a spray: leaves pointing out from the middle, each a pointed oval with a lighter rib
+      const a = rnd() * 6.28, r = 6 + rnd() * 44, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r, len = 9 + rnd() * 9, v = 150 + Math.floor(rnd() * 90);
+      g.save(); g.translate(x, y); g.rotate(a + (rnd() - 0.5) * 1.2);
+      g.fillStyle = 'rgb(' + v + ',' + v + ',' + (v - 25) + ')'; g.beginPath(); g.moveTo(-len, 0); g.quadraticCurveTo(0, -len * 0.5, len, 0); g.quadraticCurveTo(0, len * 0.5, -len, 0); g.fill();
+      g.strokeStyle = 'rgba(255,255,245,0.5)'; g.lineWidth = 1; g.beginPath(); g.moveTo(-len, 0); g.lineTo(len, 0); g.stroke(); g.restore();
+    }
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
+})();
+const solid = geo => { const u = new Float32Array(geo.attributes.position.count * 2); for (let i = 0; i < u.length; i += 2) { u[i] = 0.04 + (i % 7) * 0.02; u[i + 1] = 0.04 + (i % 5) * 0.03; } geo.setAttribute('uv', new THREE.BufferAttribute(u, 2)); return geo; }; // a shape that is all leaf mass
+function leafy3(mass, sd, size) { // the mass, with a card of leaves standing out from each of its corners
+  const p = mass.attributes.position, cards = [], q = new THREE.Quaternion(), out = new THREE.Vector3(), mid = new THREE.Vector3();
+  mass.computeBoundingBox(); mass.boundingBox.getCenter(mid);
+  for (let i = 0; i < p.count; i++) {
+    out.fromBufferAttribute(p, i); const at = out.clone(); out.sub(mid).normalize();
+    for (let n = 0; n < 2; n++) {
+      const s = size * (0.75 + hash(i * 3 + n, sd) * 0.6), card = new THREE.PlaneGeometry(s, s), cell = Math.floor(hash(i * 5 + n, sd + 1) * 9), u0 = 0.25 + (cell % 3) * 0.25, v0 = 1 - (Math.floor(cell / 3) + 1) * 0.25;
+      const uvs = card.attributes.uv; for (let k = 0; k < 4; k++) uvs.setXY(k, u0 + uvs.getX(k) * 0.25, v0 + uvs.getY(k) * 0.25);
+      q.setFromUnitVectors(new THREE.Vector3(0, 0, 1), new THREE.Vector3(out.x + (hash(i + n, sd + 2) - 0.5) * 1.4, out.y + (hash(i + n, sd + 3) - 0.5) * 1.4, out.z + (hash(i + n, sd + 4) - 0.5) * 1.4).normalize());
+      card.applyQuaternion(q); card.translate(at.x + out.x * s * 0.3, at.y + out.y * s * 0.3, at.z + out.z * s * 0.3);
+      const nn = card.attributes.normal; for (let k = 0; k < 4; k++) nn.setXYZ(k, out.x, Math.abs(out.y) * 0.5 + 0.5, out.z); // lit like the crown it belongs to, not like a flat card
+      cards.push(card);
+    }
+  }
+  return mergeGeometries([solid(mass.index === null ? mass : mass.toNonIndexed()), ...cards.map(c => c.toNonIndexed())]);
+}
 const tier = (r, h, y, seg) => { const g = new THREE.ConeGeometry(r, h, seg, 1, true); g.translate(0, y + h / 2, 0); return g; };
 const GEO = (() => { // every shape is one unit tall, standing on y = 0
-  const broadHi = mergeGeometries([lump(0.3, 1, 1, 1, 0.82, 1, 0, 0.68, 0), lump(0.2, 1, 2, 1, 0.8, 1, 0.2, 0.6, 0.06), lump(0.19, 1, 3, 1, 0.8, 1, -0.17, 0.62, 0.14), lump(0.18, 1, 4, 1, 0.8, 1, -0.05, 0.6, -0.2), lump(0.17, 1, 5, 1, 0.75, 1, 0.08, 0.86, -0.02)]);
+  const broadHi = mergeGeometries([[0.3, 1, 0.82, 0, 0.68, 0], [0.2, 2, 0.8, 0.2, 0.6, 0.06], [0.19, 3, 0.8, -0.17, 0.62, 0.14], [0.18, 4, 0.8, -0.05, 0.6, -0.2], [0.17, 5, 0.75, 0.08, 0.86, -0.02]].map(([r, sd, sy, ox, oy, oz]) => leafy3(lump(r * 0.86, 1, sd, 1, sy, 1, ox, oy, oz), sd * 17, r * 0.62)));
   const conHi = mergeGeometries([tier(0.2, 0.22, 0.22, 9), tier(0.185, 0.22, 0.33, 9), tier(0.165, 0.22, 0.44, 9), tier(0.14, 0.22, 0.55, 9), tier(0.115, 0.22, 0.65, 9), tier(0.09, 0.2, 0.75, 9), tier(0.06, 0.18, 0.83, 9)]);
   const trunkLo = new THREE.CylinderGeometry(0.018, 0.03, 0.5, 4, 1, true); trunkLo.translate(0, 0.25, 0);
   const broadLo = mergeGeometries([shade(mergeVertices(trunkLo.clone()), '#3b2d21', '#4d3b2c', 0, 0.5), shade(lump(0.34, 1, 6, 1, 1.02, 1, 0, 0.62, 0), '#34502a', '#7d9c50', 0.32, 0.98)]);
   const conLo = mergeGeometries([shade(mergeVertices(trunkLo.clone()), '#3b2d21', '#4d3b2c', 0, 0.5), shade(mergeVertices(tier(0.21, 0.5, 0.2, 6)), '#254530', '#4a7450', 0.2, 0.7), shade(mergeVertices(tier(0.14, 0.48, 0.52, 6)), '#2c5036', '#55805a', 0.52, 1)]);
   const trunk = new THREE.CylinderGeometry(0.5, 0.82, 1, 8, 3); trunk.translate(0, 0.5, 0);
   { const p = trunk.attributes.position; for (let i = 0; i < p.count; i++) if (p.getY(i) < 0.01) p.setXYZ(i, p.getX(i) * 1.5, 0, p.getZ(i) * 1.5); trunk.computeVertexNormals(); } // the trunk flares at the root
-  return { broadHi: shade(broadHi, '#3a5a2c', '#93b45a', 0.42, 1.02), conHi: shade(conHi, '#24442e', '#55825c', 0.16, 1), broadLo, conLo, trunk, bush: shade(lump(1, 1, 8, 1, 0.55, 1, 0, 0.42, 0), '#3f5c30', '#9ab862', 0, 0.9), rock: lump(1, 0, 9, 1, 0.6, 1, 0, 0.3, 0) };
+  return { broadHi: shade(broadHi, '#3a5a2c', '#93b45a', 0.42, 1.02), conHi: shade(conHi, '#24442e', '#55825c', 0.16, 1), broadLo, conLo, trunk, bush: shade(leafy3(lump(0.8, 1, 8, 1, 0.55, 1, 0, 0.42, 0), 99, 0.7), '#3f5c30', '#9ab862', 0, 0.9), rock: lump(1, 0, 9, 1, 0.6, 1, 0, 0.3, 0) };
 })();
 const MAT = {
   lo: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 }),
-  crown: new THREE.MeshStandardMaterial({ vertexColors: true, map: leafy, roughness: 1, metalness: 0 }),
+  crown: new THREE.MeshStandardMaterial({ vertexColors: true, map: leafSheet, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 1, metalness: 0 }),
   conCrown: new THREE.MeshStandardMaterial({ vertexColors: true, map: leafy, roughness: 1, metalness: 0, side: THREE.DoubleSide }),
-  trunk: new THREE.MeshStandardMaterial({ color: 0x8a735c, map: barky, roughness: 1, metalness: 0 }),
+  trunk: new THREE.MeshStandardMaterial({ color: 0xd9c8b4, map: PH.bark, normalMap: PH.barkN, roughness: 1, metalness: 0 }),
   rock: new THREE.MeshStandardMaterial({ color: 0x8f8a7e, roughness: 1, metalness: 0 })
 };
 const CHUNK = 1600, chunks = new Map();
@@ -525,21 +607,32 @@ const frond = (() => {
 const frondGeo = (() => { const a = new THREE.PlaneGeometry(1, 1); a.translate(0, 0.5, 0); const b = a.clone(); b.rotateY(Math.PI / 2); return mergeGeometries([a, b]); })();
 const frondMat = new THREE.MeshStandardMaterial({ map: frond, alphaTest: 0.45, side: THREE.DoubleSide, roughness: 1, metalness: 0 });
 const TILE = 150, tiles = new Map();
+let fern = null; // set when the scanned fern has loaded; until then, and on phones, the drawn fronds are used
+if (!PHONE) new GLTFLoader().load(REAL + 'fern_02/fern_02.gltf', g => {
+  let best = null; g.scene.traverse(o => { if (o.isMesh && (!best || o.geometry.attributes.position.count > best.geometry.attributes.position.count)) best = o; });
+  if (!best) return;
+  const geo = best.geometry.clone(); geo.computeBoundingBox(); const b = geo.boundingBox, h = (b.max.y - b.min.y) || 1;
+  geo.translate(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2); geo.scale(1 / h, 1 / h, 1 / h); // one unit tall, standing on y = 0
+  const alpha = texLoader.load(REAL + 'fern_02/textures/fern_02_alpha_1k.png'); alpha.flipY = false;
+  const mat = new THREE.MeshStandardMaterial({ map: best.material.map, normalMap: best.material.normalMap, alphaMap: alpha, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.9, metalness: 0 });
+  fern = { geo, mat };
+  for (const m of tiles.values()) { scene.remove(m); m.dispose(); } tiles.clear(); // plant them again as ferns
+}, undefined, () => {});
 function tile(ix, iy) {
-  const pts = [], x0 = box.x0 + ix * TILE, y0 = box.y0 + iy * TILE, STEP = PHONE ? 7.5 : 4.6;
+  const pts = [], x0 = box.x0 + ix * TILE, y0 = box.y0 + iy * TILE, STEP = PHONE ? 7.5 : fern ? 6.4 : 4.6;
   for (let y = y0; y < y0 + TILE; y += STEP) for (let x = x0; x < x0 + TILE; x += STEP) {
     const id = Math.round(x * 3) * 7919 + Math.round(y * 3) * 104729; if (hash(id, 70) < 0.28) continue;
     const px = x + (hash(id, 71) - 0.5) * STEP, py = y + (hash(id, 72) - 0.5) * STEP;
     if (kindAt(px, py) !== 0 || meshY(px, py) < 1.4 || nearTrail(px, py, 5) || cleared(px, py) > 0.45) continue; // the clearing has its own cover
     pts.push([px, py, id]);
   }
-  const m = new THREE.InstancedMesh(frondGeo, frondMat, Math.max(1, pts.length)), d = new THREE.Object3D(); m.count = pts.length;
+  const m = new THREE.InstancedMesh(fern ? fern.geo : frondGeo, fern ? fern.mat : frondMat, Math.max(1, pts.length)), d = new THREE.Object3D(); m.count = pts.length;
   pts.forEach(([x, y, id], k) => {
     const w = (0.6 + hash(id, 73) * 1.0) * BIG, grass = savannah(x, y);
-    d.position.set(x, groundY(x, y) - 0.05, -y); d.rotation.set(0, hash(id, 74) * 3.14, 0); d.scale.set(w, w * (grass ? 0.45 : 0.75), w); d.updateMatrix(); m.setMatrixAt(k, d.matrix);
-    const v = 0.75 + hash(id, 75) * 0.5; m.setColorAt(k, grass ? tmpC.setRGB(v * 1.15, v, v * 0.6) : tmpC.setRGB(v * 0.95, v, v * 0.85));
+    d.position.set(x, groundY(x, y) - 0.05, -y); d.rotation.set(0, hash(id, 74) * 3.14, 0); d.scale.set(w, w * (grass ? 0.45 : 0.75), w); if (fern) d.scale.setScalar(w * (grass ? 0.45 : 0.8)); d.updateMatrix(); m.setMatrixAt(k, d.matrix);
+    const v = 0.75 + hash(id, 75) * 0.5; m.setColorAt(k, fern ? tmpC.setScalar(0.85 + hash(id, 75) * 0.3) : grass ? tmpC.setRGB(v * 1.15, v, v * 0.6) : tmpC.setRGB(v * 0.95, v, v * 0.85));
   });
-  m.receiveShadow = true; m.computeBoundingSphere(); scene.add(m); return m;
+  m.receiveShadow = true; m.castShadow = !!fern; m.computeBoundingSphere(); scene.add(m); return m;
 }
 function brush() {
   const cx = Math.floor((camera.position.x - box.x0) / TILE), cy = Math.floor((-camera.position.z - box.y0) / TILE);
@@ -931,7 +1024,7 @@ if (TOWN) {
     const segs = [], LEN = 55;
     const lay = (u0, v0, u1, v1, yr, wide) => {
       const n = Math.max(1, Math.round(Math.hypot(u1 - u0, v1 - v0) / LEN));
-      for (let i = 0; i < n; i++) { const [x, y] = xy(u0 + (u1 - u0) * (i + 0.5) / n, v0 + (v1 - v0) * (i + 0.5) / n); if (!land(x, y)) continue; let cy = yr || clearYear(x, y); if (cy > 1850) continue; if (!yr && cy > 1797) cy = Math.min(1850, cy + 10); segs.push({ x, y, len: Math.hypot(u1 - u0, v1 - v0) / n, across: u0 === u1, yr: cy, wide: wide || 6 }); }
+      for (let i = 0; i < n; i++) { const [x, y] = xy(u0 + (u1 - u0) * (i + 0.5) / n, v0 + (v1 - v0) * (i + 0.5) / n); if (!land(x, y) || Math.hypot(x - FORT[0], y - FORT[1]) < 300) continue; let cy = yr || clearYear(x, y); if (cy > 1850) continue; if (!yr && cy > 1797) cy = Math.min(1850, cy + 10); segs.push({ x, y, len: Math.hypot(u1 - u0, v1 - v0) / n, across: u0 === u1, yr: cy, wide: wide || 6 }); }
     };
     let line = 0;
     for (let u = -3740; u <= 2100; u += 110, line++) { lay(u, -650, u, 1150); if (line % 4 === 0) lay(u, 1150, u, 2600); }
@@ -959,9 +1052,12 @@ if (TOWN) {
       lots.push({ x, y, id, u: lu, v: lv, cy, key: cy + Math.abs(lv - 200) / 55 + Math.abs(lu + 300) / 260 + hash(id, 163) * 9 });
     }
     lots.sort((a, b) => a.key - b.key);
-    const COUNT = Math.min(lots.length, PHONE ? 2300 : 4600), PER = 30000 / (COUNT + 1); // people to a drawn house, so the last house goes up in 1850
+    // A screen cannot hold a house for every household of 1850, and a town of a few hundred drawn at that rate would
+    // be a dozen specks. So the number of houses follows the population by a curve, not a straight line: in the
+    // first years one drawn house stands for a household or so, by 1850 for several. The page gives the figures.
+    const COUNT = Math.min(lots.length, PHONE ? 2300 : 4600), PER = 30000 / (COUNT + 1), drawnAt = y => COUNT * Math.pow(popAt(y) / 30000, 0.72);
     const built = lots.slice(0, COUNT);
-    { let yr = 1793; built.forEach((b, k) => { while (yr < 1850 && popAt(yr) / PER < k + 1) yr += 0.1; b.yr = Math.max(yr, Math.min(b.cy, 1849)); }); }
+    { let yr = 1793; built.forEach((b, k) => { while (yr < 1850 && drawnAt(yr) < k + 1) yr += 0.1; b.yr = Math.max(yr, Math.min(b.cy, 1849)); }); }
     const sec = new THREE.Shape([[-0.5, 0], [0.5, 0], [0.5, 1], [0, 1.42], [-0.5, 1]].map(p => new THREE.Vector2(p[0], p[1])));
     let geom = new THREE.ExtrudeGeometry(sec, { depth: 1, bevelEnabled: false }); geom.translate(0, 0, -0.5); geom = geom.toNonIndexed(); geom.computeVertexNormals();
     { const p = geom.attributes.position, nrm = geom.attributes.normal, c = new Float32Array(p.count * 3); // the roof is darker than the walls
@@ -990,7 +1086,7 @@ if (TOWN) {
       });
       if (dirty) m.instanceMatrix.needsUpdate = true;
     });
-    town.houses = year => built.filter(b => b.yr <= year).length; town.PER = PER; town.fire = FIRE;
+    town.houses = year => built.filter(b => b.yr <= year).length; town.PER = PER; town.perAt = year => popAt(year) / Math.max(1, town.houses(year)); town.fire = FIRE;
   }
 
   // the places with a date: each stands from its year, and some come down again
@@ -1002,7 +1098,7 @@ if (TOWN) {
   const place = (at, from, to, build) => { const [x, y] = ontoLand(at[0], at[1]), g = new THREE.Group(); g.position.copy(P(x, y, 0)); g.rotation.y = ANG; g.scale.setScalar(S); build(g); g.visible = false; scene.add(g); const p = { g, from, to: to || 9999, x, y }; places.push(p); return p; };
   const fence = (g, w, d, h, m) => { for (const [a, b, c, e] of [[w, 0.5, 0, -d / 2], [w, 0.5, 0, d / 2], [0.5, d, -w / 2, 0], [0.5, d, w / 2, 0]]) block(g, a, h, b, m, c, 0, e); };
   place(ROUILLE, 1751, 1759.5, g => { fence(g, 46, 46, 3.6, M.log); gable(g, 12, 3.2, 7, M.log, -8, -8); gable(g, 10, 3, 6, M.log, 9, -9); gable(g, 14, 3.2, 6, M.log, 0, 10); }); // a small palisaded post; its plan here is not from a survey
-  place(FORT, 1793, 1813.32, g => { fence(g, 120, 80, 3.4, M.log); for (let i = 0; i < 7; i++) gable(g, 13, 3, 6.5, M.log, -44 + (i % 4) * 28, i < 4 ? -22 : 20); block(g, 0.4, 14, 0.4, M.plank, 0, 0, 0); });
+  place(FORT, 1793, 1813.6, g => { fence(g, 120, 80, 3.4, M.log); for (let i = 0; i < 7; i++) gable(g, 13, 3, 6.5, M.log, -44 + (i % 4) * 28, i < 4 ? -22 : 20); block(g, 0.4, 14, 0.4, M.plank, 0, 0, 0); });
   place(FORT, 1813.6, 0, g => { fence(g, 150, 100, 2.6, M.earth); for (const b of g.children) b.scale.x *= b.geometry.parameters.width < 1 ? 9 : 1, b.scale.z *= b.geometry.parameters.depth < 1 ? 9 : 1; // earth walls, thick and low
     for (const [x, z] of [[-48, -24], [46, 22]]) { block(g, 9, 4, 9, M.log, x, 0, z); block(g, 10.6, 3.6, 10.6, M.log, x, 4, z); const r = new THREE.Mesh(new THREE.ConeGeometry(8, 3.4, 4), M.roof); r.rotation.y = Math.PI / 4; r.position.set(x, 9.3, z); g.add(r); } // two blockhouses, the upper floor overhanging
     for (let i = 0; i < 6; i++) gable(g, 22, 3.4, 7, i % 2 ? M.brick : M.log, -40 + (i % 3) * 40, i < 3 ? -4 : 30); block(g, 0.4, 16, 0.4, M.plank, 10, 0, -30); });
@@ -1014,6 +1110,24 @@ if (TOWN) {
   const LIGHT = [-587, -2359];
   const tower = h => g => { const t = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 3.6, h, 6), M.stone); t.position.y = h / 2; t.castShadow = true; g.add(t); const l = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.7, 2.4, 6), M.roof); l.position.y = h + 1.2; g.add(l); const c = new THREE.Mesh(new THREE.ConeGeometry(2.2, 1.8, 6), M.brick); c.position.y = h + 3.3; g.add(c); };
   place(LIGHT, 1809, 1832, tower(16)); place(LIGHT, 1832, 0, tower(25)); // 52 feet, raised to 82 in 1832
+  // Buildings of these years that still stand. Year and address are from Wikipedia's list of the oldest buildings
+  // in Toronto; each is put at its present address, found by eye on today's map (good to a block, not a survey).
+  // The shapes say what kind of building it is and no more: no plan or picture of any of them was used.
+  const ll = (lat, lon) => [(lon - T.origin.lon) * Math.cos(T.origin.lat * Math.PI / 180) * 111320, (lat - T.origin.lat) * 110574];
+  const hall = (w, h, d, m, cupola) => g => { gable(g, w, h, d, m, 0, 0); block(g, w * 0.3, h * 0.25, d * 0.2, M.stone, 0, 0, d * 0.5); if (cupola) { const c = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2, 5, 8), M.white); c.position.y = h * 1.45 + 2.5; c.castShadow = true; g.add(c); const dm = new THREE.Mesh(new THREE.SphereGeometry(2.1, 10, 6, 0, 6.3, 0, 1.6), M.roof); dm.position.y = h * 1.45 + 5; g.add(dm); } };
+  const kirk = (m, spire) => g => { gable(g, 11, 8, 24, m, 0, 0); block(g, 5.5, spire ? 16 : 13, 5.5, m, 0, 0, -14); if (spire) { const sp = new THREE.Mesh(new THREE.ConeGeometry(3.6, 10, 4), M.roof); sp.rotation.y = Math.PI / 4; sp.position.set(0, 21, -14); sp.castShadow = true; g.add(sp); } };
+  const STILL = [
+    { name: 'The Grange', year: 1817, at: ll(43.6536, -79.3925), note: 'a brick house of 1817', build: hall(17, 7, 11, M.brick) },
+    { name: 'Bank of Upper Canada', year: 1827, at: ll(43.6519, -79.3706), note: 'stone, 1827', build: hall(16, 8, 12, M.stone) },
+    { name: 'Osgoode Hall', year: 1832, at: ll(43.6521, -79.3857), note: 'the law courts, begun 1832', build: g => { hall(22, 9, 13, M.stone)(g); gable(g, 13, 7.5, 11, M.stone, -19, 0); gable(g, 13, 7.5, 11, M.stone, 19, 0); } },
+    { name: 'Little Trinity', year: 1843, at: ll(43.6533, -79.3615), note: 'church of 1843', build: kirk(M.brick, false) },
+    { name: 'City Hall', year: 1844, at: ll(43.6484, -79.3716), note: 'city hall and market, 1844', build: hall(30, 10, 13, M.brick, true) },
+    { name: 'Holy Trinity', year: 1847, at: ll(43.6546, -79.3817), note: 'church of 1847', build: kirk(M.stone, false) },
+    { name: 'St Michael’s', year: 1848, at: ll(43.6549, -79.3771), note: 'cathedral of 1848', build: g => { kirk(M.stone, false)(g); g.scale.multiplyScalar(1.35); } },
+    { name: 'St Lawrence Hall', year: 1850, at: ll(43.6502, -79.3722), note: 'public hall, 1850', build: hall(24, 11, 14, M.stone, true) }
+  ];
+  for (const b of STILL) place(b.at, b.year, 0, b.build).g.scale.multiplyScalar(1.5); // drawn half as large again as the houses round them, so they can be found
+  town.still = STILL;
 
   // wharves reach into the bay, a few at first and then many (how many, and where, is drawn)
   [[-60, 1797, 70], [-420, 1803, 60], [330, 1813, 80], [-900, 1820, 90], [-230, 1826, 120], [120, 1830, 110], [-1250, 1833, 100], [-650, 1836, 150], [520, 1839, 120], [-1500, 1842, 130], [-1050, 1844, 160], [-320, 1846, 170], [-1750, 1848, 120], [760, 1850, 110]].forEach(([u, yr, len]) => {
@@ -1033,7 +1147,7 @@ if (TOWN) {
   // smoke on the three days the record gives a fire
   const fires = [];
   { const puffMat = new THREE.MeshBasicMaterial({ color: 0x4a443e, transparent: true, opacity: 0.34, depthWrite: false }), geoP = new THREE.SphereGeometry(1, 8, 6);
-    const burn = (at, from, size) => { const [x, y] = ontoLand(at[0], at[1]), base = P(x, y, 4), puffs = []; for (let i = 0; i < 16; i++) { const m = new THREE.Mesh(geoP, puffMat); m.visible = false; scene.add(m); puffs.push(m); } fires.push({ base, from, to: from + 0.6, size, puffs }); };
+    const burn = (at, from, size) => { const [x, y] = ontoLand(at[0], at[1]), base = P(x, y, 4), puffs = []; for (let i = 0; i < 16; i++) { const m = new THREE.Mesh(geoP, puffMat); m.visible = false; scene.add(m); puffs.push(m); } fires.push({ base, from, to: from + (from > 1812 && from < 1814 ? 1.1 : 0.6), size, puffs }); };
     burn(ROUILLE, 1759.4, 22); burn(FORT, 1813.32, 46); burn(PARL, 1813.33, 34); burn(town.fire, 1849.27, 52); }
 
   // labels that come and go with their years
@@ -1044,7 +1158,8 @@ if (TOWN) {
     { name: 'Toronto', note: 'a city from 6 March 1834', x: xy(-500, 500)[0], y: xy(-500, 500)[1], lift: 150, from: 1834 },
     { name: 'Parliament', note: 'met from 1797; destroyed 1813', x: PARL[0], y: PARL[1], lift: 60, from: 1797, to: 1814 },
     { name: 'Yonge Street', note: 'cut north in the 1790s', x: xy(-480, 2300)[0], y: xy(-480, 2300)[1], lift: 60, from: 1795 },
-    { name: 'Lighthouse', note: 'Gibraltar Point, lit 1809', x: LIGHT[0], y: LIGHT[1], lift: 70, from: 1809 }
+    { name: 'Lighthouse', note: 'Gibraltar Point, lit 1809', x: LIGHT[0], y: LIGHT[1], lift: 70, from: 1809 },
+    ...STILL.map(b => ({ name: b.name, note: b.note + ' · still standing', x: b.at[0], y: b.at[1], lift: 55, from: b.year, to: b.year + 7 }))
   ];
 
   // the story, by year: what the page says beside the picture
@@ -1059,6 +1174,7 @@ if (TOWN) {
     { at: 1813, title: 'The Battle of York', what: 'On 27 April 1813 an American fleet landed its troops. The retreating British blew up the fort’s powder magazine, and the parliament buildings were destroyed. About 720 people were counted that year. The fort was built again.', real: REAL },
     { at: 1815, title: 'The town fills in', what: 'About 1,600 people in 1825, 2,860 in 1830, 5,500 in 1832. The forest is cut back, wharves reach into the bay, and the streets run west and north.', real: REAL },
     { at: 1834, title: 'York becomes Toronto', what: 'On 6 March 1834 the town, now about 9,250 people, was incorporated as the City of Toronto. Gas street lamps were lit in 1841.', real: REAL },
+    { at: 1840, title: 'Buildings you can still visit', what: 'Brick and stone replace wood. Osgoode Hall (1832), Little Trinity church (1843), the city hall on Front Street (1844), the Church of the Holy Trinity (1847), St Michael’s Cathedral (1848) and St Lawrence Hall (1850) all went up in these years, and all still stand. So do The Grange (1817) and the Bank of Upper Canada (1827).', real: 'Real: each building, its year and its address today. Drawn: its shape, which only says what kind of building it is, and its exact spot, placed by eye on today’s map.' },
     { at: 1849, title: 'The Cathedral Fire', what: 'On 7 April 1849 fire destroyed the market block, St James’ and part of the city hall. They were built again.', real: REAL },
     { at: 1850, title: 'A city of thirty thousand', what: 'About 30,000 people by 1851. In a hundred and fifty years, forest to the water’s edge has become a city on a working harbour. The railways come in the 1850s.', real: REAL }
   ];
@@ -1081,21 +1197,65 @@ if (TOWN) {
     }
   };
   // the timelapse: ninety years of forest pass quickly, then sixty years of town take their time
-  const LAPSE = [[0, 1700], [2.5, 1745], [6, 1765], [8, 1790], [34, 1850], [38, 1850]];
+  // Time is not even: the years with something to see are given longer.
+  const LAPSE = [[0, 1700], [3, 1745], [8, 1762], [10, 1790], [16, 1800], [19, 1811], [26, 1815], [32, 1833], [36, 1837], [41, 1848], [47, 1850], [52, 1850]];
   const lapse = { on: false, t: 0 };
+  // Where the camera stands in each year, and what it looks at. It starts wide over the bay, goes down to Fort
+  // Rouillé while it stands and burns, to the first ten blocks as they are laid out, to the garrison and then
+  // the parliament in 1813, back out as the town fills in, along the wharves in the 1840s, down to the market
+  // block for the fire of 1849, and out again for the city of 1850. Scene axes: x east, y up, z south.
+  const at = (p, dx, up, dy) => [p[0] + dx, up, -(p[1] + dy)], on = p => [p[0], 8, -p[1]];
+  const WIDE = { pos: [-450, 1250, 2350], look: [-450, 0, -1350] }, OLD = xy(300, 250);
+  const SHOTS = [
+    { y: 1700, pos: [-450, 1700, 3300], look: [-450, 0, -1100] },
+    { y: 1738, pos: WIDE.pos, look: WIDE.look },
+    { y: 1747, pos: at(ROUILLE, 300, 190, -420), look: on(ROUILLE) },
+    { y: 1760, pos: at(ROUILLE, 230, 150, -330), look: on(ROUILLE) },
+    { y: 1770, pos: WIDE.pos, look: WIDE.look },
+    { y: 1788, pos: [600, 900, 600], look: on(OLD) },
+    { y: 1792, pos: at(OLD, 520, 300, -700), look: on(OLD) },
+    { y: 1800, pos: at(OLD, 300, 170, -420), look: on(OLD) },
+    { y: 1806, pos: [300, 640, -200], look: [150, 0, -1800] },
+    { y: 1811, pos: at(FORT, 520, 300, -560), look: on(FORT) },
+    { y: 1812.6, pos: at(FORT, 400, 220, -440), look: on(FORT) },
+    { y: 1813.5, pos: at(FORT, 360, 200, -400), look: on(FORT) },
+    { y: 1813.7, pos: at(PARL, 330, 190, -400), look: on(PARL) },
+    { y: 1814.6, pos: at(PARL, 300, 170, -360), look: on(PARL) },
+    { y: 1818, pos: [-500, 760, 420], look: [-450, 0, -1700] },
+    { y: 1830, pos: [-700, 700, 300], look: [-650, 0, -1750] },
+    { y: 1834, pos: WIDE.pos, look: WIDE.look },
+    { y: 1837, pos: [1500, 330, -620], look: [560, 0, -1760] },
+    { y: 1846, pos: [200, 360, -480], look: [-700, 0, -1650] },
+    { y: 1848.7, pos: at(town.fire, 380, 240, -430), look: on(town.fire) },
+    { y: 1849.9, pos: at(town.fire, 300, 190, -350), look: on(town.fire) },
+    { y: 1850.01, pos: WIDE.pos, look: WIDE.look }
+  ].map(s => ({ y: s.y, pos: new THREE.Vector3(...s.pos), look: new THREE.Vector3(...s.look) }));
+  const wantPos = new THREE.Vector3(), wantLook = new THREE.Vector3();
+  function shotAt(year) {
+    let i = 1; while (i < SHOTS.length - 1 && SHOTS[i].y < year) i++;
+    const a = SHOTS[i - 1], b = SHOTS[i], k = clamp((year - a.y) / (b.y - a.y), 0, 1), e = k * k * (3 - 2 * k);
+    wantPos.lerpVectors(a.pos, b.pos, e); wantLook.lerpVectors(a.look, b.look, e);
+    wantPos.y = Math.max(wantPos.y, groundY(wantPos.x, -wantPos.z) + 60); // never under a bluff
+  }
+  const cam = { auto: true }; town.cam = cam;
   const yearAtT = t => { for (let i = 1; i < LAPSE.length; i++) if (t <= LAPSE[i][0]) { const a = LAPSE[i - 1], b = LAPSE[i]; return a[1] + (b[1] - a[1]) * (t - a[0]) / (b[0] - a[0]); } return 1850; };
   const tAtYear = y => { for (let i = 1; i < LAPSE.length - 1; i++) if (y <= LAPSE[i][1]) { const a = LAPSE[i - 1], b = LAPSE[i]; return a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); } return LAPSE[LAPSE.length - 2][0]; };
   town.lapse = lapse; town.jump = y => { lapse.t = tAtYear(y); town.set(y); };
   town.tick = (dt, clock) => {
     if (lapse.on) { lapse.t += dt; if (lapse.t >= LAPSE[LAPSE.length - 1][0]) lapse.t = 0; town.set(yearAtT(lapse.t)); }
+    if (cam.auto) { // follow the story, easing so the cuts between places read as moves
+      shotAt(lapse.on && lapse.t > LAPSE[LAPSE.length - 2][0] ? 1850.01 : town.year);
+      const k = dt > 0 ? 1 - Math.exp(-dt * 2.6) : 1;
+      camera.position.lerp(wantPos, k); controls.target.lerp(wantLook, k);
+    }
     ships.forEach((g, k) => { g.position.y = Math.sin(clock * 0.9 + k * 1.7) * 0.25; g.rotation.z = Math.sin(clock * 0.7 + k) * 0.03; });
     for (const f of fires) { const live = town.year >= f.from && town.year < f.to; f.puffs.forEach((m, i) => { m.visible = live; if (!live) return; const u = (clock * 0.16 + i / f.puffs.length) % 1; m.position.copy(f.base); m.position.y += u * f.size * 5; m.position.x += u * u * f.size * 2.4 + Math.sin(i * 2.1) * f.size * 0.4; m.position.z += Math.cos(i * 1.7) * f.size * 0.4; m.scale.setScalar(f.size * (0.35 + u * 1.3)); }); }
     if (track) track.firstChild.style.transform = 'scaleX(' + ((town.year - 1700) / 150).toFixed(4) + ')';
   };
   town.CARDS = [1700, 1751, 1793, 1813, 1834, 1850];
   const eras = document.getElementById('town-eras');
-  if (eras) town.CARDS.forEach(y => { const e = town.ERAS.find(k => k.at === y), b = document.createElement('button'), n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span'); b.type = 'button'; b.dataset.year = y; n.textContent = y === 1700 ? 'c.1700' : y; t.textContent = e.title; d.textContent = e.what.split('. ')[0] + '.'; b.append(n, t, d); b.addEventListener('click', () => { setPlaying(false); town.jump(y + (y === 1813 ? 0.5 : y === 1849 ? 0.5 : 0)); }); eras.append(b); });
-  if (range) range.addEventListener('input', () => { setPlaying(false); lapse.t = tAtYear(+range.value); town.set(+range.value, true); });
+  if (eras) town.CARDS.forEach(y => { const e = town.ERAS.find(k => k.at === y), b = document.createElement('button'), n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span'); b.type = 'button'; b.dataset.year = y; n.textContent = y === 1700 ? 'c.1700' : y; t.textContent = e.title; d.textContent = e.what.split('. ')[0] + '.'; b.append(n, t, d); b.addEventListener('click', () => { setPlaying(false); cam.auto = true; town.jump(y + (y === 1813 ? 0.45 : 0)); }); eras.append(b); });
+  if (range) range.addEventListener('input', () => { setPlaying(false); cam.auto = true; lapse.t = tAtYear(+range.value); town.set(+range.value, true); });
 }
 
 // ---------- labels ----------
@@ -1212,7 +1372,7 @@ function mark(i) { // show which view the recording is on
   }
 }
 function setPlaying(on) {
-  if (TOWN) town.lapse.on = on; else tour.on = on;
+  if (TOWN) { town.lapse.on = on; if (on) town.cam.auto = true; } else tour.on = on;
   if (playBtn) { playBtn.textContent = on ? 'Pause' : TOWN ? 'Play the timelapse' : 'Play the recording'; playBtn.setAttribute('aria-pressed', String(on)); }
   stage.classList.toggle('playing', on);
 }
@@ -1226,11 +1386,11 @@ shown.forEach(view => {
     const n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span');
     n.textContent = String(VIEWS.indexOf(view) + 1).padStart(2, '0'); t.textContent = view.name; d.textContent = view.sub; btn.append(n, t, d);
   } else btn.textContent = view.name;
-  btn.addEventListener('click', () => { goTo(view, true); if (!TOWN) setPlaying(!still()); });
+  btn.addEventListener('click', () => { goTo(view, true); if (TOWN) town.cam.auto = false; else setPlaying(!still()); });
   viewBox.append(btn);
 });
 if (playBtn) playBtn.addEventListener('click', () => setPlaying(TOWN ? !town.lapse.on : !tour.on));
-controls.addEventListener('start', () => { if (!TOWN) setPlaying(false); }); // taking hold of the model stops the recording; Play picks it up again
+controls.addEventListener('start', () => { if (TOWN) town.cam.auto = false; else setPlaying(false); }); // taking hold of the model stops the recording; Play picks it up again
 window.addEventListener('yp-motion', () => setPlaying(!still()));
 const playingNow = () => TOWN ? town.lapse.on : tour.on;
 document.querySelectorAll('#w17-when button').forEach(b => b.addEventListener('click', () => setWhen(+b.dataset.year)));
@@ -1240,7 +1400,7 @@ pose(0); if (TOWN) { setWhen(1700); town.set(still() ? 1850 : 1700); if (still()
 function resize() {
   const w = canvas.clientWidth, h = canvas.clientHeight; if (!w || !h) return;
   labelBox.style.height = h + 'px';
-  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); paint.resize(w, h);
 }
 new ResizeObserver(resize).observe(canvas); resize();
 let onScreen = true, lastNow = 0, clock = 0;
@@ -1278,7 +1438,7 @@ renderer.setAnimationLoop(now => {
   if (TOWN) town.tick(still() ? 0 : dt, clock);
   canoes.forEach((c, k) => { c.position.y = -0.12 + Math.sin(clock * 1.1 + k) * 0.07; c.rotation.z = Math.sin(clock * 0.9 + k * 2) * 0.03; }); // the ones afloat rock a little
   dress();
-  renderer.render(scene, camera);
+  if (PAINTED) paint.render(scene, camera); else renderer.render(scene, camera);
   placeLabels();
 });
 
@@ -1286,10 +1446,10 @@ renderer.setAnimationLoop(now => {
 async function shot(i, w, h, year) {
   const was = TOWN ? town.year : when; if (year) (TOWN ? town.set(year) : setWhen(year));
   const v = VIEWS[i], keep = { p: camera.position.clone(), t: controls.target.clone() };
-  renderer.setPixelRatio(1); renderer.setSize(w, h, false);
+  renderer.setPixelRatio(1); renderer.setSize(w, h, false); paint.resize(w, h, Math.min(w, h)); // a still is painted at its full size
   camera.aspect = w / h;
   camera.position.set(...v.pos); controls.target.set(...v.look); camera.lookAt(controls.target);
-  dress(); renderer.render(scene, camera); renderer.render(scene, camera); // twice: the first pass builds any close-up forest and its shadows
+  dress(); for (let pass = 0; pass < 2; pass++) { if (PAINTED) paint.render(scene, camera); else renderer.render(scene, camera); } // twice: the first pass builds any close-up forest and its shadows
   const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.88));
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
   camera.position.copy(keep.p); controls.target.copy(keep.t); camera.lookAt(keep.t); resize();

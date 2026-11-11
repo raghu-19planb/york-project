@@ -79,6 +79,18 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'The timelapse now names eight buildings you can still visit, each going up in its year at its address: The Grange (1817), the Bank of Upper Canada (1827), Osgoode Hall (1832), Little Trinity (1843), the city hall on Front Street (1844), Holy Trinity (1847), St Michael\u2019s (1848) and St Lawrence Hall (1850).'
+  },
+  {
+    date: '2026-11-11',
+    text: 'The c.1700 world has real surfaces for the first time: photographed sand and forest floor on the ground, photographed bark on the trunks, a scanned fern in the undergrowth, and leaves at the edge of every broadleaf crown instead of a smooth lump. All are public-domain stand-ins from Poly Haven, not evidence of what grew here, and the page says so. The canoes, the conifers and the people are still simple shapes.'
+  },
+  {
+    date: '2026-11-11',
+    text: 'The game and both 3D worlds are now painted: each picture is drawn in 3D and then laid down again in flat dabs of colour, like gouache. In the timelapse the camera no longer sits still. It goes down to Fort Rouillé while it stands and burns, to the first ten blocks as they are laid out, to the garrison and the parliament in 1813, along the wharves in the 1840s and to the market block for the fire of 1849. The first town now shows its houses: early on, one drawn house stands for fewer people than it does by 1850, and the page gives the figures.'
+  },
+  {
+    date: '2026-11-11',
     text: 'Next Stop, Toronto has a new start, a new finish and sound. The start screen tells the ride in two lines and shows how to play. Holding the button now carries a jump higher. The end screen shows how far you rode and which records you caught along the line. The music is a fiddle reel written for the game and played in the browser; it is not a period tune.'
   },
   {

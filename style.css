@@ -482,7 +482,6 @@ body.game footer { margin-top: 48px; }
 .town-band .town-row figcaption { font: 600 0.78rem var(--body); letter-spacing: 0.08em; margin-top: 6px; }
 .town-band .town-go { margin: 22px var(--gutter) 0; }
 @media (max-width: 820px) { .town-band .town-row { grid-template-columns: repeat(2, 1fr); } .town-band .town-row figure:first-child { grid-column: 1 / -1; } }
-@media (max-width: 820px) { body.town .world3d .views { bottom: 66px; } }
 
 /* Next Stop, Toronto: the start and end screens sit on the live picture, dark at the left and clear at the right;
    the ride's own panels are dark too, so the picture stays the brightest thing on screen. */
@@ -547,3 +546,4 @@ body.game footer { margin-top: 48px; }
   .stage .round.sound { margin-top: 4px; }
 }
 @supports (height: 1svh) { @media (max-width: 820px) { .stage.tall { height: min(88svh, 680px); } } }
+@media (max-width: 820px) { body.town .world-play { bottom: auto; top: 96px; } } /* on a phone the camera buttons run along the bottom, so Play sits under the year */

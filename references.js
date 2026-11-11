@@ -43,14 +43,26 @@ YP.REFERENCES = [
     caveat: 'Nothing was mapped in 1700, so the shore is a century late. The ground is today\u2019s, stretched 2.5 times in height. The trail\u2019s exact line, every tree outside High Park, and the canoes and people are not from any source. No picture of this place around 1700 has been looked at, and no dwellings are modelled.'
   },
   {
+    item: 'The 3D worlds (photographed sand, forest floor and bark; a scanned fern)',
+    refs: [
+      { title: 'Poly Haven: Coast Sand 01 (CC0)', url: 'https://polyhaven.com/a/coast_sand_01' },
+      { title: 'Poly Haven: Forrest Ground 01 (CC0)', url: 'https://polyhaven.com/a/forrest_ground_01' },
+      { title: 'Poly Haven: Bark Brown 02 (CC0)', url: 'https://polyhaven.com/a/bark_brown_02' },
+      { title: 'Poly Haven: Fern 02 (CC0)', url: 'https://polyhaven.com/a/fern_02' }
+    ],
+    took: 'The 1k colour and normal maps of each surface, and the fern model with its colour, normal and transparency maps. They are in assets/polyhaven/. The fern file had its reference to a third texture removed, since that texture is not used.',
+    caveat: 'These are stand-ins for texture, not evidence. The photographs were not taken in Toronto, and nothing here says what sand, soil, bark or fern was at this shore. The leaves on the broadleaf trees are drawn, not photographed.'
+  },
+  {
     item: 'A town taking shape, 1700 to 1850 (the timelapse)',
     refs: [
       { title: 'Wikipedia, York, Upper Canada', url: 'https://en.wikipedia.org/wiki/York,_Upper_Canada' },
       { title: 'Wikipedia, History of Toronto', url: 'https://en.wikipedia.org/wiki/History_of_Toronto' },
       { title: 'Wikipedia, Gibraltar Point Lighthouse', url: 'https://en.wikipedia.org/wiki/Gibraltar_Point_Lighthouse' },
-      { title: 'The Friends of Fort York, History', url: 'https://friendsoffortyork.ca/history/' }
+      { title: 'The Friends of Fort York, History', url: 'https://friendsoffortyork.ca/history/' },
+      { title: 'Wikipedia, List of oldest buildings and structures in Toronto', url: 'https://en.wikipedia.org/wiki/List_of_oldest_buildings_and_structures_in_Toronto' }
     ],
-    took: 'The dates of the French posts, the founding of York, parliament, the market, the church, the lighthouse, the Battle of York, incorporation and the fire of 1849; the counts of people at nine dates; the first town plot of ten blocks and its extension west to Peter Street in 1797.',
+    took: 'The years and present addresses of eight buildings that still stand (The Grange to St Lawrence Hall). The dates of the French posts, the founding of York, parliament, the market, the church, the lighthouse, the Battle of York, incorporation and the fire of 1849; the counts of people at nine dates; the first town plot of ten blocks and its extension west to Peter Street in 1797.',
     caveat: 'Every ordinary house, street, wharf and ship is drawn, not mapped, and so is the pace at which the forest is cut. Two population figures on those pages (600 for 1796, 1,460 for 1812) do not fit the rest and are left out. The named buildings are simple stand-ins; no plan or picture of them was used. The shore is held as it was about 1800 throughout.'
   },
   {
