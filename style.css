@@ -95,8 +95,12 @@ html.still .btn { transition: none; }
 .band-play { background: var(--oxide); color: var(--chalk); min-height: min(820px, 92vh); display: flex; flex-direction: column; overflow: hidden;
   background-image: linear-gradient(180deg, #2f4148 0%, #a08a78 40%, #eab873 64%, #356a6c 64.2%, #24525a 100%); } /* shown only if the 3D picture cannot start */
 #hero-gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.band-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(42, 12, 10, 0.88) 0%, rgba(42, 12, 10, 0.55) 38%, rgba(42, 12, 10, 0) 68%), linear-gradient(0deg, rgba(10, 22, 24, 0.75) 0%, rgba(10, 22, 24, 0) 30%); pointer-events: none; }
-.band-play h1 span { color: #e9b9a1; }
+.band-shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(36, 10, 8, 0.92) 0%, rgba(36, 10, 8, 0.78) 34%, rgba(36, 10, 8, 0.46) 56%, rgba(36, 10, 8, 0) 82%), linear-gradient(0deg, rgba(10, 22, 24, 0.75) 0%, rgba(10, 22, 24, 0) 30%); pointer-events: none; }
+/* The title sits on a moving painting whose sky can be bright or dark, and whose width changes with the window.
+   So it does not rely on the shade alone: both lines carry a dark halo that keeps them readable on any colour. */
+.band-play h1, .band-play .kicker { text-shadow: 0 0 2px rgba(26, 8, 6, 0.85), 0 2px 5px rgba(26, 8, 6, 0.6), 0 4px 30px rgba(26, 8, 6, 0.75); }
+.band-play h1 span { color: #ffd0b0; }
+.band-play .lead, .band-play .sublead, .band-play .fine { text-shadow: 0 1px 3px rgba(26, 8, 6, 0.7), 0 2px 16px rgba(26, 8, 6, 0.6); }
 .band-play .fine { color: rgba(255, 246, 229, 0.78); margin-top: 16px; }
 .rides { position: relative; list-style: none; margin: auto 0 0; padding: clamp(40px, 7vw, 80px) var(--gutter) 0; display: grid; grid-template-columns: repeat(4, auto); justify-content: space-between; gap: 10px 24px; }
 .rides::before { content: ''; position: absolute; left: var(--gutter); right: var(--gutter); bottom: 0.72em; border-top: 1px solid rgba(255, 246, 229, 0.3); }
@@ -113,12 +117,12 @@ html.still .btn { transition: none; }
      win on a browser that lacks the unit and then make every height that reads it invalid. */
   @supports (height: 1svh) { .band-play { --pic: clamp(340px, 60svh, 540px); } }
   .band-play #hero-gl, .band-play .band-shade { height: var(--pic); bottom: auto; }
-  .band-play .band-shade { background: linear-gradient(180deg, rgba(38, 16, 14, 0.62) 0%, rgba(38, 16, 14, 0.28) 30%, rgba(38, 16, 14, 0) 48%, rgba(74, 28, 26, 0) 88%, var(--oxide) 100%); }
+  .band-play .band-shade { background: linear-gradient(180deg, rgba(32, 12, 10, 0.8) 0%, rgba(32, 12, 10, 0.62) 30%, rgba(32, 12, 10, 0.2) 46%, rgba(32, 12, 10, 0) 56%, rgba(74, 28, 26, 0) 88%, var(--oxide) 100%); }
   .hero-title { min-height: var(--pic); padding-top: 26px; }
   /* A page cached from before .hero-title existed has the title straight inside .band-in: hold its place too. */
   .band-play .band-in > .kicker { padding-top: 26px; }
   .band-play .band-in > h1 { margin-bottom: calc(var(--pic) - 150px); }
-  .band-play h1 { margin-top: 14px; text-shadow: 0 2px 18px rgba(30, 10, 8, 0.55); }
+  .band-play h1 { margin-top: 14px; }
   .band-play .lead { margin-top: 18px; }
   .band-play { min-height: 0; }
   .rides { grid-template-columns: repeat(2, 1fr); gap: 14px 20px; }
