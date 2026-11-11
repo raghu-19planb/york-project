@@ -79,6 +79,19 @@ function cyl(p, rTop, rBot, h, color, x, y, z) {
   return put(p, GEO.cyl.get(k), typeof color === 'object' ? color : mat(color), x, y + h / 2, z, rBot, h, rBot);
 }
 const roof = (p, w, h, d, color, x, y, z) => put(p, GEO.prism, mat(color), x, y, z, w, h, d);
+const dome = (p, r, color, x, y, z, sy) => { // the top half of a sphere, sitting on y
+  const geo = new THREE.SphereGeometry(r, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2); geo.userData.own = true;
+  const m = new THREE.Mesh(geo, mat(color)); m.position.set(x, y, z); m.scale.y = sy || 1; m.castShadow = true; p.add(m);
+  return m;
+};
+const longRoof = (p, len, h, span, color, x, y, z) => { const m = roof(p, span, h, len, color, x, y, z); m.rotation.y = Math.PI / 2; return m; };
+const flamesOn = (g, xs, y, when) => { // flames that burn while when(year) is true
+  const flames = xs.map((x, k) => cone(g, 9, 30, k % 2 ? '#e8762c' : '#f2b233', x, y, (k % 2) * 14 - 7));
+  flames.forEach(f => { f.castShadow = false; });
+  (g.userData.anim = g.userData.anim || []).push((t, year) => flames.forEach((f, k) => {
+    f.visible = when(year); f.scale.y = 20 + Math.abs(Math.sin(t * 9 + k * 2)) * 30; f.position.y = y + f.scale.y / 2;
+  }));
+};
 const wheel = (p, r, x, z, color) => { const m = cyl(p, r, r, 3, color || '#1f2226', x, 0, z); m.rotation.x = Math.PI / 2; m.position.y = r; return m; };
 
 // Window textures: one 64px tile = 32 world units, baked per wall colour.
@@ -285,22 +298,142 @@ const LANDMARK = {
     const geo = new THREE.SphereGeometry(62, 24, 10, 0, Math.PI * 2, 0, Math.PI / 2); geo.userData.own = true;
     const dome = new THREE.Mesh(geo, mat('#f1eee6')); dome.scale.y = 0.55; dome.position.y = 26; dome.castShadow = true; g.add(dome);
     return 70;
+  },
+  // The models below are built from written descriptions on the pages their entries cite, not from
+  // pictures. references.js lists them as not yet checked against a period image.
+  tavern(g) { // a two-storey frame inn with a porch and a hanging sign; burned on 7 December 1837
+    const whole = new THREE.Group(), ruin = new THREE.Group(); g.add(whole, ruin);
+    tbox(whole, 72, 40, 40, 'wood', '#b08f5e', 0, 0, 0); longRoof(whole, 78, 18, 46, '#4b3a2c', 0, 40, 0);
+    box(whole, 76, 2, 14, '#6b4a2e', 0, 20, 27); for (let k = 0; k < 5; k++) box(whole, 2, 20, 2, '#6b4a2e', -34 + k * 17, 0, 32);
+    box(whole, 7, 16, 7, '#5a5148', 24, 50, 0); box(whole, 9, 15, 1, '#3a2c20', 0, 0, 20.6);
+    cyl(g, 1, 1.2, 44, C.ink, 52, 0, 30); box(g, 16, 1.2, 1.2, C.ink, 46, 42, 30); box(g, 12, 9, 0.8, C.paper, 45, 31, 30);
+    tbox(ruin, 72, 14, 40, 'burnt', '#3a2e2a', 0, 0, 0); box(ruin, 7, 40, 7, '#3a3530', 24, 0, 0); box(ruin, 3, 26, 3, '#2a2420', -30, 14, 16); box(ruin, 3, 18, 3, '#2a2420', 8, 14, -16);
+    const fired = year => year >= 1837.93;
+    (g.userData.anim = g.userData.anim || []).push((t, year) => { ruin.visible = fired(year); whole.visible = !ruin.visible; });
+    flamesOn(g, [-28, -14, 0, 14, 28], 12, year => fired(year) && year < 1839.6);
+    smoke(g, 24, 70, 0, 6);
+    return 72;
+  },
+  stlawrence(g) { // a three-storey hall: pediment on four columns over three arches, mansard roof, cupola
+    const st = '#d8c9a6', trim = '#ece2c8';
+    tbox(g, 80, 54, 48, 'stone', st, 0, 0, 0); box(g, 84, 3, 52, '#b9aa88', 0, 54, 0); box(g, 78, 12, 46, '#4f4a44', 0, 57, 0);
+    box(g, 32, 54, 4, trim, 0, 0, 25);
+    for (const x of [-12, -4, 4, 12]) cyl(g, 1.8, 2, 30, trim, x, 22, 28.5);
+    for (const x of [-9, 0, 9]) { box(g, 6, 14, 1, '#3a2c20', x, 0, 27.2); const a = cyl(g, 3, 3, 1, '#3a2c20', x, 0, 27.2); a.rotation.x = Math.PI / 2; a.position.y = 14; }
+    box(g, 32, 3, 6, trim, 0, 52, 27); roof(g, 32, 9, 6, trim, 0, 55, 27);
+    cyl(g, 9, 10, 6, trim, 0, 69, 0); for (let k = 0; k < 8; k++) cyl(g, 1, 1, 12, trim, Math.cos(k * Math.PI / 4) * 8, 75, Math.sin(k * Math.PI / 4) * 8);
+    cyl(g, 9.5, 9.5, 2, trim, 0, 87, 0); dome(g, 9, '#6f9a86', 0, 89, 0, 1); cyl(g, 0.8, 1.4, 12, '#6f9a86', 0, 97, 0);
+    return 110;
+  },
+  uc(g) { // a long Romanesque range in stone and pale brick, with a square tower at its centre
+    const st = '#c6b78e', slate = '#55504a';
+    tbox(g, 150, 40, 40, 'stone', st, 0, 0, 0); longRoof(g, 150, 16, 44, slate, 0, 40, 0);
+    tbox(g, 28, 86, 28, 'stone', st, 0, 0, 10); cone(g, 22, 26, slate, 0, 86, 10, true);
+    for (const x of [-11, 11]) for (const z of [-1, 21]) cone(g, 3.5, 13, slate, x, 86, z, true);
+    const arch = cyl(g, 6, 6, 2, '#3a2c20', 0, 0, 24.4); arch.rotation.x = Math.PI / 2; arch.position.y = 20; box(g, 12, 20, 2, '#3a2c20', 0, 0, 24.4);
+    cyl(g, 12, 12, 44, st, 78, 0, 6); cone(g, 14, 22, slate, 78, 44, 6);
+    for (const x of [-66, -36]) { tbox(g, 16, 48, 44, 'stone', st, x, 0, 0); roof(g, 16, 12, 46, slate, x, 48, 0); }
+    return 116;
+  },
+  queenspark(g) { // pink sandstone: a central block under a steep roof, two domed towers, a wing each side
+    const pink = '#b98774', slate = '#5c5650';
+    tbox(g, 64, 60, 50, 'stone', pink, 0, 0, 0); longRoof(g, 66, 30, 54, slate, 0, 60, 0);
+    for (const x of [-14, 0, 14]) { box(g, 8, 20, 1, '#3a2c20', x, 30, 25.6); const a = cyl(g, 4, 4, 1, '#3a2c20', x, 0, 25.6); a.rotation.x = Math.PI / 2; a.position.y = 50; }
+    box(g, 46, 12, 10, pink, 0, 0, 30); for (const x of [-18, -6, 6, 18]) cyl(g, 1.8, 1.8, 12, '#d2a996', x, 12, 33); box(g, 46, 3, 10, '#d2a996', 0, 24, 30);
+    for (const x of [-41, 41]) { tbox(g, 18, 84, 18, 'stone', pink, x, 0, 14); dome(g, 11.5, '#6f9a86', x, 84, 14, 1.15); cyl(g, 0.8, 1.2, 10, '#6f9a86', x, 96, 14); }
+    for (const x of [-84, 84]) { tbox(g, 58, 42, 44, 'stone', pink, x, 0, 0); cone(g, 40, 22, slate, x, 42, 0, true); }
+    return 108;
+  },
+  casaloma(g) { // a castle of a house: one tall round tower, one square battlemented one, steep roofs
+    const st = '#b5ada0', tile = '#8a4a3a';
+    tbox(g, 110, 46, 42, 'stone', st, 0, 0, 0); longRoof(g, 112, 18, 46, tile, 0, 46, 0);
+    cyl(g, 13, 13, 104, st, -40, 0, 8); cone(g, 15, 32, tile, -40, 104, 8); cyl(g, 0.6, 0.6, 12, C.ink, -40, 134, 8);
+    tbox(g, 24, 84, 24, 'stone', st, 34, 0, 6);
+    for (const x of [24.5, 34, 43.5]) for (const z of [-3.5, 6, 15.5]) if (x !== 34 || z !== 6) box(g, 5, 7, 5, st, x, 84, z);
+    cyl(g, 6, 6, 62, st, 62, 0, 14); cone(g, 7.5, 18, tile, 62, 62, 14);
+    for (const x of [-12, 8]) { box(g, 12, 14, 6, st, x, 46, 20); roof(g, 12, 9, 6, tile, x, 60, 20); }
+    box(g, 12, 18, 2, '#3a2c20', 4, 0, 21.4);
+    return 148;
+  },
+  viaduct(g) { // steel arches between concrete piers, a road deck above and a second deck below it for trains
+    const conc = '#b9b2a3', steel = '#4a5560';
+    box(g, 250, 5, 30, '#8a8f86', 0, 72, 0); for (const z of [-15, 15]) box(g, 250, 3, 1, C.ink, 0, 77, z);
+    box(g, 250, 3, 18, steel, 0, 60, 0);
+    for (const x of [-96, -32, 32, 96]) { box(g, 12, 72, 30, conc, x, 0, 0); box(g, 16, 9, 34, conc, x, 77, 0); }
+    const ring = new THREE.TorusGeometry(27, 1.8, 6, 20, Math.PI); ring.userData.own = true;
+    for (const x of [-64, 0, 64]) for (const z of [-11, 11]) {
+      put(g, ring, mat(steel), x, 30, z, 1, 1.05, 1);
+      for (const dx of [-18, -9, 0, 9, 18]) { const top = 30 + Math.sqrt(27 * 27 - dx * dx) * 1.05; box(g, 1.2, 60 - top, 1.2, steel, x + dx, top, z); }
+    }
+    box(g, 46, 0.8, 74, '#3f7f93', 0, 0.2, 0).castShadow = false; // the Don
+    return 92;
+  },
+  union(g) { // a long limestone front with a colonnade at its centre (ten columns here stand for the 22)
+    const lime = '#d9cfb8', pale = '#e8dfca';
+    tbox(g, 220, 34, 44, 'deco', lime, 0, 0, 0);
+    tbox(g, 84, 50, 50, 'deco', lime, 0, 0, 0); box(g, 88, 4, 54, '#c4b99e', 0, 50, 0); box(g, 60, 9, 40, lime, 0, 54, 0);
+    box(g, 84, 6, 9, lime, 0, 0, 28); for (let k = 0; k < 10; k++) cyl(g, 2.2, 2.4, 36, pale, -36 + k * 8, 6, 28.5); box(g, 84, 6, 9, lime, 0, 42, 28);
+    for (const x of [-98, 98]) { tbox(g, 30, 42, 48, 'deco', lime, x, 0, 0); box(g, 34, 3, 52, '#c4b99e', x, 42, 0); }
+    return 72;
+  },
+  gardens(g) { // a brick arena: a big box with stepped corners and a shallow dome on top
+    const br = '#c8b182';
+    tbox(g, 100, 50, 64, 'deco', br, 0, 0, 0); tbox(g, 70, 16, 46, 'deco', br, 0, 50, 0);
+    dome(g, 34, '#d9d6cc', 0, 66, 0, 0.35); cyl(g, 0.7, 0.7, 14, C.ink, 0, 78, 0);
+    box(g, 46, 5, 9, C.red, 0, 14, 35); box(g, 30, 8, 1, C.paper, 0, 20, 39);
+    for (const x of [-22, -11, 0, 11, 22]) box(g, 5, 22, 1, '#3a3530', x, 24, 32.6);
+    return 92;
+  },
+  ontarioplace(g) { // the Cinesphere and three of the five pods, standing on columns over the water
+    box(g, 230, 0.8, 84, '#3f7f93', 0, 0.2, 10).castShadow = false;
+    sph(g, 30, '#f1eee6', -72, 36, 0); cyl(g, 10, 14, 8, '#b9b2a3', -72, 0, 0);
+    for (let k = 1; k < 4; k++) { const band = cyl(g, 30.2 * Math.sin(k * Math.PI / 4), 30.2 * Math.sin(k * Math.PI / 4), 0.8, '#b9c2c8', -72, 36 + 30 * Math.cos(k * Math.PI / 4), 0); band.castShadow = false; }
+    for (let k = 0; k < 3; k++) {
+      const x = 4 + k * 46;
+      box(g, 36, 12, 36, '#f1eee6', x, 40, 0); box(g, 36.6, 4, 36.6, '#8f9aa3', x, 44, 0);
+      for (const dx of [-13, 13]) for (const dz of [-13, 13]) cyl(g, 1.3, 1.3, 40, '#d9d6cc', x + dx, 0, dz);
+      box(g, k ? 12 : 44, 3, 5, '#8f9aa3', k ? x - 23 : x - 38, 44, 0);
+    }
+    return 80;
+  },
+  eaton(g) { // a long shopping hall with a glass barrel vault along its roof
+    tbox(g, 160, 40, 50, 'slab', '#d2ccbe', 0, 0, 0);
+    const shell = new THREE.CylinderGeometry(21, 21, 160, 20, 1, true, 0, Math.PI); shell.userData.own = true;
+    const glassMat = new THREE.MeshLambertMaterial({ color: 0xbfe0ea, transparent: true, opacity: 0.6, side: THREE.DoubleSide }); glassMat.userData = { own: true };
+    const glass = new THREE.Mesh(shell, glassMat); glass.rotation.z = Math.PI / 2; glass.position.set(0, 40, 0); g.add(glass);
+    const rib = new THREE.TorusGeometry(21.2, 0.8, 6, 16, Math.PI); rib.userData.own = true;
+    for (let x = -80; x <= 80; x += 20) put(g, rib, mat('#f1eee6'), x, 40, 0, 1, 1, 1).rotation.y = Math.PI / 2;
+    box(g, 24, 26, 2, '#bfe0ea', 0, 0, 25.4); box(g, 28, 3, 6, C.red, 0, 26, 27);
+    return 66;
+  },
+  crystal(g) { // the 1914 museum wing, with tilted aluminium-and-glass shards breaking out of it
+    tbox(g, 112, 46, 40, 'stone', '#c9b592', 0, 0, -10); box(g, 116, 3, 44, '#8a7d66', 0, 46, -10);
+    const shard = (r, h, x, z, rx, ry, rz, color) => { const m = cone(g, r, h, color, x, 0, z, true); m.rotation.set(rx, ry, rz); m.position.y = h * 0.42; return m; };
+    shard(26, 82, -16, 20, 0.28, 0.5, 0.5, '#c9ced2'); shard(22, 70, 16, 24, -0.22, 1.2, -0.55, '#d6dadd');
+    shard(18, 58, 0, 34, 0.55, 0.2, 0.05, '#b9c0c6'); shard(14, 46, 36, 14, 0.1, 0.9, -0.9, '#c9ced2');
+    for (const [x, y, z, rz] of [[-14, 40, 34, 0.5], [14, 34, 37, -0.55], [2, 26, 44, 0.05]]) { const w = box(g, 3, 30, 1, '#7fb0c4', x, y, z); w.rotation.z = rz; w.castShadow = false; }
+    return 86;
   }
 };
-const SLF = 82, landmarkAt = {}, byId = {};
+// The newer landmarks are drawn a little larger than the street around them, and keep the slots beside
+// them empty (the number is how many on each side), so no ordinary building stands inside them.
+const WIDE = { tavern: 1, stlawrence: 1, uc: 2, queenspark: 2, casaloma: 1, viaduct: 2, union: 2, gardens: 1, ontarioplace: 2, eaton: 2, crystal: 1 };
+const SLF = 82, landmarkAt = {}, byId = {}, BLANK = { blank: true };
 for (const s of YP.SCENERY) {
   byId[s.id] = s;
   if (!LANDMARK[s.id]) continue;
   let i = Math.round(xAt(s.at) / SLF);
   while (landmarkAt[i]) i++;
   landmarkAt[i] = s;
+  for (let n = 1; n <= (WIDE[s.id] || 0); n++) for (const j of [i - n, i + n]) if (!landmarkAt[j]) landmarkAt[j] = BLANK;
 }
 
 function frontSlot(i) {
   const g = new THREE.Group(), x = i * SLF, yr = yearAt(x), h2 = hash(i, 2), dv = dev(yr);
   g.position.set(x, 0, Z_FRONT);
   const lm = landmarkAt[i];
-  if (lm) { const top = LANDMARK[lm.id](g); label(g, lm.title + ' · ' + lm.label, 0, Math.min(top + 16, 400), 30); g.scale.setScalar(1.05); return g; }
+  if (lm === BLANK) return g;
+  if (lm) { const top = LANDMARK[lm.id](g); label(g, lm.title + ' · ' + lm.label, 0, Math.min(top + 16, 400), 30); g.scale.setScalar(WIDE[lm.id] ? 1.3 : 1.05); return g; }
   g.scale.setScalar(1.05);
   if (hash(i) < clamp(1 - (yr - 1790) / 75, 0.07, 1)) { yr < 1865 ? conifers(g, i) : streetTree(g); return g; }
   const t = yr + (hash(i, 3) - 0.5) * 30; // styles overlap by about a generation
@@ -449,6 +582,19 @@ const blast = new THREE.Group();
   sph(blast, 26, new THREE.MeshBasicMaterial({ color: 0xf2b233, transparent: true }), 0, 40, 0).castShadow = false;
   blast.visible = false; scene.add(blast);
 }
+
+// Two storms, both dated in YP.SCENERY: rain, a darker light, and a caption that rides with the camera.
+const storm = new THREE.Group();
+const RAIN = PHONE ? 90 : 180;
+const rain = new THREE.InstancedMesh(GEO.box, new THREE.MeshBasicMaterial({ color: 0xdfeef0, transparent: true, opacity: 0.55, fog: false }), RAIN);
+rain.frustumCulled = false; storm.add(rain);
+const STORMS = [
+  { s: byId.island, from: byId.island.at + 0.02, len: 1.3, day: '13 April ' },
+  { s: byId.hazel, from: byId.hazel.at + 0.55, len: 1.2, day: '15 October ' }
+];
+for (const st of STORMS) st.label = label(storm, st.s.title + ' · ' + st.day + st.s.label, 0, 268, -60);
+storm.visible = false; scene.add(storm);
+const rainM = new THREE.Matrix4(), rainP = new THREE.Vector3(), rainS = new THREE.Vector3(), rainQ = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -0.3);
 
 // ---------- the four rides ----------
 // Shapes follow the images listed in references.js. Where the reference is a
@@ -615,6 +761,24 @@ YP.view = {
       if (n < 7) { m.position.set(Math.sin(n * 2.4) * 34 * bk, 40 + n * 24 * bk + bk * 70, 0); m.scale.setScalar(16 + n * 5 * bk + bk * 18); m.material.opacity = 0.6 * (1 - bk); }
       else { m.visible = bk < 0.25; m.scale.setScalar(30 * (1 - bk * 3)); }
     });
+
+    // storms
+    let wet = 0;
+    for (const st of STORMS) { const k = (yearF - st.from) / st.len, on = k > 0 && k < 1; st.label.visible = on; if (on) wet = Math.sin(k * Math.PI); }
+    storm.visible = wet > 0;
+    hemi.intensity = 1.25 - wet * 0.5; sun.intensity = 1.7 - wet * 1.15;
+    const dim = wet > 0 ? 'brightness(' + (1 - wet * 0.22).toFixed(2) + ') saturate(' + (1 - wet * 0.45).toFixed(2) + ')' : '';
+    if (canvas.style.filter !== dim) canvas.style.filter = dim; // the sky is a CSS gradient behind the canvas, so it is dimmed here
+    if (wet > 0) {
+      storm.position.x = camX;
+      for (let i = 0; i < RAIN; i++) {
+        const fall = ((hash(i, 41) * 700 - t * (700 + hash(i, 42) * 300)) % 700 + 700) % 700;
+        rainP.set((hash(i, 43) - 0.5) * 2000 - (700 - fall) * 0.3, fall, 320 - hash(i, 44) * 760);
+        rainS.set(1.4, 6 + 30 * wet, 1.4);
+        rain.setMatrixAt(i, rainM.compose(rainP, rainQ, rainS));
+      }
+      rain.instanceMatrix.needsUpdate = true;
+    }
 
     // the "now riding" banner
     const show = S.banner && S.state !== 'menu' && S.t < S.banner.until;

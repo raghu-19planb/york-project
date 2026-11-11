@@ -80,6 +80,7 @@ YP.REFERENCES = [
 
 YP.UNCHECKED = [
   'The landmarks: the garrison, Worts’s windmill, Old City Hall, the Royal York, the Bank of Commerce tower, New City Hall, the TD tower, the CN Tower, SkyDome',
+  'The landmarks added on 2026-11-11, which were modelled from written descriptions on the pages they cite and not from pictures: Montgomery’s Tavern, St. Lawrence Hall, University College, the Legislative Building, Casa Loma, the Prince Edward Viaduct, Union Station, Maple Leaf Gardens, Ontario Place, the Eaton Centre, the Crystal at the ROM. Their colours, and any detail the page does not describe, are guesses',
   'Ordinary buildings of every period',
   'People and their clothing',
   'Carts, cars, bicycles, ships and the 1853 train',

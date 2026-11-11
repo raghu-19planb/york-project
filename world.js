@@ -22,7 +22,7 @@ YP.PIECES = [
     status: 'live',
     title: 'The record',
     line: 'Every card in the game, with the source it came from.',
-    body: 'Fifteen entries so far. Each was checked against the page it links to before it went in.',
+    body: 'Twenty-one entries so far. Each was checked against the page it links to before it went in.',
     href: '#record',
     cta: 'Read the record'
   },
@@ -57,6 +57,10 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'Next Stop, Toronto has more to see and more to catch. Six new records, from the 1837 rebellion on Yonge Street to the stopping of the Spadina Expressway in 1971, bring the count to twenty-one. Thirteen more dated things are in the landscape: eleven landmarks modelled in 3D, from Montgomery\u2019s Tavern (which burns in December 1837) to the Crystal at the ROM, and two storms, the one that made the peninsula an island in 1858 and Hurricane Hazel in 1954. The new models were built from written descriptions and are listed as not yet checked against a picture.'
+  },
   {
     date: '2026-11-11',
     text: 'The game has a new name: Next Stop, Toronto. It was Carrying Place, and older notes below still call it that. The picture behind the title is now painted: the live 3D skyline and the maple leaves go through a filter that makes them read as oil on canvas. It is a painted look, not a period painting.'

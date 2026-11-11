@@ -62,11 +62,25 @@ YP.RECORDS = [
     url: 'https://en.wikipedia.org/wiki/History_of_Toronto'
   },
   {
+    at: 1837, label: '1837',
+    title: 'Rebellion on Yonge Street',
+    text: 'On 7 December about a thousand government troops and militia marched up Yonge Street and scattered the rebels gathered at Montgomery’s Tavern. The tavern was burned on the lieutenant governor’s order.',
+    source: 'Wikipedia, Battle of Montgomery’s Tavern',
+    url: 'https://en.wikipedia.org/wiki/Battle_of_Montgomery%27s_Tavern'
+  },
+  {
     at: 1849, label: '1849',
     title: 'The omnibus',
     text: 'Public transportation in Toronto started with H.B. Williams’s horse-drawn omnibus, running between Yorkville and the market.',
     source: 'City of Toronto Archives, The TTC: 100 Years of Moving Toronto',
     url: 'https://www.toronto.ca/explore-enjoy/history-art-culture/online-exhibits/web-exhibits/web-exhibits-transportation/the-ttc-100-years-of-moving-toronto/setting-the-scene/'
+  },
+  {
+    at: 1858, label: '1858',
+    title: 'The peninsula becomes an island',
+    text: 'On 13 April a violent storm cut a channel about 150 m wide through the sand peninsula that sheltered the harbour. It has been an island ever since.',
+    source: 'Wikipedia, Toronto Islands',
+    url: 'https://en.wikipedia.org/wiki/Toronto_Islands'
   },
   {
     at: 1861, label: '1861',
@@ -90,11 +104,25 @@ YP.RECORDS = [
     url: 'https://www.toronto.ca/city-government/accountability-operations-customer-service/access-city-information-or-records/city-of-toronto-archives/whats-online/web-exhibits/the-great-fire-of-1904/'
   },
   {
+    at: 1918, label: '1918',
+    title: 'A bridge over the Don',
+    text: 'The Prince Edward Viaduct opened on 18 October, carrying Bloor Street 40 m above the Don Valley to Danforth Avenue. It was built with a lower deck for trains; the subway did not use it until 1966.',
+    source: 'Wikipedia, Prince Edward Viaduct',
+    url: 'https://en.wikipedia.org/wiki/Prince_Edward_Viaduct'
+  },
+  {
     at: 1921, label: '1921',
     title: 'The TTC takes over',
     text: 'On 1 September the city handed the private Toronto Railway Company and its own Civic Railways to the new Toronto Transportation Commission.',
     source: 'City of Toronto Archives, The TTC: 100 Years of Moving Toronto',
     url: 'https://www.toronto.ca/explore-enjoy/history-art-culture/online-exhibits/web-exhibits/web-exhibits-transportation/the-ttc-100-years-of-moving-toronto/setting-the-scene/'
+  },
+  {
+    at: 1927, label: '1927',
+    title: 'Union Station opens',
+    text: 'The Prince of Wales opened the station on 6 August, cutting a ribbon with gold scissors. Building had begun in 1914, and the train shed was not finished until 1930.',
+    source: 'Wikipedia, Union Station (Toronto)',
+    url: 'https://en.wikipedia.org/wiki/Union_Station_(Toronto)'
   },
   {
     at: 1954, label: '1954',
@@ -109,6 +137,21 @@ YP.RECORDS = [
     text: 'Opened on 13 September. Viljo Revell’s design was picked from 540 entries in an international competition held in 1958.',
     source: 'Wikipedia, Toronto City Hall',
     url: 'https://en.wikipedia.org/wiki/Toronto_City_Hall'
+  },
+  {
+    // Placed at 1968 so its card does not land on the 1965 one; the label carries the real year.
+    at: 1968, label: '1967',
+    title: 'Caribana',
+    text: 'The first Caribana was held in 1967, organised by Toronto’s West Indian community to mark Canada’s centennial. It became the Toronto Caribbean Carnival.',
+    source: 'Wikipedia, Toronto Caribbean Carnival',
+    url: 'https://en.wikipedia.org/wiki/Toronto_Caribbean_Carnival'
+  },
+  {
+    at: 1971, label: '1971',
+    title: 'The expressway is stopped',
+    text: 'On 3 June the Ontario government withdrew its support for the Spadina Expressway. Residents had campaigned against it since 1969. A subway line was built along part of its route instead and opened in 1978.',
+    source: 'Wikipedia, Spadina Expressway',
+    url: 'https://en.wikipedia.org/wiki/Spadina_Expressway'
   },
   {
     at: 1976, label: '1976',

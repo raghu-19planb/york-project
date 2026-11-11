@@ -10,7 +10,7 @@
   const { W, GROUND, Y0, PXPY } = GEO;
   const BASE = GROUND - 12;
   const C = YP.C;
-  let ctx, T = 0;
+  let ctx, T = 0, YEAR = 0;
 
   const hash = (i, s) => { const x = Math.sin(i * 127.1 + (s || 0) * 311.7 + 74.7) * 43758.5453; return x - Math.floor(x); };
   const clamp = (v, a, b) => Math.max(a === undefined ? 0 : a, Math.min(b === undefined ? 1 : b, v));
@@ -144,6 +144,80 @@
       ctx.strokeStyle = 'rgba(23,32,43,0.35)'; ctx.lineWidth = 1;
       for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.ellipse(x + 34, b - 26, 56 - k * 14, 34, 0, Math.PI, 0); ctx.stroke(); }
       return 66;
+    },
+    // Plain versions of the landmarks scene3d.js models, for browsers without WebGL.
+    tavern(x, b) {
+      if (YEAR >= 1837.93) { rect(x, b - 14, 66, 14, '#3a2e2a'); rect(x + 50, b - 40, 7, 40, '#3a3530'); if (YEAR < 1839.6) for (let k = 0; k < 4; k++) { const h = 16 + Math.abs(Math.sin(T * 9 + k * 2)) * 22; poly([x + 6 + k * 14, b - 12, x + 13 + k * 14, b - 12 - h, x + 20 + k * 14, b - 12], k % 2 ? '#e8762c' : '#f2b233'); } return 46; }
+      rect(x, b - 40, 66, 40, '#b08f5e'); poly([x - 4, b - 40, x + 33, b - 58, x + 70, b - 40], '#4b3a2c'); rect(x - 2, b - 22, 70, 2, '#6b4a2e');
+      for (let k = 0; k < 5; k++) rect(x + k * 16, b - 20, 2, 20, '#6b4a2e');
+      rect(x + 50, b - 66, 7, 14, '#5a5148'); smoke(x + 53, b - 70, 5, 5);
+      return 64;
+    },
+    stlawrence(x, b) {
+      rect(x - 6, b - 54, 78, 54, '#d8c9a6'); rect(x - 5, b - 68, 76, 14, '#4f4a44'); rect(x + 18, b - 54, 30, 54, '#ece2c8');
+      poly([x + 16, b - 54, x + 33, b - 64, x + 50, b - 54], '#ece2c8');
+      for (let k = 0; k < 4; k++) rect(x + 21 + k * 7.5, b - 50, 2.5, 30, '#d8c9a6');
+      for (let k = 0; k < 3; k++) { ctx.fillStyle = '#3a2c20'; ctx.beginPath(); ctx.arc(x + 25 + k * 8, b - 14, 3, Math.PI, 0); ctx.fill(); ctx.fillRect(x + 22 + k * 8, b - 14, 6, 14); }
+      rect(x + 25, b - 82, 16, 14, '#ece2c8'); ctx.fillStyle = '#6f9a86'; ctx.beginPath(); ctx.arc(x + 33, b - 82, 9, Math.PI, 0); ctx.fill(); rect(x + 32, b - 100, 2, 10, '#6f9a86');
+      return 104;
+    },
+    uc(x, b) {
+      rect(x - 30, b - 40, 126, 40, '#c6b78e'); poly([x - 32, b - 40, x - 20, b - 54, x + 86, b - 54, x + 98, b - 40], '#55504a');
+      rect(x + 20, b - 86, 26, 86, '#c6b78e'); poly([x + 17, b - 86, x + 33, b - 112, x + 49, b - 86], '#55504a');
+      ctx.fillStyle = '#3a2c20'; ctx.beginPath(); ctx.arc(x + 33, b - 20, 6, Math.PI, 0); ctx.fill(); ctx.fillRect(x + 27, b - 20, 12, 20);
+      rect(x + 84, b - 44, 20, 44, '#c6b78e'); poly([x + 81, b - 44, x + 94, b - 66, x + 107, b - 44], '#55504a');
+      return 116;
+    },
+    queenspark(x, b) {
+      for (const dx of [-56, 64]) { rect(x + dx, b - 42, 50, 42, '#b98774'); poly([x + dx - 3, b - 42, x + dx + 25, b - 62, x + dx + 53, b - 42], '#5c5650'); }
+      rect(x + 2, b - 60, 62, 60, '#b98774'); poly([x - 1, b - 60, x + 10, b - 86, x + 56, b - 86, x + 67, b - 60], '#5c5650');
+      for (const dx of [-12, 60]) { rect(x + dx, b - 84, 16, 84, '#b98774'); ctx.fillStyle = '#6f9a86'; ctx.beginPath(); ctx.arc(x + dx + 8, b - 84, 10, Math.PI, 0); ctx.fill(); }
+      for (let k = 0; k < 3; k++) { ctx.fillStyle = '#3a2c20'; ctx.beginPath(); ctx.arc(x + 19 + k * 14, b - 48, 4, Math.PI, 0); ctx.fill(); ctx.fillRect(x + 15 + k * 14, b - 48, 8, 18); }
+      return 100;
+    },
+    casaloma(x, b) {
+      rect(x - 20, b - 46, 106, 46, '#b5ada0'); poly([x - 22, b - 46, x - 10, b - 62, x + 76, b - 62, x + 88, b - 46], '#8a4a3a');
+      rect(x - 16, b - 104, 24, 104, '#b5ada0'); poly([x - 19, b - 104, x - 4, b - 136, x + 11, b - 104], '#8a4a3a');
+      rect(x + 52, b - 84, 22, 84, '#b5ada0'); for (let k = 0; k < 3; k++) rect(x + 52 + k * 8.5, b - 91, 5, 7, '#b5ada0');
+      rect(x + 84, b - 62, 11, 62, '#b5ada0'); poly([x + 82, b - 62, x + 89.5, b - 80, x + 97, b - 62], '#8a4a3a');
+      return 138;
+    },
+    viaduct(x, b) {
+      rect(x - 70, b - 77, 206, 5, '#8a8f86'); rect(x - 70, b - 63, 206, 3, '#4a5560'); rect(x + 12, b - 2, 42, 2, '#3f7f93');
+      for (let k = 0; k < 4; k++) rect(x - 60 + k * 62, b - 72, 10, 72, '#b9b2a3');
+      ctx.strokeStyle = '#4a5560'; ctx.lineWidth = 3;
+      for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.arc(x - 24 + k * 62, b - 32, 26, Math.PI, 0); ctx.stroke(); }
+      return 86;
+    },
+    union(x, b) {
+      rect(x - 60, b - 34, 186, 34, '#d9cfb8'); rect(x - 4, b - 50, 74, 50, '#d9cfb8'); rect(x - 6, b - 54, 78, 4, '#c4b99e'); rect(x + 8, b - 62, 50, 8, '#d9cfb8');
+      for (let k = 0; k < 10; k++) rect(x + 1 + k * 7, b - 42, 3, 36, '#efe6d2');
+      return 68;
+    },
+    gardens(x, b) {
+      rect(x - 14, b - 50, 94, 50, '#c8b182'); rect(x, b - 66, 66, 16, '#c8b182');
+      ctx.fillStyle = '#d9d6cc'; ctx.beginPath(); ctx.ellipse(x + 33, b - 66, 32, 12, 0, Math.PI, 0); ctx.fill();
+      rect(x + 12, b - 19, 42, 5, C.red); ctx.fillStyle = '#3a3530'; for (let k = 0; k < 5; k++) ctx.fillRect(x + 13 + k * 9, b - 46, 4, 20);
+      return 84;
+    },
+    ontarioplace(x, b) {
+      rect(x - 70, b - 2, 210, 2, '#3f7f93'); disc(x - 30, b - 36, 28, '#f1eee6'); rect(x - 40, b - 8, 20, 8, '#b9b2a3');
+      for (let k = 0; k < 3; k++) { const px = x + 16 + k * 42; rect(px, b - 52, 32, 12, '#f1eee6'); rect(px, b - 44, 32, 4, '#8f9aa3'); rect(px + 3, b - 40, 2, 40, '#d9d6cc'); rect(px + 27, b - 40, 2, 40, '#d9d6cc'); }
+      rect(x - 4, b - 46, 150, 2, '#8f9aa3');
+      return 70;
+    },
+    eaton(x, b) {
+      rect(x - 40, b - 40, 146, 40, '#d2ccbe');
+      ctx.fillStyle = 'rgba(191,224,234,0.75)'; ctx.fillRect(x - 40, b - 58, 146, 18);
+      ctx.strokeStyle = '#f1eee6'; ctx.lineWidth = 1.5; for (let k = 0; k <= 8; k++) { ctx.beginPath(); ctx.moveTo(x - 40 + k * 18.25, b - 40); ctx.lineTo(x - 40 + k * 18.25, b - 58); ctx.stroke(); }
+      rect(x + 20, b - 26, 26, 26, '#bfe0ea'); rect(x + 18, b - 30, 30, 4, C.red);
+      return 62;
+    },
+    crystal(x, b) {
+      rect(x - 20, b - 46, 106, 46, '#c9b592'); rect(x - 22, b - 49, 110, 3, '#8a7d66');
+      poly([x - 4, b, x + 6, b - 78, x + 44, b - 30, x + 40, b], '#c9ced2'); poly([x + 30, b, x + 66, b - 68, x + 78, b - 10, x + 70, b], '#d6dadd'); poly([x + 18, b, x + 34, b - 54, x + 56, b], '#b9c0c6');
+      ctx.strokeStyle = '#7fb0c4'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 8, b - 60); ctx.lineTo(x + 30, b - 8); ctx.moveTo(x + 62, b - 56); ctx.lineTo(x + 44, b - 10); ctx.stroke();
+      return 82;
     }
   };
   const SL = 64, PAR = 0.5;
@@ -358,9 +432,22 @@
     if (k < 0.25) disc(x, BASE - 40, 26 * (1 - k * 3), 'rgba(242,178,51,0.8)');
   }
 
+  function storms(year) { // 13 April 1858 (the island) and 15 October 1954 (Hazel): rain and a caption
+    for (const [s, from, len, day] of [[byId.island, byId.island.at + 0.02, 1.3, '13 April '], [byId.hazel, byId.hazel.at + 0.55, 1.2, '15 October ']]) {
+      const k = (year - from) / len;
+      if (k < 0 || k > 1) continue;
+      const wet = Math.sin(k * Math.PI);
+      rect(0, 0, W, GROUND, 'rgba(40,50,60,' + wet * 0.3 + ')');
+      ctx.strokeStyle = 'rgba(223,238,240,' + (0.3 + wet * 0.4) + ')'; ctx.lineWidth = 1.2; ctx.beginPath();
+      for (let i = 0; i < 90; i++) { const rx = hash(i, 43) * (W + 200) - 100, ry = (hash(i, 41) * GROUND + T * (500 + hash(i, 42) * 200)) % GROUND; ctx.moveTo(rx, ry); ctx.lineTo(rx - 6, ry + 18); }
+      ctx.stroke();
+      tag(W / 2, 110, s.title + ' · ' + day + s.label);
+    }
+  }
+
   // ---------- entry point ----------
   YP.drawLandscape = function (c, d, year, t) {
-    ctx = c; T = t;
+    ctx = c; T = t; YEAR = year;
     const [top, bot] = sky(year);
     const g = ctx.createLinearGradient(0, 0, 0, GROUND);
     g.addColorStop(0, top); g.addColorStop(1, bot);
@@ -372,5 +459,6 @@
     battle(d, year);
     life(d);
     train(year);
+    storms(year);
   };
 })();
