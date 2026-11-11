@@ -7,10 +7,10 @@
   const frame = dialog.querySelector('iframe'), title = dialog.querySelector('.short-title'), full = dialog.querySelector('.short-full'), max = dialog.querySelector('.short-max'), close = dialog.querySelector('.short-close');
   function setMax(on) { dialog.classList.toggle('max', on); max.textContent = on ? 'Smaller' : 'Maximize'; max.setAttribute('aria-pressed', String(on)); }
   function shut() { frame.src = 'about:blank'; setMax(false); if (dialog.open) dialog.close(); } // stopping the page stops its sound too
-  document.querySelectorAll('.story-card[data-short]').forEach(card => card.addEventListener('click', e => {
+  document.querySelectorAll('a[data-short]').forEach(card => card.addEventListener('click', e => {
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; // a new tab or window is the visitor's choice
     e.preventDefault();
-    title.textContent = card.querySelector('b').textContent; full.href = card.dataset.page || card.getAttribute('href');
+    title.textContent = card.dataset.title || card.querySelector('b').textContent; full.href = card.dataset.page || card.getAttribute('href');
     frame.title = title.textContent; frame.src = card.dataset.short; setMax(false); dialog.showModal();
   }));
   max.addEventListener('click', () => setMax(!dialog.classList.contains('max')));

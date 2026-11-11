@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'The five still pictures of the timelapse are gone from the home page and from its own page. The timelapse itself shows the change better, and the Play button on the home page now opens it in the story frame.'
+  },
+  {
+    date: '2026-11-11',
     text: 'Stories now play in a tall frame, nine wide to sixteen high, the shape of a short video on a phone. A card on the home page opens its story in that frame; Maximize makes it as tall as the screen. The scrapbook sits in the same frame on its own page. The leaf-drawn film has a page of its own so it can be a story too.'
   },
   {

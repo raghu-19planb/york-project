@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111u">
+<link rel="stylesheet" href="style.css?v=20261111v">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -17,7 +17,7 @@
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
 } }
 </script>
-<script src="short.js?v=20261111u"></script>
+<script src="short.js?v=20261111v"></script>
 </head>
 <body class="shore world17 town" data-world="town">
 <div class="wrap">
@@ -53,7 +53,7 @@
   <div class="world-track" id="w17-track" role="progressbar" aria-label="Progress from 1700 to 1850"><span></span></div>
   <button class="world-play" id="w17-play" type="button" aria-pressed="true">Pause</button>
   <div class="views" id="w17-views" role="group" aria-label="Camera views"></div>
-  <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The five pictures below show the same timelapse.</div>
+  <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The notes below say what it shows.</div>
 </div>
 
 <div class="wrap">
@@ -67,15 +67,6 @@
   <div class="views cards" id="town-eras" role="group" aria-label="Jump to a moment"></div>
   <div class="about" id="w17-about" aria-live="polite"></div>
   <p class="help" style="padding:0">The timelapse runs from 1700 to 1850 and starts again, and the camera goes to wherever the change is. Drag the year, or pick a moment, to stop it · drag the picture to take the camera yourself · scroll or pinch to zoom · Play picks it up again</p>
-
-  <section class="notes">
-    <div class="sec-head"><h2>One camera, five moments</h2></div>
-    <p class="src" style="margin:0 0 14px">Choose a year. The camera stays where it is. Each picture is taken from the live model.</p>
-    <div class="when town-pick" id="town-pick" role="group" aria-label="Choose a year">
-      <button type="button" data-y="1700" aria-pressed="false"><b>c.1700</b><span>forest</span></button><button type="button" data-y="1793" aria-pressed="false"><b>1793</b><span>founded</span></button><button type="button" data-y="1813" aria-pressed="false"><b>1813</b><span>the battle</span></button><button type="button" data-y="1834" aria-pressed="false"><b>1834</b><span>a city</span></button><button type="button" data-y="1850" aria-pressed="true"><b>1850</b><span>30,000 people</span></button>
-    </div>
-    <figure class="town-still"><img id="town-still" src="images/town/town-1850.jpg" width="1600" height="900" alt="The model in 1850: a city along the bay, wharves, the forest cut far back" loading="lazy"><figcaption id="town-still-cap"></figcaption></figure>
-  </section>
 
   <section class="notes">
     <div class="sec-head"><h2>What's real here, and what is drawn</h2></div>
@@ -111,26 +102,12 @@
   </footer>
 </div>
 
-<script src="data/history.js?v=20261111u"></script>
-<script src="data/terrain.js?v=20261111u"></script>
-<script type="module" src="world1700.js?v=20261111u"></script>
+<script src="data/history.js?v=20261111v"></script>
+<script src="data/terrain.js?v=20261111v"></script>
+<script type="module" src="world1700.js?v=20261111v"></script>
 <script>
-// The five pictures: one camera, a different year. And the counts in the notes, read from the model itself.
+// The counts in the notes, read from the model itself, so the page cannot drift from what was built.
 (function () {
-  var CAP = {
-    1700: 'About 1700. Forest to the water’s edge, the bay behind its sandbar, and no town.',
-    1793: '1793. A garrison at the harbour mouth on the left; ten blocks of town surveyed near the Don on the right.',
-    1813: '1813, after the battle. A town of about 720 people; the fort and the parliament buildings burned.',
-    1834: '1834. York becomes the City of Toronto, about 9,250 people. The clearing has reached well back from the bay.',
-    1850: '1850. About 30,000 people, wharves along the shore, and the forest cut back out of sight of the water.'
-  };
-  var img = document.getElementById('town-still'), cap = document.getElementById('town-still-cap');
-  function pick(y) {
-    img.src = 'images/town/town-' + y + '.jpg'; img.alt = 'The model: ' + CAP[y]; cap.textContent = CAP[y];
-    document.querySelectorAll('#town-pick button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.y === String(y))); });
-  }
-  document.querySelectorAll('#town-pick button').forEach(function (b) { b.addEventListener('click', function () { pick(+b.dataset.y); }); });
-  pick(1850);
   document.getElementById('town-play2').addEventListener('click', function () { var w = window.YP && window.YP.w17; if (!w) return; w.town.cam.auto = true; w.town.jump(1700); w.setPlaying(true); window.YP.w17focus(); });
   var t = setInterval(function () {
     var w = window.YP && window.YP.w17; if (!w || !w.town || !w.town.houses) return; clearInterval(t);

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111u">
+<link rel="stylesheet" href="style.css?v=20261111v">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -157,17 +157,10 @@
       </div>
       <div class="aside">
         <p class="lead">The same ground, followed for a hundred and fifty years: forest, a French fort that burned, ten blocks of York, a battle, and by 1850 a city of thirty thousand on a working harbour.</p>
-        <p class="fine">A 3D timelapse · one camera, five moments below</p>
+        <p class="fine">A 3D timelapse</p>
       </div>
     </div>
-    <div class="town-row">
-      <figure><a href="town.html"><img src="images/town/town-1700.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1700, from one fixed camera above the bay"></a><figcaption>c.1700 · forest to the water</figcaption></figure>
-      <figure><a href="town.html"><img src="images/town/town-1793.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1793, from one fixed camera above the bay"></a><figcaption>1793 · York is founded</figcaption></figure>
-      <figure><a href="town.html"><img src="images/town/town-1813.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1813, from one fixed camera above the bay"></a><figcaption>1813 · after the battle</figcaption></figure>
-      <figure><a href="town.html"><img src="images/town/town-1834.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1834, from one fixed camera above the bay"></a><figcaption>1834 · a city</figcaption></figure>
-      <figure><a href="town.html"><img src="images/town/town-1850.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1850, from one fixed camera above the bay"></a><figcaption>1850 · 30,000 people</figcaption></figure>
-    </div>
-    <p class="town-go"><a class="btn dark" href="town.html">Play the timelapse, 1700 to 1850 <i aria-hidden="true">↗</i></a></p>
+    <p class="town-go"><a class="btn dark" href="town.html" data-short="town.html?short" data-title="A town taking shape">Play the timelapse, 1700 to 1850 <i aria-hidden="true">▶</i></a></p>
     <div class="band-in"><p class="fine" style="max-width:70ch">Dates and counts of people are from sources. Every ordinary house and street is drawn to match them, not taken from a map; the page says which is which.</p></div>
   </section>
 
@@ -207,30 +200,30 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261111u"></script>
-<script src="world.js?v=20261111u"></script>
-<script src="scenery.js?v=20261111u"></script>
-<script src="references.js?v=20261111u"></script>
-<script src="draw.js?v=20261111u"></script>
-<script src="site.js?v=20261111u"></script>
-<script src="data/boundaries.js?v=20261111u"></script>
-<script src="data/history.js?v=20261111u"></script>
-<script src="data/today.js?v=20261111u"></script>
-<script src="data/shoreline.js?v=20261111u"></script>
-<script src="data/buildings.js?v=20261111u"></script>
-<script src="data/terrain.js?v=20261111u"></script>
-<script src="gallery.js?v=20261111u"></script>
-<script src="sketch.js?v=20261111u"></script>
-<script src="stories.js?v=20261111u"></script>
+<script src="records.js?v=20261111v"></script>
+<script src="world.js?v=20261111v"></script>
+<script src="scenery.js?v=20261111v"></script>
+<script src="references.js?v=20261111v"></script>
+<script src="draw.js?v=20261111v"></script>
+<script src="site.js?v=20261111v"></script>
+<script src="data/boundaries.js?v=20261111v"></script>
+<script src="data/history.js?v=20261111v"></script>
+<script src="data/today.js?v=20261111v"></script>
+<script src="data/shoreline.js?v=20261111v"></script>
+<script src="data/buildings.js?v=20261111v"></script>
+<script src="data/terrain.js?v=20261111v"></script>
+<script src="gallery.js?v=20261111v"></script>
+<script src="sketch.js?v=20261111v"></script>
+<script src="stories.js?v=20261111v"></script>
 <script>
 // The first story card shows its photograph as a sketch, like the story it opens.
 document.querySelectorAll("img.sketch-me").forEach(function (img) { function go() { try { var c = YP.sketch(img, 700); c.className = "sketch"; img.parentNode.insertBefore(c, img); img.parentNode.classList.add("drawn"); } catch (e) {} } if (img.complete && img.naturalWidth) go(); else img.addEventListener("load", go, { once: true }); });
 </script>
-<script src="leafline.js?v=20261111u"></script>
+<script src="leafline.js?v=20261111v"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
-import('./world1700.js?v=20261111u').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261111u').catch(() => {});
+import('./world1700.js?v=20261111v').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261111v').catch(() => {});
 </script>
 </body>
 </html>
