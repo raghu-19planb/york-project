@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The shoreline, today · The York Project</title>
+<meta name="description" content="A 3D model of Toronto's present-day Lake Ontario shoreline near downtown, built from OpenStreetMap. The first layer of a world in progress.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body class="shore">
+<div class="wrap">
+  <header class="bar">
+    <a class="name" href="./">The York Project</a>
+    <nav class="mono"><a href="./#world">The world</a></nav>
+  </header>
+
+  <div class="shore-head">
+    <div class="mono">The world · layer 01 · in progress</div>
+    <h1>The shoreline, <em>today</em>.</h1>
+    <p>Where the city meets Lake Ontario near downtown, as it is mapped now. Everything older gets measured against this line.</p>
+  </div>
+</div>
+
+<div class="world3d" id="world3d">
+  <canvas id="gl" aria-label="3D model of the Toronto shoreline"></canvas>
+  <div class="labels" id="labels" aria-hidden="true"></div>
+  <div class="key" aria-label="Building height sources">
+    <div class="mono">Building heights</div>
+    <div><i style="background:#fbf7ee"></i>Recorded height <b id="k-h"></b></div>
+    <div><i style="background:#d8bd92"></i>Estimated from storeys <b id="k-l"></b></div>
+    <div><i style="background:#b7b0a1"></i>Height unknown <b id="k-n"></b></div>
+  </div>
+  <div class="views" id="views" role="group" aria-label="Camera views"></div>
+  <div class="glfail" id="glfail" hidden>This view needs WebGL, which isn't available in this browser.</div>
+</div>
+
+<div class="wrap">
+  <p class="help" style="padding:0">Drag to orbit · scroll or pinch to zoom · right-drag or two fingers to pan</p>
+
+  <section class="notes">
+    <div class="sec-head"><h2>What's real here, and what isn't yet</h2></div>
+    <ul class="log">
+      <li><span class="mono">Real</span><span>The shoreline and the islands. Traced from the Lake Ontario outline in <a id="src-link" target="_blank" rel="noopener">OpenStreetMap</a>, <span id="src-date"></span>, at true scale: <span id="src-count"></span>.</span></li>
+      <li><span class="mono">Real</span><span>The CN Tower's position and its 553.33 m height. Its shape is a simple marker, not a model of the tower.</span></li>
+      <li><span class="mono">Real</span><span>The footprints of <span id="b-total"></span> downtown buildings and building parts, from OpenStreetMap, between roughly Bathurst Street and the Don River and north to about College Street.</span></li>
+      <li><span class="mono">Mixed</span><span>Building heights. <span id="b-h"></span> use a height recorded in OpenStreetMap (white). <span id="b-l"></span> are estimated from the storey count at 3.2 m per storey (tan). <span id="b-n"></span> have no height data and are drawn as 6 m blocks (grey). Every block rises straight from the ground, so setbacks, podium gaps and roof shapes are not shown.</span></li>
+      <li><span class="mono">Not yet</span><span>Ground height. The land is a flat slab a few metres above the water; no terrain has been surveyed in.</span></li>
+      <li><span class="mono">Not yet</span><span>Buildings outside the downtown box, streets, and any earlier shoreline. Those are the next layers.</span></li>
+    </ul>
+    <p class="src" style="margin-top:18px">Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap contributors</a>, available under the Open Database Licence.</p>
+  </section>
+
+  <footer>
+    An independent project about Toronto's history. Not affiliated with the City of Toronto or the TTC.
+  </footer>
+</div>
+
+<script src="data/shoreline.js"></script>
+<script src="data/buildings.js"></script>
+<script type="module" src="shore.js"></script>
+</body>
+</html>

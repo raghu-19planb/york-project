@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Carrying Place · The York Project</title>
+<meta name="description" content="A one-button ride through three centuries of Toronto, from the portage trail to the subway.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body class="game">
+<div class="wrap">
+  <header class="bar">
+    <a class="name" href="./">The York Project</a>
+    <nav class="mono"><a href="./#record">The record</a></nav>
+  </header>
+</div>
+
+<div class="stage" id="stage">
+  <canvas id="c" width="960" height="540" aria-label="Carrying Place game"></canvas>
+  <canvas id="c3d" aria-hidden="true"></canvas>
+  <div class="banner" id="banner" hidden></div>
+
+  <div class="hud" id="hud" hidden>
+    <div>
+      <div class="year" id="year">1690</div>
+      <div class="mono" id="ride">Canoe</div>
+      <div class="mono pop" id="pop"></div>
+    </div>
+    <div class="right">
+      <div class="mono" id="found">0 / 15 punched</div>
+      <div class="lives" id="lives" aria-label="Lives"></div>
+      <button class="pause" id="pause" type="button">Pause</button>
+    </div>
+  </div>
+
+  <div class="card" id="card" aria-live="polite" hidden>
+    <div class="mono yr" id="card-yr"></div>
+    <h3 id="card-title"></h3>
+    <p id="card-text"></p>
+    <div class="src">Source: <a id="card-src" target="_blank" rel="noopener"></a></div>
+    <button class="btn" id="card-go" type="button" hidden>Ride on</button>
+  </div>
+
+  <div class="overlay" id="menu">
+    <div class="mono">The York Project · 01</div>
+    <h1>Carrying <em>Place</em></h1>
+    <p>Three centuries of Toronto in one ride. Jump what's in the way and catch the transfers: each one is a record with a source.</p>
+    <div class="btn-row" style="justify-content:center">
+      <button class="btn" id="play-rush" type="button">Rush</button>
+      <button class="btn ghost" id="play-explore" type="button">Explore: stop and read</button>
+    </div>
+    <p class="mono" style="margin-top:22px">Space, ↑, click or tap to jump · P to pause</p>
+  </div>
+
+  <div class="overlay" id="paused" hidden>
+    <h1>Paused</h1>
+    <button class="btn" id="resume" type="button">Ride on</button>
+  </div>
+</div>
+
+<p class="help">No sound yet. Rush gives you three lives; Explore has nothing in the way and stops at every record.</p>
+
+<div class="after" id="after" hidden>
+  <div class="mono" id="after-kicker"></div>
+  <h2 id="after-title"></h2>
+  <p id="after-sub"></p>
+  <canvas id="transfer" width="900" height="340" aria-label="Your transfer, punched with the records you found"></canvas>
+  <div class="btn-row">
+    <button class="btn" id="again" type="button">Ride again</button>
+    <a class="btn ghost" id="save" download="carrying-place-transfer.png">Save your transfer</a>
+  </div>
+  <ol class="records" id="after-records" style="margin-top:28px"></ol>
+</div>
+
+<script src="records.js"></script>
+<script src="draw.js"></script>
+<script src="scenery.js"></script>
+<script src="landscape.js"></script>
+<script src="game.js"></script>
+<script type="module" src="scene3d.js"></script>
+</body>
+</html>

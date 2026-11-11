@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The York Project · Toronto, a world in progress</title>
+<meta name="description" content="Toronto through play and record. A one-button history game, the sources behind it, and a world that keeps being added to.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <a class="name" href="./">The York Project</a>
+    <nav class="mono">
+      <a href="#world">World</a>
+      <a href="#record">Record</a>
+      <a href="#references">References</a>
+      <a href="#log">Log</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="mono">Toronto · a world in progress</div>
+      <h1>A city you can <em>ride</em> through.</h1>
+      <p class="byline mono">An exploration by Raghu Devaguptapu</p>
+      <p class="lede">Toronto was a carrying place before it was York, and York before it was Toronto. This project follows that line, one sourced record at a time, and keeps adding to it.</p>
+      <div class="btn-row">
+        <a class="btn" href="game.html">Play Carrying Place</a>
+        <a class="btn ghost" href="#world">See what's here so far</a>
+      </div>
+      <div class="rides" id="rides" aria-label="The four rides in the game"></div>
+    </div>
+
+    <section id="world">
+      <div class="sec-head">
+        <h2>The world so far</h2>
+        <span class="mono" id="world-count"></span>
+      </div>
+      <div class="pieces" id="pieces"></div>
+    </section>
+
+    <section id="record">
+      <div class="sec-head">
+        <h2>The record</h2>
+        <span class="mono" id="record-count"></span>
+      </div>
+      <ol class="records" id="records"></ol>
+
+      <h3 class="sub">Also in the landscape</h3>
+      <p class="subnote">The game's scenery changes with the year. These are the dated things in it; the city's growth is paced by census counts (<a id="pop-src" target="_blank" rel="noopener"></a>). Ordinary houses, people, carts, cars and ships are an illustration of the period, not records.</p>
+      <ol class="records" id="scenery"></ol>
+    </section>
+
+    <section id="references">
+      <div class="sec-head">
+        <h2>Visual references</h2>
+        <span class="mono" id="ref-count"></span>
+      </div>
+      <p class="subnote">What things look like should come from period paintings, plans and photographs, not from guesswork. These are the pictures each model was built from, what was taken from them, and what is still a guess.</p>
+      <ol class="records" id="refs"></ol>
+      <h3 class="sub">Not yet checked against a reference</h3>
+      <p class="subnote">These are illustrative for now and should not be read as accurate depictions.</p>
+      <ul class="unchecked" id="unchecked"></ul>
+    </section>
+
+    <section id="log">
+      <div class="sec-head">
+        <h2>World log</h2>
+        <span class="mono">What was added, and when</span>
+      </div>
+      <ul class="log" id="loglist"></ul>
+    </section>
+  </main>
+
+  <footer>
+    An independent project about Toronto's history. Not affiliated with the City of Toronto or the TTC. Each record links to the source it was checked against.
+  </footer>
+</div>
+
+<script src="records.js"></script>
+<script src="world.js"></script>
+<script src="scenery.js"></script>
+<script src="references.js"></script>
+<script src="draw.js"></script>
+<script src="site.js"></script>
+</body>
+</html>
