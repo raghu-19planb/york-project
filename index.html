@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111v">
+<link rel="stylesheet" href="style.css?v=20261111w">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -200,30 +200,30 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261111v"></script>
-<script src="world.js?v=20261111v"></script>
-<script src="scenery.js?v=20261111v"></script>
-<script src="references.js?v=20261111v"></script>
-<script src="draw.js?v=20261111v"></script>
-<script src="site.js?v=20261111v"></script>
-<script src="data/boundaries.js?v=20261111v"></script>
-<script src="data/history.js?v=20261111v"></script>
-<script src="data/today.js?v=20261111v"></script>
-<script src="data/shoreline.js?v=20261111v"></script>
-<script src="data/buildings.js?v=20261111v"></script>
-<script src="data/terrain.js?v=20261111v"></script>
-<script src="gallery.js?v=20261111v"></script>
-<script src="sketch.js?v=20261111v"></script>
-<script src="stories.js?v=20261111v"></script>
+<script src="records.js?v=20261111w"></script>
+<script src="world.js?v=20261111w"></script>
+<script src="scenery.js?v=20261111w"></script>
+<script src="references.js?v=20261111w"></script>
+<script src="draw.js?v=20261111w"></script>
+<script src="site.js?v=20261111w"></script>
+<script src="data/boundaries.js?v=20261111w"></script>
+<script src="data/history.js?v=20261111w"></script>
+<script src="data/today.js?v=20261111w"></script>
+<script src="data/shoreline.js?v=20261111w"></script>
+<script src="data/buildings.js?v=20261111w"></script>
+<script src="data/terrain.js?v=20261111w"></script>
+<script src="gallery.js?v=20261111w"></script>
+<script src="sketch.js?v=20261111w"></script>
+<script src="stories.js?v=20261111w"></script>
 <script>
 // The first story card shows its photograph as a sketch, like the story it opens.
 document.querySelectorAll("img.sketch-me").forEach(function (img) { function go() { try { var c = YP.sketch(img, 700); c.className = "sketch"; img.parentNode.insertBefore(c, img); img.parentNode.classList.add("drawn"); } catch (e) {} } if (img.complete && img.naturalWidth) go(); else img.addEventListener("load", go, { once: true }); });
 </script>
-<script src="leafline.js?v=20261111v"></script>
+<script src="leafline.js?v=20261111w"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
-import('./world1700.js?v=20261111v').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261111v').catch(() => {});
+import('./world1700.js?v=20261111w').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261111w').catch(() => {});
 </script>
 </body>
 </html>

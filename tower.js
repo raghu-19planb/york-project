@@ -33,9 +33,13 @@
     const img = el('img'); img.alt = p.shows + ' ' + p.when + '.'; img.width = p.width; img.height = p.height; img.dataset.src = DIR + p.file;
     const cap = el('figcaption'); cap.append(p.shows + ' ', el('span', null, 'Photo: ' + p.by.replace(/ ?\(Bobolink\),?| from Stirling.*$/g, '').trim() + ', ' + p.licence));
     snap.append(el('span', 'tape t1'), el('span', 'tape t2'), img, cap);
-    const note = el('div', 'note'); note.append(el('div', 'dated', p.when), el('h2', null, p.title), el('p', null, p.text), gauge(p.level, p.mark, i));
+    // The heading sits beside the little tower; the words run the full width under it. A tall photograph shares
+    // its row with the heading, so every page comes to about the same height and fills the frame.
+    const titles = el('div'); titles.append(el('div', 'dated', p.when), el('h2', null, p.title));
+    const head = el('div', 'head'); head.append(titles, gauge(p.level, p.mark, i));
+    const text = el('p', 'text', p.text); if (p.height > p.width) page.classList.add('tall-page');
     const sticky = el('aside', 'sticky ' + (i % 2 ? 'lean-l' : 'lean-r')); sticky.append(el('small', null, 'Not many people know'), el('p', null, p.fact));
-    page.append(snap, note, sticky, el('div', 'folio', (i + 1) + ' / ' + T.pages.length));
+    page.append(snap, head, text, sticky, el('div', 'folio', (i + 1) + ' / ' + T.pages.length));
     pagesEl.append(page);
     const bar = el('i'); bar.append(el('b')); barsEl.append(bar);
     return { page, img, snap, bar: bar.firstChild, done: false };
@@ -76,10 +80,10 @@
     since += dt; pages[at].bar.style.transform = 'scaleX(' + Math.min(1, since / HOLD).toFixed(3) + ')';
     if (since >= HOLD) { if (at < pages.length - 1) show(at + 1); else setPlaying(false); }
   }
-  // The book is 560 wide and as tall as its tallest page. The frame is nine by sixteen; the book is scaled to sit
+  // The book is 400 wide (BOOK in the stylesheet) and as tall as its tallest page. The frame is nine by sixteen; the book is scaled to sit
   // inside it whole, so a page is always seen from its rings to its page number.
   const frame = document.getElementById('story-frame'), maxBtn = document.getElementById('story-max'), play2 = document.getElementById('story-play2');
-  function fit() { const k = Math.min(frame.clientWidth / 560, frame.clientHeight / (book.offsetHeight || 1)); book.style.transform = 'translate(-50%, -50%) scale(' + k.toFixed(4) + ')'; }
+  function fit() { const k = Math.min(frame.clientWidth / book.offsetWidth, frame.clientHeight / (book.offsetHeight || 1)); book.style.transform = 'translate(-50%, -50%) scale(' + k.toFixed(4) + ')'; }
   new ResizeObserver(fit).observe(frame); new ResizeObserver(fit).observe(book); fit();
   function setMax(on) { frame.classList.toggle('max', on); document.documentElement.classList.toggle('story-max', on); maxBtn.textContent = on ? 'Smaller' : 'Maximize'; maxBtn.setAttribute('aria-pressed', String(on)); fit(); }
   maxBtn.addEventListener('click', () => setMax(!frame.classList.contains('max')));

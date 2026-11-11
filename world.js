@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'The words in the stories were too small to read. The scrapbook had been drawn wide and shrunk to fit the tall frame, which took its text under 11 pixels on a phone and its labels to 6. It is now drawn at the width it is read, so on a phone the story text is about 15 pixels and nothing is under 11; on a desktop the page is enlarged. The captions over the timelapse, the village and the film are larger too, and on a phone the frame takes the whole width.'
+  },
+  {
+    date: '2026-11-11',
     text: 'The five still pictures of the timelapse are gone from the home page and from its own page. The timelapse itself shows the change better, and the Play button on the home page now opens it in the story frame.'
   },
   {
