@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111i">
+<link rel="stylesheet" href="style.css?v=20261111j">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -48,12 +48,14 @@
   <canvas id="w17-gl" aria-label="3D model of the Toronto shore around 1700"></canvas>
   <div class="labels" id="w17-labels" aria-hidden="true"></div>
   <div class="view-tag" id="w17-tag"></div>
+  <div class="world-track" id="w17-track" role="progressbar" aria-label="Progress through the recording"><span></span></div>
+  <button class="world-play" id="w17-play" type="button" aria-pressed="true">Pause</button>
   <div class="views" id="w17-views" role="group" aria-label="Camera views"></div>
   <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The snapshots below show the same world.</div>
 </div>
 
 <div class="wrap">
-  <p class="help" style="padding:0">Drag to orbit · scroll or pinch to zoom · right-drag or two fingers to pan</p>
+  <p class="help" style="padding:0">The recording moves through all six views and starts again. Drag to stop it and orbit · scroll or pinch to zoom · right-drag or two fingers to pan · Play picks it up again</p>
 
   <section class="notes">
     <div class="sec-head"><h2>Six snapshots from the world</h2><button class="btn dark" id="gallery-open" type="button">Open the image gallery <i aria-hidden="true">↗</i></button></div>
@@ -92,10 +94,10 @@
 
 <dialog class="gallery" id="gallery-dialog" aria-labelledby="gallery-title"></dialog>
 
-<script src="data/history.js?v=20261111i"></script>
-<script src="data/terrain.js?v=20261111i"></script>
-<script src="gallery.js?v=20261111i"></script>
-<script type="module" src="world1700.js?v=20261111i"></script>
+<script src="data/history.js?v=20261111j"></script>
+<script src="data/terrain.js?v=20261111j"></script>
+<script src="gallery.js?v=20261111j"></script>
+<script type="module" src="world1700.js?v=20261111j"></script>
 <script>
 // Fill in the notes from the data file, so the page cannot drift from what was built.
 (function () {

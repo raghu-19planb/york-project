@@ -276,7 +276,7 @@ for (const [dx, dy, r] of [[-26, -9, 1.15], [-44, -12, 1.5]]) { // two more draw
 {
   const g = new THREE.Group();
   for (const [dx, dy, r] of [[-18, 2, 2.2], [-22, 5, 2.6], [-66, 6, 1]]) { const f = new THREE.Group(); person(f, 0, 0, 0, false); f.scale.setScalar(BIG); f.position.copy(P(BEACH[0] + dx, BEACH[1] + dy, 0.1)); f.rotation.y = r; g.add(f); }
-  [[0, 300], [4, 318], [-3, 760], [2, 1700]].forEach(([dx, y], k) => { const p = trailAt(trail[0][1] + y); const f = new THREE.Group(); person(f, 0, 0, 0, false); f.scale.setScalar(BIG); f.position.copy(P(p[0] + dx, p[1], 1.3)); f.rotation.y = k; g.add(f); });
+  [[0, 300], [4, 318], [-3, 760], [2, 1800]].forEach(([dx, y], k) => { const p = trailAt(trail[0][1] + y); const f = new THREE.Group(); person(f, 0, 0, 0, false); f.scale.setScalar(BIG); f.position.copy(P(p[0] + dx, p[1], 1.3)); f.rotation.y = k; g.add(f); });
   scene.add(g);
 }
 
@@ -321,33 +321,72 @@ const VIEWS = [
   { name: 'The mouth of the Humber', sub: 'Where the trail met the lake', cap: 'The Humber mouth', pos: [mouth[0] + 1500, 620, -(mouth[1] - 1500)], look: [mouth[0] - 300, 0, -(mouth[1] + 500)], turn: true },
   { name: 'As a map', sub: 'Rivers, shore and marsh from above', cap: 'Rivers and shore', pos: [-1250, 21500, -745], look: [-1250, 0, -750] }
 ];
-let fly = null;
 const still = () => document.documentElement.classList.contains('still');
-function goTo(view, instant) {
-  const p = new THREE.Vector3(...view.pos), t = new THREE.Vector3(...view.look);
-  controls.autoRotate = !!view.turn; controls.autoRotateSpeed = 0.18;
-  if (instant || still()) { camera.position.copy(p); controls.target.copy(t); fly = null; return; }
-  fly = { p0: camera.position.clone(), t0: controls.target.clone(), p, t, start: performance.now() };
+
+// ---------- the recording ----------
+// One camera move through every view, in order, drawn live each time it plays (it is not a video file).
+// Each view is held for a few seconds while the camera drifts, walks or sinks a little; then it flies to the next.
+const HOLD = 8, FLY = 3.2, LEG = HOLD + FLY, TOUR = VIEWS.length * LEG;
+const turned = (v, deg, closer) => { // the same view from a little further round, and a little nearer
+  const t = new THREE.Vector3(...v.look), d = new THREE.Vector3(...v.pos).sub(t);
+  d.applyAxisAngle(new THREE.Vector3(0, 1, 0), deg * Math.PI / 180).multiplyScalar(closer || 1);
+  return t.add(d).toArray();
+};
+{
+  const tA2 = trailAt(1555), tB2 = trailAt(1815); // a walk of about 55 m along the trail
+  VIEWS[0].end = { pos: turned(VIEWS[0], -14, 0.86) };
+  VIEWS[1].end = { pos: eye(BEACH[0] + 12, BEACH[1] + 20, 2.6), look: eye(BEACH[0] - 150, BEACH[1] - 85, 1) };
+  VIEWS[2].end = { pos: eye(tA2[0], tA2[1], 2.7), look: eye(tB2[0], tB2[1], 5) };
+  VIEWS[3].end = { pos: turned(VIEWS[3], 16, 0.9) };
+  VIEWS[4].end = { pos: turned(VIEWS[4], -14, 0.88) };
+  VIEWS[5].end = { pos: [VIEWS[5].pos[0], 17500, VIEWS[5].pos[2]] };
+  for (const v of VIEWS) { v.p0 = new THREE.Vector3(...v.pos); v.l0 = new THREE.Vector3(...v.look); v.p1 = new THREE.Vector3(...v.end.pos); v.l1 = new THREE.Vector3(...(v.end.look || v.look)); }
 }
+const tour = { on: !still(), t: 0, at: -1 };
+const lookAtNow = new THREE.Vector3();
+function pose(t) { // where the camera is, and what it looks at, t seconds into the recording
+  const i = Math.floor(t / LEG) % VIEWS.length, u = t - Math.floor(t / LEG) * LEG, v = VIEWS[i];
+  if (u < HOLD) { camera.position.lerpVectors(v.p0, v.p1, u / HOLD); lookAtNow.lerpVectors(v.l0, v.l1, u / HOLD); }
+  else {
+    const next = VIEWS[(i + 1) % VIEWS.length], k = (u - HOLD) / FLY, e = k * k * (3 - 2 * k);
+    camera.position.lerpVectors(v.p1, next.p0, e); lookAtNow.lerpVectors(v.l1, next.l0, e);
+    camera.position.y += Math.sin(Math.PI * e) * Math.min(1600, v.p1.distanceTo(next.p0) * 0.1); // rise over the trees on the way
+  }
+  controls.target.copy(lookAtNow); camera.lookAt(lookAtNow);
+  return i;
+}
+
 const viewBox = document.getElementById('w17-views'), tag = document.getElementById('w17-tag');
+const track = document.getElementById('w17-track'), playBtn = document.getElementById('w17-play');
 const cards = viewBox.classList.contains('cards');
 const shown = viewBox.dataset.pick ? viewBox.dataset.pick.split(',').map(i => VIEWS[+i]) : VIEWS;
-function choose(view) {
-  goTo(view);
-  [...viewBox.children].forEach((b, i) => b.classList.toggle('on', shown[i] === view));
-  if (tag) tag.innerHTML = '<small>' + String(shown.indexOf(view) + 1).padStart(2, '0') + ' / ' + String(shown.length).padStart(2, '0') + '</small><b></b>', tag.lastChild.textContent = view.name;
+function mark(i) { // show which view the recording is on
+  const view = VIEWS[i];
+  [...viewBox.children].forEach((btn, k) => btn.classList.toggle('on', shown[k] === view));
+  if (tag) { tag.innerHTML = '<small></small><b></b>'; tag.firstChild.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(VIEWS.length).padStart(2, '0'); tag.lastChild.textContent = view.name; }
+}
+function setPlaying(on) {
+  tour.on = on;
+  if (playBtn) { playBtn.textContent = on ? 'Pause' : 'Play the recording'; playBtn.setAttribute('aria-pressed', String(on)); }
+  stage.classList.toggle('playing', on);
+}
+function goTo(view, instant) { // jump the recording to a view; it plays on from there unless motion is switched off
+  tour.t = VIEWS.indexOf(view) * LEG; tour.at = -1;
+  if (instant) pose(tour.t);
 }
 shown.forEach((view, i) => {
-  const b = document.createElement('button'); b.type = 'button';
+  const btn = document.createElement('button'); btn.type = 'button';
   if (cards) {
     const n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span');
-    n.textContent = String(i + 1).padStart(2, '0'); t.textContent = view.name; d.textContent = view.sub; b.append(n, t, d);
-  } else b.textContent = view.name;
-  b.addEventListener('click', () => choose(view));
-  viewBox.append(b);
+    n.textContent = String(VIEWS.indexOf(view) + 1).padStart(2, '0'); t.textContent = view.name; d.textContent = view.sub; btn.append(n, t, d);
+  } else btn.textContent = view.name;
+  btn.addEventListener('click', () => { goTo(view, true); setPlaying(!still()); });
+  viewBox.append(btn);
 });
-controls.addEventListener('start', () => { fly = null; controls.autoRotate = false; });
-goTo(shown[0], true); choose(shown[0]); goTo(shown[0], true);
+if (playBtn) playBtn.addEventListener('click', () => setPlaying(!tour.on));
+controls.addEventListener('start', () => setPlaying(false)); // taking hold of the model stops the recording; Play picks it up again
+window.addEventListener('yp-motion', () => setPlaying(!still()));
+pose(0); setPlaying(tour.on);
 
 // ---------- loop ----------
 function resize() {
@@ -356,25 +395,24 @@ function resize() {
   renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(canvas); resize();
-let onScreen = true;
+let onScreen = true, lastNow = 0;
 new IntersectionObserver(es => { onScreen = es[0].isIntersecting; }).observe(stage);
 if (document.body.classList.contains('home')) { // on the home page a wheel or one-finger swipe scrolls the page
   controls.enableZoom = false;
   canvas.addEventListener('wheel', e => { controls.enableZoom = e.ctrlKey; }, { capture: true, passive: true });
 }
 renderer.setAnimationLoop(now => {
+  const dt = Math.min(0.5, (now - lastNow) / 1000); lastNow = now;
   if (!onScreen) return;
-  if (fly) {
-    const k = Math.min(1, (now - fly.start) / 1400), e = k * k * (3 - 2 * k);
-    camera.position.lerpVectors(fly.p0, fly.p, e); controls.target.lerpVectors(fly.t0, fly.t, e);
-    if (k === 1) fly = null;
-  }
+  let i;
+  if (tour.on) { tour.t = (tour.t + dt) % TOUR; i = pose(tour.t); }
+  else { controls.update(); i = Math.floor(tour.t / LEG) % VIEWS.length; }
+  if (i !== tour.at) { tour.at = i; mark(i); }
+  if (track) track.firstChild.style.transform = 'scaleX(' + (tour.t / TOUR).toFixed(4) + ')';
   // seen from far up, the near plane and the haze move out with the camera, so the water does not shimmer and the map view is not washed out
   const far = camera.position.distanceTo(controls.target);
   camera.near = Math.max(2, far / 300); camera.updateProjectionMatrix();
   scene.fog.near = 9000 + far * 1.2; scene.fog.far = 30000 + far * 4;
-  const wasTurning = controls.autoRotate; if (still()) controls.autoRotate = false;
-  controls.update(); controls.autoRotate = wasTurning;
   canoes.forEach((c, k) => { c.position.y = -0.1 + Math.sin(now / 900 + k) * 0.08; }); // the ones afloat rock a little
   renderer.render(scene, camera);
   placeLabels();
@@ -391,7 +429,7 @@ async function shot(i, w, h) {
   renderer.render(scene, camera);
   const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.86));
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
-  camera.position.copy(keep.p); controls.target.copy(keep.t); resize();
+  camera.position.copy(keep.p); controls.target.copy(keep.t); camera.lookAt(keep.t); resize();
   return blob;
 }
-YP.w17 = { scene, camera, controls, VIEWS, goTo, shot, groundY, trailAt, SITE };
+YP.w17 = { scene, camera, controls, VIEWS, goTo, shot, groundY, trailAt, SITE, tour, pose, setPlaying, TOUR, LEG };
