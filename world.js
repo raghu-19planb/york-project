@@ -89,7 +89,7 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
-    text: 'Every page now closes with a band above its footer: Many places. One Toronto. on one side, and Toronto has more stories on the other, with links to the stories made so far and to this log.'
+    text: 'Every page now closes with a band above its footer: Toronto has more stories on the left and Many places. One Toronto. on the right, with links to the stories made so far and to this log.'
   },
   {
     date: '2026-11-11',
