@@ -9,6 +9,15 @@ const COMMONS = 'https://commons.wikimedia.org/wiki/File:';
 
 YP.REFERENCES = [
   {
+    item: 'Toronto, redrawn (the boundaries)',
+    refs: [
+      { title: 'City of Toronto Historical Annexation Boundaries, 1834-1967 (Marcel Fortin, University of Toronto Map & Data Library, CC BY 4.0)', url: 'https://doi.org/10.5683/SP3/XN2NRW' },
+      { title: 'Former Municipality Boundaries (City of Toronto Open Data)', url: 'https://open.toronto.ca/dataset/former-municipality-boundaries/' }
+    ],
+    took: 'Every outline, its name, its number and its date, unchanged apart from simplifying the lines to about 15 m.',
+    caveat: 'The thirteen municipalities of 1954 are not drawn individually; the six shown are as they stood from 1967.'
+  },
+  {
     item: 'The canoe',
     refs: [
       { title: 'Birchbark canoe, Abbe Museum, Bar Harbor, Maine (photograph)', url: COMMONS + 'Birchbark_canoe,_Abbe_Museum,_Bar_Harbor,_ME_IMG_2301.JPG' },

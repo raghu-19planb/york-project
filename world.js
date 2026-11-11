@@ -37,12 +37,14 @@ YP.PIECES = [
     cta: 'Open the 3D shoreline'
   },
   {
-    id: 'lines',
+    id: 'redrawn',
     kind: 'Watch',
-    status: 'planned',
-    title: 'Lines',
-    line: 'The city drawn as one continuous route, in code.',
-    body: 'A short film that draws Toronto the way a transit map would: shoreline, ravines, then the rails laid over them. Not started.'
+    status: 'live',
+    title: 'Toronto, redrawn',
+    line: 'The city\u2019s limits, growing from 1834 to 1998, drawn in code with sound.',
+    body: 'Fifty annexations in the order they happened, then thirteen municipalities, then six, then one. Every outline is a mapped boundary.',
+    href: '#redrawn',
+    cta: 'Watch the map change'
   },
   {
     id: 'york-1813',
@@ -55,6 +57,10 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'Toronto, redrawn: a 41-second film in code and sound of the city\u2019s limits from 1834 to 1998, drawn from the University of Toronto\u2019s annexation boundaries and the City\u2019s former-municipality boundaries. It replaces the planned film "Lines". The site also now works on phones, and the home page title sits on a red band.'
+  },
   {
     date: '2026-11-10',
     text: 'Carrying Place is now drawn in 3D, and a new rule comes with it: models are built from period pictures. The four rides and the arc lamps were remodelled from archival photographs and a painting; everything else is listed as not yet checked.'

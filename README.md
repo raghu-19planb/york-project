@@ -12,6 +12,8 @@ Toronto, a world in progress. A static site (plain HTML, CSS and JS, no build st
 - `landscape.js` – draws the landscape for any given year. Ordinary buildings, people, carts, cars and ships are illustrative; anything with a caption comes from `scenery.js`.
 - `scene3d.js` – the 3D renderer for the game (three.js from a CDN). `game.js` owns the rules; if WebGL is unavailable the 2D drawings in `landscape.js` and `game.js` are used instead, so a new landmark needs a drawing in both.
 - `references.js` – the period pictures each model was built from, and the list of things not yet checked. **Rule: look at a period source before drawing anything historical, and record it here.**
+- `redrawn.js` – **Toronto, redrawn**, the film on the home page: the city limits from 1834 to 1998, drawn on a canvas as a function of time, with a few Web Audio notes.
+- `data/boundaries.js` – generated boundary geometry for the film. Rebuild with `node tools/build-boundaries.js <folder>`; the script header says which two files to download (U of T annexation boundaries, CC BY 4.0; City of Toronto former municipalities, OGL-Toronto).
 - `draw.js` – canvas drawing for the four rides, shared by the game and the landing page.
 
 - `shore.html`, `shore.js` – **The shoreline, today**, layer 01 of the 3D world (three.js, loaded from a CDN). Scene units are metres.
