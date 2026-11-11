@@ -297,6 +297,7 @@
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     if (S.state === 'run') update(dt);
+    if (snd.motion) snd.motion(S.state === 'run' && !S.jy ? S.ride : null); // hooves or wheels, only while the ride is on the ground and moving
     if (S.state !== 'end') draw();
     requestAnimationFrame(frame);
   }

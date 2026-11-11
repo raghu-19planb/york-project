@@ -1,4 +1,4 @@
-// Sound for Next Stop, Toronto: a fiddle tune and a few small effects, all made in the browser. No recordings.
+// Sound for Next Stop, Toronto: a fiddle tune, a few small effects and the faint sound of the ride, all made in the browser. No recordings.
 //
 // The tune is a reel in D written for this game. It is in the manner of the fiddle music played for dancing in
 // Upper Canada, but it is not a period tune and is not copied from one. The fiddle is a sawtooth wave with a slow
@@ -60,6 +60,23 @@
       step++; nextAt += EIGHTH;
     }
   }
+  // The sound of the ride itself, kept faint under the tune: hooves for the horsecar, wheels over rail joints for
+  // the streetcar and the subway. Filtered noise, made here; not recordings of a horse or of any TTC vehicle.
+  let riding = null, rideAt = 0, rideStep = 0, rideTimer = 0, hiss = null;
+  function knock(at, vol, freq, q, dur) { // a short knock: a burst of noise through a narrow filter
+    if (!hiss) { hiss = ac.createBuffer(1, ac.sampleRate * 0.25, ac.sampleRate); const d = hiss.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+    const n = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain(); n.buffer = hiss; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q;
+    g.gain.setValueAtTime(vol, at); g.gain.exponentialRampToValueAtTime(0.0001, at + dur); n.connect(f); f.connect(g); g.connect(master); n.start(at, Math.random() * 0.1, dur + 0.02);
+  }
+  const BEATS = { // each ride's pattern: [seconds to the next beat, loudness, pitch, sharpness, length]; loudness 0 is a rest
+    horsecar: [[0.1, 1.0, 950, 7, 0.05], [0.1, 0.8, 1250, 7, 0.045], [0.12, 1.2, 780, 6, 0.06], [0.18, 0, 0, 0, 0]], // a gallop: three beats and a rest, half a second a stride
+    streetcar: [[0.13, 0.8, 520, 3, 0.07], [0.62, 0.62, 430, 3, 0.07]], // two axles over a joint, then the gap
+    subway: [[0.09, 0.9, 300, 2.5, 0.08], [0.45, 0.7, 260, 2.5, 0.08]]
+  };
+  function rideTick() {
+    const p = BEATS[riding]; if (!p) return;
+    while (rideAt < ac.currentTime + 0.3) { const b = p[rideStep % p.length]; if (b[1]) knock(rideAt, b[1], b[2], b[3], b[4]); rideAt += b[0]; rideStep++; }
+  }
   const fx = fn => { if (ready() && ac.state === 'running') fn(ac.currentTime + 0.01); };
   YP.sound = {
     get state() { return ac ? ac.state : 'none'; },
@@ -69,6 +86,12 @@
     unlock() { if (ready() && ac.state === 'suspended') ac.resume(); },
     start(fromTop) { if (!ready()) return; this.unlock(); if (fromTop) step = 0; if (playing) return; playing = true; nextAt = ac.currentTime + 0.12; clearInterval(timer); timer = setInterval(schedule, 90); schedule(); },
     stop() { playing = false; clearInterval(timer); },
+    motion(kind) { // called every frame by the game with the ride that is rolling, or null when it is not
+      if (!BEATS[kind] || !ac || ac.state !== 'running') kind = null;
+      if (kind === riding) return;
+      riding = kind; clearInterval(rideTimer); if (!kind) return;
+      rideAt = ac.currentTime + 0.04; rideStep = 0; rideTimer = setInterval(rideTick, 80); rideTick();
+    },
     jump() { fx(t => bow(392, t, 0.13, 0.05, 587)); },                                   // a quick slide up the string
     catch() { fx(t => { click(t, 0.16); pluck(hz('A5'), t + 0.02, 0.16); pluck(hz('D6'), t + 0.12, 0.16); }); }, // punch, then two plucked notes
     hit() { fx(t => { bow(110, t, 0.3, 0.12, 82); bow(116, t, 0.3, 0.09, 87); }); },      // a low scrape

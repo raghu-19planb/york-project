@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'Next Stop, Toronto: the rides come alive. The canoe now carries three paddlers who lean into each stroke on alternate sides. The horsecar\u2019s horse gallops, legs, neck and tail, with a faint beat of hooves under the fiddle. The streetcar and the subway sway a little and knock over the rail joints. The figures and the sounds are drawings made in code, not records of a crew, a horse or a TTC vehicle.'
+  },
+  {
+    date: '2026-11-11',
     text: 'Five lines, one city: Ride the lines as a story in the Stories row. All five rapid transit lines are ridden one after another in about a minute; a title comes up for each line, the map of Toronto closes in on it, and its stations light one by one on the strip and on the map. It ends with every line on the whole city. Same OpenStreetMap data as the section on the home page; the pace is quicker than the section\u2019s and is a drawing, not a timetable.'
   },
   {

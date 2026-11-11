@@ -623,10 +623,27 @@ const rides = {};
   put(g1, hullGeo, mat('#d2a85e'), 0, 0, 0, 1, 1, 1);
   for (const z of [-7.9, 7.9]) box(g1, 60, 1.6, 1.2, '#5a3a22', 48, 10.4, z);
   for (const x of [28, 48, 68]) box(g1, 1.8, 1.2, 15, '#8a6a3a', x, 10, 0);
-  box(g1, 8, 13, 7, '#7a5a3a', 46, 9, 0); sph(g1, 4.6, '#c99872', 46, 26, 0); sph(g1, 4.8, '#1f1a16', 45.4, 27.2, 0, 0.8);
-  const paddle = new THREE.Group(); paddle.position.set(50, 21, 6); g1.add(paddle);
-  box(paddle, 1.8, 32, 1.8, '#c79a66', 0, -30, 0); box(paddle, 5.5, 13, 1.1, '#c79a66', 0, -37, 0);
-  rides.canoe = { g: g1, anim: t => { g1.position.y += Math.sin(t * 3) * 1.5 - 7; g1.rotation.z = Math.sin(t * 3 + 1) * 0.02; paddle.rotation.z = -0.5 + Math.sin(t * 5) * 0.45; paddle.rotation.x = 0.35; } };
+  // Three paddlers, one behind the other, paddling on alternate sides. Each is hinged at the hips so the body
+  // leans into the stroke, with arms that reach for the paddle. The figures are illustrative.
+  const paddlers = [27, 47, 67].map((x, n) => {
+    const side = n % 2 ? -1 : 1, p = new THREE.Group(); p.position.set(x, 9, 0); g1.add(p);
+    box(p, 8, 13, 7, ['#7a5a3a', '#6b4a2e', '#8a6a48'][n], 0, 0, 0); sph(p, 4.6, '#c99872', 0, 17, 0); sph(p, 4.8, '#1f1a16', -0.6, 18.2, 0, 0.8);
+    const arms = [side * 4.2, side * 1.2].map((z, j) => { const a = new THREE.Group(); a.position.set(2, 11.5 - j, z); p.add(a); box(a, 2.2, 10, 2.2, '#c99872', 0, -10, 0); return a; });
+    const paddle = new THREE.Group(); paddle.position.set(6, 12, side * 7.5); p.add(paddle);
+    box(paddle, 1.8, 32, 1.8, '#c79a66', 0, -30, 0); box(paddle, 5.5, 13, 1.1, '#c79a66', 0, -37, 0);
+    return { p, arms, paddle, side };
+  });
+
+  rides.canoe = { g: g1, anim: (t, moving) => {
+    g1.position.y += Math.sin(t * 3) * 1.5 - 7; g1.rotation.z = Math.sin(t * 3 + 1) * 0.02;
+    const k = moving ? 1 : 0;
+    paddlers.forEach((c, n) => { // the stroke: blade forward, pulled back through the water, lifted on the way forward again
+      const s = t * 5 + n * 0.18;
+      c.paddle.rotation.z = -0.5 + Math.sin(s) * 0.5 * k; c.paddle.rotation.x = -c.side * 0.32; c.paddle.position.y = 12 + Math.max(0, Math.cos(s)) * 4 * k;
+      c.p.rotation.z = -0.1 - Math.sin(s) * 0.12 * k;
+      c.arms.forEach((a, j) => { a.rotation.z = (j ? 1.3 : 1.0) + Math.sin(s) * 0.32 * k; });
+    });
+  } };
 
   // Horsecar: short enclosed body, clerestory roof carried out over open end platforms, driver standing in front.
   box(g2, 64, 2, 24, C.ink, 32, 9, 0);
@@ -636,8 +653,21 @@ const rides = {};
   clerestory(g2, -1, 65, 40, 27);
   crew(g2, 59, 11, '#3a3530');
   wheels(g2, [22, 42], 6, [-10, 10]);
-  const legs = horse(g2, 88, 0, C.wood); box(g2, 12, 1.1, 1.1, C.ink, 70, 20, 0);
-  rides.horsecar = { g: g2, anim: t => legs.forEach((l, k) => { l.rotation.z = Math.sin(t * 12 + (k % 2) * Math.PI) * 0.6; }) };
+  // The horse is built in parts so it can move: legs hinged at the body, a neck and head that nod, a tail.
+  const hg = new THREE.Group(); hg.position.set(88, 0, 0); g2.add(hg);
+  const hb = new THREE.Group(); hb.position.set(0, 12, 0); hg.add(hb);
+  box(hb, 26, 11, 9, C.wood, 0, 0, 0);
+  const neck = new THREE.Group(); neck.position.set(11, 9, 0); hb.add(neck);
+  box(neck, 7, 15, 6, C.wood, 2, -3, 0).rotation.z = -0.5; box(neck, 11, 6, 5.5, C.wood, 9, 7, 0);
+  const tail = new THREE.Group(); tail.position.set(-13.5, 8, 0); hb.add(tail); box(tail, 2, 11, 2, '#3a2c20', 0, -11, 0);
+  const legs = [-10, -5, 6, 11].map(lx => { const l = new THREE.Group(); l.position.set(lx, 1, lx % 2 ? 2.5 : -2.5); hb.add(l); box(l, 2.6, 13, 2.6, C.wood, 0, -13, 0); return l; });
+  box(g2, 12, 1.1, 1.1, C.ink, 70, 20, 0);
+  rides.horsecar = { g: g2, anim: (t, moving) => { // a gallop: hind legs push, front legs reach, the body rocks and lifts once a stride (sound.js keeps the same half-second stride)
+    const k = moving ? 1 : 0, s = t * 12.57;
+    legs.forEach((l, i) => { l.rotation.z = Math.sin(s + (i > 1 ? 0 : 2.3) + (i % 2) * 0.7) * 0.8 * k; });
+    hg.position.y = Math.max(0, Math.sin(s + 0.4)) * 2.6 * k; hb.rotation.z = Math.sin(s + 1.1) * 0.075 * k;
+    neck.rotation.z = Math.sin(s + 2.2) * 0.13 * k; tail.rotation.z = (-0.75 + Math.sin(s * 1.0 + 0.5) * 0.25) * k;
+  } };
 
   // Electric streetcar: a single-truck closed car. Wheels close together under the middle,
   // clerestory roof, large windows, end platforms, trolley pole trailing up to the wire.
@@ -651,7 +681,7 @@ const rides = {};
   sph(g3, 2.6, new THREE.MeshBasicMaterial({ color: 0xffe9a8 }), 98.6, 17, 0).castShadow = false;
   const fender = box(g3, 11, 1.1, 22, C.ink, 103, 5, 0); fender.rotation.z = 0.35;
   box(g3, 34, 5, 20, '#2a2f35', 49, 4, 0); wheels(g3, [38, 60], 7, [-11, 11]);
-  rides.streetcar = { g: g3 };
+  rides.streetcar = { g: g3, anim: (t, moving) => { const k = moving ? 1 : 0; g3.rotation.x = Math.sin(t * 6.5) * 0.014 * k; g3.position.y += Math.max(0, Math.sin(t * 8.4)) ** 8 * 1.1 * k; pole.rotation.z = -0.5 + Math.sin(t * 13) * 0.012 * k; } }; // sways on its single truck, bumps at the rail joints
 
   // Subway: the 1954 red cars. Red sides, thin yellow lines at the belt and under the roof,
   // grey roof, paired windows, flat end with three windows and a destination sign.
@@ -664,7 +694,7 @@ const rides = {};
   for (const z of [-11, 11]) sph(g4, 1.8, new THREE.MeshBasicMaterial({ color: 0xffe9a8 }), 98.6, 41, z).castShadow = false;
   box(g4, 6, 5, 8, '#2a2f35', 100, 5, 0); box(g4, 90, 5, 22, '#2a2f35', 49, 5, 0);
   wheels(g4, [16, 30, 68, 82], 6, [-12, 12]);
-  rides.subway = { g: g4 };
+  rides.subway = { g: g4, anim: (t, moving) => { const k = moving ? 1 : 0; g4.rotation.x = Math.sin(t * 5) * 0.007 * k; g4.position.y += Math.max(0, Math.sin(t * 11.6)) ** 10 * 0.7 * k; } }; // heavier: less sway, a quicker beat
 
   rides.spin = spin;
   for (const id of ['canoe', 'horsecar', 'streetcar', 'subway']) { rides[id].g.visible = false; scene.add(rides[id].g); }
@@ -744,7 +774,7 @@ YP.view = {
     for (const k of ['canoe', 'horsecar', 'streetcar', 'subway']) rides[k].g.visible = k === id && !(S.safe > 0 && Math.floor(t * 12) % 2);
     const r = rides[id];
     r.g.position.set(d, S.jy || 0, 0);
-    if (r.anim) r.anim(t);
+    if (r.anim) r.anim(t, S.state === 'run' || S.state === 'menu');
     for (const w of rides.spin) w.rotation.y = -t * 9;
 
     // tokens
