@@ -304,6 +304,15 @@ body.shore .about { margin: 22px 0 6px; }
 .gallery-stage figcaption b { display: block; font: 550 1.15rem var(--display); letter-spacing: -0.02em; margin-bottom: 4px; }
 .gallery-stage figcaption p { margin: 0 0 4px; max-width: 80ch; font-size: 0.95rem; }
 .gallery-stage .real { color: rgba(255, 246, 229, 0.72); }
+/* the two moments */
+.when { position: absolute; right: 16px; top: 16px; display: flex; gap: 0; }
+.when button { background: var(--chalk); color: var(--ink); border: 1px solid var(--ink); padding: 8px 14px 9px; cursor: pointer; text-align: left; font-family: var(--body); min-height: 44px; }
+.when button + button { border-left: 0; }
+.when button b { display: block; font: 550 1.05rem var(--display); letter-spacing: -0.02em; }
+.when button span { font-size: 0.72rem; color: var(--muted); }
+.when button[aria-pressed="true"] { background: var(--lake); color: var(--chalk); border-color: var(--lake); }
+.when button[aria-pressed="true"] span { color: rgba(255, 246, 229, 0.8); }
+@media (max-width: 640px) { .when { right: 8px; top: 8px; } .when button { padding: 5px 9px 6px; } .when button span { display: none; } }
 /* the recording's progress line and its play button */
 .world-track { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(22, 48, 47, 0.25); pointer-events: none; }
 .world-track span { display: block; height: 100%; background: var(--lake); transform-origin: left center; transform: scaleX(0); }

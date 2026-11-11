@@ -30,9 +30,9 @@ YP.PIECES = [
     id: 'world-1700',
     kind: 'Walk',
     status: 'building',
-    title: 'Toronto, c.1700',
-    line: 'The ground before the town, as a 3D world: the bay, the sandbar, the marsh and the trail.',
-    body: 'Built on real ground and the oldest shoreline the maps give, with a forest that is an impression and no dwellings yet. Six snapshots, and a list of what is real in it.',
+    title: 'Toronto, c.1680 and c.1700',
+    line: 'The ground before the town, as a 3D world: the bay, the sandbar, the trail, and the Seneca village on it.',
+    body: 'Built on real ground and the oldest shoreline the maps give. Teiaiagon stands as it might have about 1680, from the record and from Seneca towns of those years, and is gone by 1700. A recording moves through six views, each explained.',
     href: 'world.html',
     cta: 'Open the c.1700 world'
   },
@@ -67,6 +67,10 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'The 3D world now has two moments. About 1680 the Seneca village of Teiaiagon stands on its bluff above the Humber: longhouses of bark inside a palisade, corn round them, people at the doors and in the fields. About 1700 it is gone and the clearing is going back to brush. The houses follow what is recorded of Haudenosaunee longhouses and the one rebuilt at Ganondagan; the people\u2019s dress follows portraits painted in 1710. Where each house stood is invented, because no plan survives, and the page says so. The world was also redrawn with sunlight and shadow, water with shallows and foam, and trees with leaves, and every view now explains what it shows.'
+  },
   {
     date: '2026-11-11',
     text: 'A second layer of the 3D world: Toronto around 1700, before the town. The ground is today\u2019s elevation model, the shore, marsh and creeks are from the earliest maps (1802, 1834, 1851), and land made since has been taken back out so the bay sits behind its sandbar again. The trail up the Humber and the place where Teiaiagon stood are marked. The trees are an impression, the canoes and people are for scale, and nobody\u2019s home is modelled, because nothing read so far says what stood here. Six snapshots from it are on the home page.'

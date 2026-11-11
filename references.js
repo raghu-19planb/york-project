@@ -9,6 +9,28 @@ const COMMONS = 'https://commons.wikimedia.org/wiki/File:';
 
 YP.REFERENCES = [
   {
+    item: 'Teiaiagon, the village (c.1680, in the 3D world)',
+    refs: [
+      { title: 'Wikipedia, Teiaiagon (the record of the village: size, palisade traces, fields, visitors)', url: 'https://en.wikipedia.org/wiki/Teiaiagon' },
+      { title: 'Wikipedia, Longhouses of the Indigenous peoples of North America (size and construction)', url: 'https://en.wikipedia.org/wiki/Longhouses_of_the_Indigenous_peoples_of_North_America' },
+      { title: 'The rebuilt Seneca longhouse at Ganondagan, outside (photograph, Wikimedia Commons)', url: 'https://commons.wikimedia.org/wiki/File:Ganondagan-house.jpg' },
+      { title: 'The same, its frame under construction (photograph, Wikimedia Commons)', url: 'https://commons.wikimedia.org/wiki/File:Ganondagan_-_Longhouse_under_construction.jpg' },
+      { title: 'The same, inside (photograph by DanielPenfield, CC BY-SA 4.0)', url: 'https://commons.wikimedia.org/wiki/File:GanondaganRecreatedLonghouse.jpg' },
+      { title: 'Wikipedia, Ganondagan State Historic Site (palisade heights, and the 1677 report of none)', url: 'https://en.wikipedia.org/wiki/Ganondagan_State_Historic_Site' }
+    ],
+    took: 'From the photographs: straight walls of poles, a pitched roof, bark in lapped rectangular sheets held down by poles, a door in the end wall. From the texts: houses about 24 m by 5.5 m by 5.5 m, some longer; doors at both ends; smoke holes along the roof; 20 to 30 buildings; a palisade about 4 m high; fields round the village.',
+    caveat: 'The photographs are of a modern reconstruction of a Seneca house in New York, not of Teiaiagon. No plan or picture of Teiaiagon survives, so the placing of every house is invented. Whether the palisade stood in 1680 is not known. The burial ground at the centre is deliberately not drawn. Nobody from the Seneca Nation has seen this.'
+  },
+  {
+    item: 'The people' + "\\u2019" + 's dress (in the 3D world)',
+    refs: [
+      { title: 'John Verelst, Four Indian Kings, 1710 (Library and Archives Canada; on Wikimedia Commons)', url: 'https://commons.wikimedia.org/wiki/File:Four_Indian_Kings_of_the_New_World_(1_Mohican_3_Mohawk)_by_John_Verelst_1710.jpg' },
+      { title: 'Wikipedia, Iroquois (clothing and hair in the 1600s and 1700s)', url: 'https://en.wikipedia.org/wiki/Iroquois' }
+    ],
+    took: 'From the paintings: white linen shirts to the thigh, a patterned sash, a wide scarlet cloak, moccasins with a wrapped ankle, short dark hair. From the text: leggings and a short kilt, women' + "\\u2019" + 's skirts and capes, hair shaved to a tuft, a married woman' + "\\u2019" + 's single braid, red and blue trade cloth.',
+    caveat: 'The sitters are Mohawk and Mohican men, not Seneca, painted in London dressed to meet the Queen. No period picture of a woman was looked at. Tattoos, paint and ornaments are left out. The same dress is used for the people of about 1700, who would have been Anishinaabe; nothing was read about their dress.'
+  },
+  {
     item: 'Toronto, c.1700 (the 3D world)',
     refs: [
       { title: 'Terrain Tiles (Mapzen / Tilezen), from Canadian and US government elevation models', url: 'https://registry.opendata.aws/terrain-tiles/' },

@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2e9d7">
-<title>Toronto, c.1700 · The York Project</title>
+<title>Toronto, c.1680 and c.1700 · The York Project</title>
 <meta name="description" content="A 3D reconstruction in progress of the ground Toronto was built on, around 1700: the bay, the sand peninsula, the marsh, the Humber and the Carrying Place trail, on real terrain and the earliest mapped shoreline.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111k">
+<link rel="stylesheet" href="style.css?v=20261111l">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -38,9 +38,9 @@
   </nav>
 
   <div class="shore-head">
-    <div class="mono">03 / Reconstructing Toronto · c.1700 · in progress</div>
+    <div class="mono">03 / Reconstructing Toronto · c.1680 and c.1700 · in progress</div>
     <h1>The ground <em>before the town.</em></h1>
-    <p>Around 1700 there was no town here. There was a bay behind a long sandbar, a marsh at the mouth of the Don, forest to the water’s edge, and a trail up the Humber, the Carrying Place, that people had walked for centuries to reach the upper lakes. On it stood the clearing of Teiaiagon, a Seneca village left a few years before. This is a first pass at that place, built on real ground and the oldest shoreline the maps can give. Every view below says what it shows and what in it is real.</p>
+    <p>Around 1700 there was no town here. There was a bay behind a long sandbar, a marsh at the mouth of the Don, forest to the water’s edge, and a trail up the Humber, the Carrying Place, that people had walked for centuries to reach the upper lakes. On it stood Teiaiagon, a Seneca village of bark longhouses with fields round it, left in 1687 or by 1701. The switch on the picture shows the place at two moments: about 1680, with the village standing, and about 1700, after. It is built on real ground and the oldest shoreline the maps can give, and every view says what it shows and what in it is real.</p>
   </div>
 </div>
 
@@ -48,6 +48,7 @@
   <canvas id="w17-gl" aria-label="3D model of the Toronto shore around 1700"></canvas>
   <div class="labels" id="w17-labels" aria-hidden="true"></div>
   <div class="view-tag" id="w17-tag"></div>
+  <div class="when" id="w17-when" role="group" aria-label="Choose a moment"><button type="button" data-year="1680" aria-pressed="true"><b>c.1680</b><span>the village stands</span></button><button type="button" data-year="1700" aria-pressed="false"><b>c.1700</b><span>twenty years on</span></button></div>
   <div class="world-track" id="w17-track" role="progressbar" aria-label="Progress through the recording"><span></span></div>
   <button class="world-play" id="w17-play" type="button" aria-pressed="true">Pause</button>
   <div class="views" id="w17-views" role="group" aria-label="Camera views"></div>
@@ -68,12 +69,14 @@
     <ul class="log">
       <li><span class="mono">Real</span><span>The shape of the ground: the Humber and Don valleys, the ravines and the old lake bluff. It comes from today’s elevation model (<a id="w17-src-h" target="_blank" rel="noopener"></a>), because the land’s broad shape has not changed. Heights are stretched <b>2.5 times</b> so the relief can be seen.</span></li>
       <li><span class="mono">Real</span><span>The water’s edge, the marsh and the creeks, with one large caveat: nothing was mapped in 1700. They are traced from the earliest maps that cover each place, <span id="w17-maps"></span> (<a id="w17-src-w" target="_blank" rel="noopener"></a>). Land made since then has been taken back out, and the sand peninsula put back where those maps draw it.</span></li>
-      <li><span class="mono">Real</span><span>Where Teiaiagon stood. It was a village of the Seneca, one of the Haudenosaunee (Iroquois) nations, on the east bank of the Humber at what is now Baby Point, on the trail. Estimates of its size run from 500 to 800 people to about 2,000, and accounts differ on when it was left, in 1687 or by 1701 (<a href="https://en.wikipedia.org/wiki/Teiaiagon" target="_blank" rel="noopener">Wikipedia, Teiaiagon</a>; <a href="https://en.wikipedia.org/wiki/History_of_Toronto" target="_blank" rel="noopener">Wikipedia, History of Toronto</a>). Only its place is marked, as a clearing: no buildings are drawn.</span></li>
+      <li><span class="mono">Real</span><span>Where Teiaiagon stood. It was a village of the Seneca, one of the Haudenosaunee (Iroquois) nations, on the east bank of the Humber at what is now Baby Point, on the trail. Estimates of its size run from 500 to 800 people to about 2,000, and accounts differ on when it was left, in 1687 or by 1701 (<a href="https://en.wikipedia.org/wiki/Teiaiagon" target="_blank" rel="noopener">Wikipedia, Teiaiagon</a>; <a href="https://en.wikipedia.org/wiki/History_of_Toronto" target="_blank" rel="noopener">Wikipedia, History of Toronto</a>). Its place is certain.</span></li>
+      <li><span class="mono">Mixed</span><span>The village as built here, about 1680. From the record of Teiaiagon itself: 20 to 30 buildings and 500 to 800 people by one estimate, traces of a palisade found in the 1800s (the notes are lost), and fields all round. From what is known of Haudenosaunee longhouses, and from the Seneca longhouse rebuilt at Ganondagan in New York: houses about 24 m long and 5.5 m wide and high, some longer, with straight bark walls, a pitched roof, a door at each end and smoke holes along the ridge (<a href="https://en.wikipedia.org/wiki/Longhouses_of_the_Indigenous_peoples_of_North_America" target="_blank" rel="noopener">Wikipedia, Longhouses</a>; <a href="https://commons.wikimedia.org/wiki/File:Ganondagan-house.jpg" target="_blank" rel="noopener">photograph of the Ganondagan longhouse</a>). The palisade posts are 4 m, as a visitor measured at a Seneca town in 1669, though another in 1677 wrote that Seneca towns had none (<a href="https://en.wikipedia.org/wiki/Ganondagan_State_Historic_Site" target="_blank" rel="noopener">Wikipedia, Ganondagan</a>). <b>Where each house stood is arranged by hand</b>: no plan or picture of the village survives. Its burial ground lay in the middle; that ground is left open and nothing is drawn on it. Corn, beans and squash were grown in hills (<a href="https://en.wikipedia.org/wiki/Three_Sisters_(agriculture)" target="_blank" rel="noopener">Wikipedia, Three Sisters</a>); only the corn is drawn, and how thickly is a guess.</span></li>
+      <li><span class="mono">Mixed</span><span>The people’s dress. It follows the four portraits John Verelst painted in 1710 of three Mohawk leaders and one Mohican (<a href="https://commons.wikimedia.org/wiki/File:Four_Indian_Kings_of_the_New_World_(1_Mohican_3_Mohawk)_by_John_Verelst_1710.jpg" target="_blank" rel="noopener">Library and Archives Canada, on Wikimedia Commons</a>): white linen shirts to the thigh, a patterned sash, a wide scarlet cloth cloak, moccasins with a wrapped ankle, dark hair cut short. Written accounts add leggings, a short kilt, a skirt and cape for women, men’s hair shaved to a tuft, a married woman’s single braid, and red and blue trade cloth replacing hide (<a href="https://en.wikipedia.org/wiki/Iroquois" target="_blank" rel="noopener">Wikipedia, Iroquois</a>). Limits: the portraits are of Mohawk and Mohican men, not Seneca, painted in London in clothes for meeting the Queen; no picture of a woman of these years was looked at; tattoos and ornaments are left out; and the figures are simple shapes.</span></li>
       <li><span class="mono">Mixed</span><span>Three places where a rule, not a measurement, shapes the land. The sandbar comes out of the data in pieces, because it is narrower than the 50 m spacing; it is recorded as joined to the shore until 1858, so the pieces are joined across their gaps. Ground the old maps draw as water but which stands above the lake today, close to the lake, is land made since and is put back under water. And a few specks of land alone in open water, where two map sheets disagree, are taken out.</span></li>
       <li><span class="mono">Mixed</span><span>The Carrying Place. The trail began at the lake and followed the Humber’s east bank north (<a href="https://en.wikipedia.org/wiki/Toronto_Carrying-Place_Trail" target="_blank" rel="noopener">Wikipedia, Toronto Carrying-Place Trail</a>). Its exact line is not known to this project, so the line here simply keeps to that bank, and it is drawn about four metres wide so that it can be seen.</span></li>
       <li><span class="mono">Not real</span><span>The trees. Where each stands, what kind it is and how thick the forest grows are an impression, <span id="w17-trees"></span> of them. The one exception is the scattered oaks at High Park, where black oak savannah still survives (<a href="https://en.wikipedia.org/wiki/High_Park" target="_blank" rel="noopener">Wikipedia, High Park</a>).</span></li>
-      <li><span class="mono">Not real</span><span>The canoes and the people. They are there for scale, and like the trees they are drawn 1.5 times life size.</span></li>
-      <li><span class="mono">Not yet</span><span>Anyone’s home. Anishinaabe people, whom the French called Mississaugas, moved into this country around 1700 (<a href="https://en.wikipedia.org/wiki/Mississaugas" target="_blank" rel="noopener">Wikipedia, Mississaugas</a>). Nothing read for this project says where they camped here or what their lodges looked like, so none are modelled. That needs sources, and people who know, before anything is drawn.</span></li>
+      <li><span class="mono">Not real</span><span>Where each person and canoe is. They are placed by hand, and like the trees and houses they are drawn 1.5 times life size.</span></li>
+      <li><span class="mono">Not yet</span><span>The Anishinaabe, whom the French called Mississaugas, who moved into this country around 1700 (<a href="https://en.wikipedia.org/wiki/Mississaugas" target="_blank" rel="noopener">Wikipedia, Mississaugas</a>). Nothing read for this project says where they camped here, so no camp is modelled in the c.1700 view. And the whole village needs checking with people who know: this reconstruction has not been seen by anyone from the Seneca Nation or the Mississaugas of the Credit.</span></li>
       <li><span class="mono">Not yet</span><span>The lake bed, animals, seasons, the Rouge and its trail, and the shoreline east and west of the old maps, where today’s shore stands in.</span></li>
     </ul>
     <p class="src" style="margin-top:18px">The shoreline, marsh and creek data are adapted from the University of Toronto’s Historical Hydrography of Toronto, CC BY-SA 4.0.</p>
@@ -96,10 +99,10 @@
 
 <dialog class="gallery" id="gallery-dialog" aria-labelledby="gallery-title"></dialog>
 
-<script src="data/history.js?v=20261111k"></script>
-<script src="data/terrain.js?v=20261111k"></script>
-<script src="gallery.js?v=20261111k"></script>
-<script type="module" src="world1700.js?v=20261111k"></script>
+<script src="data/history.js?v=20261111l"></script>
+<script src="data/terrain.js?v=20261111l"></script>
+<script src="gallery.js?v=20261111l"></script>
+<script type="module" src="world1700.js?v=20261111l"></script>
 <script>
 // Fill in the notes from the data file, so the page cannot drift from what was built.
 (function () {

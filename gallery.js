@@ -18,10 +18,12 @@ YP.GALLERY = [
     real: 'Real: the river, its valley and the sand at its mouth, from today’s ground and a map of 1851. Drawn: the forest and the canoes.'
   },
   {
-    view: 3, file: '03-carrying-place.jpg', short: 'Teiaiagon', title: 'The site of Teiaiagon · c.1700',
-    alt: 'The clearing on the east bank of the Humber where Teiaiagon stood, with the river below it, in the 3D reconstruction',
-    what: 'Teiaiagon was a village of the Seneca, one of the Haudenosaunee (Iroquois) nations, standing here by the late 1660s where the trail north crossed their country. Estimates of its size run from 500 to 800 people in 20 to 30 buildings up to about 2,000, with fields around it; traders came to barter for corn in 1678. It was left in 1687 or by 1701, accounts differ, and the Anishinaabe, whom the French called Mississaugas, then held this country. Around 1700 the clearing would have been open ground going back to brush.',
-    real: 'Real: the place, on the east bank at today’s Baby Point, and the river bend below it. Drawn: the size and shape of the clearing. No buildings are shown.'
+    view: 3, file: '03-carrying-place.jpg', short: 'Teiaiagon', title: 'Teiaiagon, a Seneca village · c.1680',
+    alt: 'A village of bark longhouses inside a palisade, with corn fields round it, on the bluff above the Humber, in the 3D reconstruction',
+    what: 'Teiaiagon, a village of the Seneca, one of the Haudenosaunee (Iroquois) nations, standing here by the late 1660s where the trail north crossed their country. Families lived in longhouses of bark over a frame of poles, each about 24 m long and home to many related households. Fields of corn, beans and squash lay all round; in November 1678 the village fed La Salle’s crew when their ship put in at the river mouth.',
+    real: 'From the record: the place, 20 to 30 buildings, a palisade (traces were found), fields around it. From Seneca towns of the same years: the size and build of the houses. Arranged by hand: where each house stood. No plan or picture of the village survives, and the middle is left open.',
+    what1700: 'The same bluff twenty years on. Teiaiagon was left in 1687 or by 1701; accounts differ on which, and on whether the French burned it or its people moved away. The Anishinaabe, whom the French called Mississaugas, then held this country. The clearing and its old fields are going back to brush.',
+    real1700: 'Real: the place, on the east bank at today’s Baby Point. Drawn: the brush, and how far the clearing had closed in. Nothing read for this project describes the site in 1700.'
   },
   {
     view: 5, file: '04-map.jpg', short: 'Rivers & shore', title: 'Rivers, shore and marsh · c.1700',
@@ -33,13 +35,15 @@ YP.GALLERY = [
     view: 1, file: '05-beach.jpg', short: 'On the beach', title: 'On the beach at the Humber · c.1700',
     alt: 'Canoes drawn up on the sand at the mouth of the Humber, with people beside them, at eye level',
     what: 'The landing. A canoe trip up the lake ended on a beach like this one, and the carry began: boats and loads went on shoulders for about 80 km to the Holland River and Lake Simcoe. The canoes are birchbark, the kind used across the Great Lakes.',
-    real: 'Real: that there was sand here, from the 1851 map. Drawn: the canoes and the people, who are here to give the scale. Nobody’s camp is shown.'
+    real: 'Real: that there was sand here, from the 1851 map. Drawn: the canoes, and the people, whose dress follows portraits painted in 1710 and written accounts. Nobody’s camp is shown.'
   },
   {
-    view: 2, file: '06-trees.jpg', short: 'On the trail', title: 'On the Carrying Place, coming to Teiaiagon · c.1700',
-    alt: 'The trail coming out of tall forest into the clearing where Teiaiagon stood, at eye level',
-    what: 'Walking the Carrying Place north. First Nations travellers used this trail for centuries before French and English traders followed them; it was the short way from Lake Ontario to the upper lakes. Ahead the forest opens into the clearing where the Seneca village of Teiaiagon stood, beside the trail.',
-    real: 'Real: that the trail kept to this bank and passed the village. Drawn: its exact line, its width (a footpath would not show), and every tree.'
+    view: 2, file: '06-trees.jpg', short: 'On the trail', title: 'On the Carrying Place, coming to Teiaiagon · c.1680',
+    alt: 'The trail coming out of forest through corn fields to the gate of a palisaded village of longhouses, at eye level',
+    what: 'Walking the Carrying Place north, the short way from Lake Ontario to the upper lakes, used for centuries before French and English traders followed. The forest gives way to fields of corn, and ahead the trail goes in at the gate of Teiaiagon. The people are dressed as the evidence of these years shows: linen shirts and red or blue cloth got in trade, worn with hide leggings and moccasins.',
+    real: 'Real: that the trail passed the village and that fields surrounded it. Drawn from portraits painted in 1710 and written accounts: the dress. Drawn: the trail’s exact line and width, and every tree and corn hill.',
+    what1700: 'Walking the Carrying Place north, the short way from Lake Ontario to the upper lakes. Twenty years after the village, the trail runs through its old clearing, now open ground going back to brush.',
+    real1700: 'Real: that the trail kept to this bank and passed where the village had been. Drawn: its exact line and width, the brush, and every tree.'
   }
 ];
 (function () {

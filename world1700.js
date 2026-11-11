@@ -14,7 +14,10 @@
 //   - the canoes and people, which are there for scale;
 //   - the light, the sky, the waves and the foam;
 //   - heights, which are stretched 2.5 times, and trees, canoes and people, drawn 1.5 times life size.
-// No dwellings are modelled: no source read for this project says what stood here in 1700 or where.
+// The village of Teiaiagon is modelled as it stood about 1680, from what is recorded of it and of Seneca towns of
+// those years; where each house stood is not known, and that is said on the page. The people's dress follows the
+// 1710 portraits by John Verelst and written accounts. Around 1700 the village had been left; no camp of the
+// Anishinaabe, who then held this country, is modelled, because nothing read for this project says where one stood.
 //
 // How it is drawn: a low afternoon sun with soft shadows that follow the camera; a ground with a fine
 // grain over its colours and a shoreline smoothed across the 50 m data points; a water surface that is
@@ -222,6 +225,8 @@ const cleared = (x, y) => clamp((1 - Math.hypot(x - SITE.x, y - SITE.y) / 380) *
       c.set('#55583a').lerp(c2.set('#646b44'), clamp(h / 90, 0, 1));                      // the forest floor, in shade
       c.lerp(c2.set('#a3a868'), 0.6 * openness(x, y));                                   // grass under the scattered oaks
       c.lerp(c2.set('#a9a36a'), 0.7 * cleared(x, y));                                    // the old clearing
+      if (((x - SITE.x) / 172) ** 2 + ((y - SITE.y) / 142) ** 2 < 1) c.lerp(c2.set('#c4b08a'), 0.55); // ground worn bare where the houses stood
+      else if (cleared(x, y) > 0.5) c.lerp(c2.set('#8c7650'), 0.6);                       // turned soil in the fields
       const s = slopeAt(n); if (s > 0.16) c.lerp(c2.set('#b9a67c'), clamp((s - 0.16) * 4, 0, 0.85)); // bare clay on bluffs and valley sides
       c.offsetHSL((hash(n, 6) - 0.5) * 0.02, 0, (hash(n, 5) - 0.5) * 0.05);
     }
@@ -334,13 +339,16 @@ const trail = [];
   };
   let gx = -7700;
   for (let y = -150; y <= box.y1 - 100; y += 150) {
-    const rx = riverX(y, gx); if (rx !== null) gx = rx;
+    // below the village the river swings far to the west; look for it along the line from the mouth to the village
+    const lead = y <= SITE.y ? -7700 + (SITE.x - 250 + 7700) * clamp((y + 150) / (SITE.y + 150), 0, 1) : gx;
+    const rx = riverX(y, lead); gx = rx !== null ? rx : lead;
     let x = gx + 230; // keep to the east bank, on ground that is land
     for (let k = 0; k < 8 && kindAt(x, y) !== 0; k++) x += maskCell;
     trail.push([x, y]);
   }
   for (const p of trail) { const w = Math.exp(-(((p[1] - SITE.y) / 420) ** 2)); p[0] += (SITE.x + 30 - p[0]) * w; } // the village stood on the trail: bend the line to pass it
   for (let pass = 0; pass < 3; pass++) for (let i = 1; i < trail.length - 1; i++) trail[i][0] = (trail[i - 1][0] + trail[i][0] * 2 + trail[i + 1][0]) / 4;
+  for (const p of trail) { const w = Math.exp(-(((p[1] - SITE.y) / 300) ** 2)); p[0] += (SITE.x + 30 - p[0]) * w; } // and again after smoothing, so it goes in at the gate
 }
 const trailAt = y => { for (let i = 0; i < trail.length - 1; i++) if (trail[i + 1][1] >= y) { const a = trail[i], b = trail[i + 1], k = (y - a[1]) / (b[1] - a[1]); return [a[0] + (b[0] - a[0]) * k, y]; } return trail[trail.length - 1]; };
 const nearTrail = (x, y, gap) => Math.abs(x - trailAt(clamp(y, trail[0][1], trail[trail.length - 1][1]))[0]) < (gap || 16) && y > trail[0][1] - 30;
@@ -410,7 +418,7 @@ const CHUNK = 1600, chunks = new Map();
     if (i < 1 || j < 1 || i >= maskNx - 1 || j >= maskNy - 1 || T.kind[n] !== '0' || hs[n] < 0.7) continue;
     if (isSand(n) && hash(k, 3) > 0.06) continue;                              // beaches and the sandbar are nearly bare
     if (slopeAt(n) > 0.45) continue;
-    if (hash(k, 4) < cleared(px, py) * 0.97) continue;                         // the clearing where Teiaiagon stood
+    if (cleared(px, py) > 0.3 || hash(k, 4) < cleared(px, py) * 0.97) continue; // the clearing where Teiaiagon stood: no tree inside it
     if (nearTrail(px, py)) continue;
     const oak = savannah(px, py);
     if (hash(k, 6) < openness(px, py) * 0.72) continue;                        // savannah: scattered trees over grass
@@ -463,7 +471,7 @@ function detail(ch) { // the close-up version of one patch of forest, built the 
   for (const t of ch.trees) for (let q = 0; q < (t.oak ? 2 : 9); q++) {
     const a = hash(t.id, 40 + q) * 6.28, r = 2 + hash(t.id, 50 + q) * 26, x = t.x + Math.cos(a) * r, y = t.y + Math.sin(a) * r;
     if (nearTrail(x, y, 4) || kindAt(x, y) !== 0 || meshY(x, y) < 0.8) continue;
-    spots.push({ x, y, s: 0.45 + hash(t.id, 60 + q) * 1.1, id: t.id * 11 + q });
+    spots.push({ x, y, s: 0.35 + hash(t.id, 60 + q) * 0.6, id: t.id * 11 + q });
   }
   const bushes = new THREE.InstancedMesh(GEO.bush, MAT.crown, Math.max(1, spots.length)); bushes.count = spots.length;
   spots.forEach((s, k) => {
@@ -495,7 +503,7 @@ function tile(ix, iy) {
   for (let y = y0; y < y0 + TILE; y += STEP) for (let x = x0; x < x0 + TILE; x += STEP) {
     const id = Math.round(x * 3) * 7919 + Math.round(y * 3) * 104729; if (hash(id, 70) < 0.28) continue;
     const px = x + (hash(id, 71) - 0.5) * STEP, py = y + (hash(id, 72) - 0.5) * STEP;
-    if (kindAt(px, py) !== 0 || meshY(px, py) < 1.4 || nearTrail(px, py, 5)) continue;
+    if (kindAt(px, py) !== 0 || meshY(px, py) < 1.4 || nearTrail(px, py, 5) || cleared(px, py) > 0.45) continue; // the clearing has its own cover
     pts.push([px, py, id]);
   }
   const m = new THREE.InstancedMesh(frondGeo, frondMat, Math.max(1, pts.length)), d = new THREE.Object3D(); m.count = pts.length;
@@ -537,16 +545,54 @@ const bark = new THREE.MeshStandardMaterial({ color: 0xd9b46e, roughness: 0.9 })
 const skin = new THREE.MeshStandardMaterial({ color: 0xb07f5c, roughness: 0.9 }), hide = new THREE.MeshStandardMaterial({ color: 0xa88560, roughness: 1 });
 const hair = new THREE.MeshStandardMaterial({ color: 0x1f1813, roughness: 1 }), legging = new THREE.MeshStandardMaterial({ color: 0x7a6248, roughness: 1 });
 const part = (g, geo, m, x, y, z, rx, rz) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); if (rx) o.rotation.x = rx; if (rz) o.rotation.z = rz; o.castShadow = true; g.add(o); return o; };
-function person(seated) { // a figure 1.7 m tall, standing or sitting
-  const g = new THREE.Group(), up = seated ? 0.3 : 0.82;
-  part(g, new THREE.CapsuleGeometry(0.16, 0.36, 4, 10), hide, 0, up + 0.36, 0);
-  part(g, new THREE.SphereGeometry(0.115, 12, 10), skin, 0, up + 0.78, 0);
-  part(g, new THREE.SphereGeometry(0.122, 12, 10, 0, 6.3, 0, 1.9), hair, 0, up + 0.8, -0.012);
-  for (const s of [-1, 1]) {
-    part(g, new THREE.CapsuleGeometry(0.05, 0.42, 4, 8), skin, s * 0.21, up + 0.33, seated ? 0.12 : 0, seated ? -0.9 : 0, s * 0.12);
-    if (seated) part(g, new THREE.CapsuleGeometry(0.07, 0.34, 4, 8), legging, s * 0.09, 0.3, 0.2, Math.PI / 2);
-    else part(g, new THREE.CapsuleGeometry(0.075, 0.66, 4, 8), legging, s * 0.09, 0.41, 0);
+// Dress. What is known, and where from (see references.js):
+//   - John Verelst's portraits of three Mohawk leaders and one Mohican, painted in 1710: white linen shirts to the
+//     thigh, a patterned woven sash at the waist, a wide scarlet cloth cloak over the shoulders, moccasins with a
+//     wrapped ankle, dark hair cut short, bare lower legs. They were painted in London, dressed to meet the Queen.
+//   - Written accounts: men in moccasins, leggings and a short kilt; women in a skirt, with a cape-like upper garment;
+//     men's hair shaved to a tuft on the crown, a married woman's in one braid; hide first, then red and blue trade
+//     cloth, which had become the usual material by the 1700s.
+// So: hide and trade cloth together, as it was in these decades. No two figures are dressed quite alike.
+const cloth = hex => new THREE.MeshStandardMaterial({ color: hex, roughness: 1, metalness: 0 });
+const DRESS = {
+  linen: cloth(0xe9e2d0), scarlet: cloth(0x8e2f26), blue: cloth(0x2f4a6b), hide: cloth(0xb08d63), hideDark: cloth(0x8a6a48),
+  sash: cloth(0x6a2f2a), moc: cloth(0x9a6b3e), cuff: cloth(0xc5552f), basket: cloth(0xb9995e)
+};
+function person(seated, k) { // a figure 1.7 m tall; k picks who it is, so the same figure is the same on every visit
+  const g = new THREE.Group(), id = k == null ? 0 : k, r = n => hash(id * 13 + 5, n);
+  const woman = !seated && r(1) < 0.45, up = seated ? 0.3 : 0.82;
+  const wrap = r(2) < 0.36 ? DRESS.scarlet : r(2) < 0.58 ? DRESS.blue : null; // a cloth cloak or blanket, or none
+  const bare = !woman && r(3) < 0.22;                                          // some men in warm weather: no shirt
+  // legs: leggings of hide or cloth, or bare below the shirt as in the portraits; moccasins with a wrapped cuff
+  const legMat = r(4) < 0.4 ? skin : r(4) < 0.75 ? DRESS.hide : DRESS.blue;
+  for (const sd of [-1, 1]) {
+    if (seated) part(g, new THREE.CapsuleGeometry(0.07, 0.34, 4, 8), legMat, sd * 0.09, 0.3, 0.2, Math.PI / 2);
+    else {
+      part(g, new THREE.CapsuleGeometry(0.072, 0.62, 4, 8), legMat, sd * 0.09, 0.43, 0);
+      part(g, new THREE.BoxGeometry(0.12, 0.07, 0.25), DRESS.moc, sd * 0.09, 0.04, 0.03);
+      part(g, new THREE.CylinderGeometry(0.085, 0.08, 0.09, 8), DRESS.cuff, sd * 0.09, 0.13, 0);
+    }
   }
+  if (woman) { // a skirt to the calf, a shirt or cape over it, hair in one braid down the back
+    part(g, new THREE.CylinderGeometry(0.2, 0.3, 0.62, 12), r(5) < 0.5 ? DRESS.hide : DRESS.blue, 0, 0.62, 0);
+    part(g, new THREE.CylinderGeometry(0.17, 0.24, 0.5, 12), r(6) < 0.6 ? DRESS.linen : DRESS.hideDark, 0, up + 0.3, 0);
+  } else if (bare) { // a short kilt and a bare chest
+    part(g, new THREE.CapsuleGeometry(0.16, 0.34, 4, 10), skin, 0, up + 0.36, 0);
+    part(g, new THREE.CylinderGeometry(0.19, 0.23, 0.3, 12), DRESS.hide, 0, up + 0.08, 0);
+  } else { // a linen shirt to the thigh, tied with a woven sash
+    part(g, new THREE.CylinderGeometry(0.17, 0.25, seated ? 0.6 : 0.78, 12), DRESS.linen, 0, up + (seated ? 0.32 : 0.2), 0);
+    part(g, new THREE.CylinderGeometry(0.21, 0.21, 0.06, 12), DRESS.sash, 0, up + 0.16, 0);
+  }
+  for (const sd of [-1, 1]) part(g, new THREE.CapsuleGeometry(0.05, 0.42, 4, 8), woman || !bare ? (woman && r(6) >= 0.6 ? DRESS.hideDark : DRESS.linen) : skin, sd * 0.215, up + 0.33, seated ? 0.12 : 0, seated ? -0.9 : 0, sd * 0.12);
+  part(g, new THREE.SphereGeometry(0.112, 12, 10), skin, 0, up + 0.78, 0);
+  if (woman) { part(g, new THREE.SphereGeometry(0.12, 12, 10, 0, 6.3, 0, 1.9), hair, 0, up + 0.8, -0.012); part(g, new THREE.CapsuleGeometry(0.035, 0.42, 4, 6), hair, 0, up + 0.5, -0.13); }
+  else if (r(7) < 0.5) part(g, new THREE.CylinderGeometry(0.035, 0.055, 0.13, 8), hair, 0, up + 0.92, -0.02);     // shaved to a tuft on the crown
+  else part(g, new THREE.SphereGeometry(0.118, 12, 10, 0, 6.3, 0, 1.5), hair, 0, up + 0.795, -0.01);              // or cut short, as in the portraits
+  if (wrap && !seated) { // the cloak: a wide piece of cloth over both shoulders, open at the front, falling to the calf
+    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.34, 0.9, 14, 1, true, Math.PI * 0.68, Math.PI * 1.64), wrap); c.material.side = THREE.DoubleSide;
+    c.position.set(0, up + 0.24, -0.01); c.castShadow = true; g.add(c);
+  }
+  if (woman && r(8) < 0.5) part(g, new THREE.CylinderGeometry(0.17, 0.13, 0.2, 10), DRESS.basket, 0.3, up + 0.02, 0.1); // a basket on the hip
   return g;
 }
 function canoe(x, y, heading, crew) { // a birchbark canoe, 5.5 m: the type checked against the references listed for the game
@@ -558,7 +604,7 @@ function canoe(x, y, heading, crew) { // a birchbark canoe, 5.5 m: the type chec
   for (const z of [-0.44, 0.44]) part(g, new THREE.BoxGeometry(3.6, 0.07, 0.06), dark, 0, 0.36, z);
   for (const px of [-1.1, 0, 1.1]) part(g, new THREE.BoxGeometry(0.07, 0.05, 0.86), dark, px, 0.33, 0);
   if (crew) for (const [px, r] of [[-1.25, 1], [1.05, -1]]) {
-    const p = person(true); p.position.set(px, 0.12, 0); p.rotation.y = Math.PI / 2; g.add(p);
+    const p = person(true, Math.round(x * 3 + px * 7)); p.position.set(px, 0.12, 0); p.rotation.y = Math.PI / 2; g.add(p);
     const paddle = part(g, new THREE.BoxGeometry(0.05, 1.5, 0.05), dark, px + 0.25, 0.62, r * 0.55, 0, 0); paddle.rotation.x = r * 0.5;
     part(g, new THREE.BoxGeometry(0.03, 0.5, 0.2), dark, px + 0.25, 0.05, r * 0.86);
   }
@@ -585,9 +631,126 @@ for (const [dx, up, r] of [[-22, 7, 1.15], [-38, 9, 1.5]]) { // two more drawn u
   const [x, y] = onBeach(dx, up), c = canoe(x, y, r, false); c.position.y = groundY(x, y) + 0.1; c.rotation.z = 0.12;
 }
 {
-  const stand = (x, y, r) => { const f = person(false); f.scale.setScalar(BIG); f.position.copy(P(x, y, 0)); f.rotation.y = r; scene.add(f); };
+  let folk = 0;
+  const stand = (x, y, r, into) => { const f = person(false, ++folk); f.scale.setScalar(BIG); f.position.copy(P(x, y, 0)); f.rotation.y = r; (into || scene).add(f); return f; };
+  YP.w17stand = stand;
   for (const [dx, up, r] of [[-14, 12, 2.2], [-18, 15, 2.6], [-52, 16, 1]]) { const [x, y] = onBeach(dx, up); stand(x, y, r); }
-  for (const [dx, y, r] of [[0, 300, 0], [1.2, 318, 0.4], [-1, 760, 3], [0.6, SITE.y - 250 - trail[0][1], 0.2], [-1.4, SITE.y - 242 - trail[0][1], 0.5]]) { const p = trailAt(trail[0][1] + y); stand(p[0] + dx, p[1], r); }
+  for (const [dx, y, r] of [[0, 300, 0], [1.2, 318, 0.4], [-1, 760, 3], [0.9, SITE.y - 196 - trail[0][1], 3.3], [-1.6, SITE.y - 186 - trail[0][1], 0.5], [1.3, SITE.y - 150 - trail[0][1], 2.9], [-1.8, SITE.y - 128 - trail[0][1], 1.2]]) { const p = trailAt(trail[0][1] + y); stand(p[0] + dx, p[1], r); }
+}
+
+// ---------- Teiaiagon, as it stood about 1680 ----------
+// What the record gives (references.js): 20 to 30 buildings and 500 to 800 people by one estimate; traces of a
+// palisade found in the 1800s, the notes since lost; fields all round it; a burial ground in its middle.
+// What the longhouses are built from: the usual size of a Haudenosaunee longhouse (about 24 m long, 5.5 m wide and
+// high, some far longer), its making (a frame of poles, sheets of bark lapped like shingles, a door at each end,
+// smoke holes along the roof), and the Seneca longhouse rebuilt at Ganondagan, which has straight walls and a
+// pitched roof. Palisade posts are 4 m, as a visitor measured at a Seneca town in 1669.
+// What is NOT known and is therefore arranged by hand: where each house stood. No plan or picture of the village
+// survives. The middle is left as open ground and nothing is drawn there.
+const village = new THREE.Group(); village.name = 'Teiaiagon c.1680'; scene.add(village);
+{
+  const sheets = texture(256, (g, sz) => { // bark in lapped sheets, with the poles that hold them down
+    g.fillStyle = '#8a7a66'; g.fillRect(0, 0, sz, sz);
+    for (let row = 0; row < 4; row++) for (let col = 0; col < 3; col++) {
+      const v = 105 + Math.floor(rnd() * 50), x = col * 86 + (row % 2 ? 40 : 0) - 20, y = row * 64;
+      g.fillStyle = 'rgb(' + (v + 14) + ',' + (v + 2) + ',' + (v - 14) + ')'; g.fillRect(x, y, 84, 62);
+      g.fillStyle = 'rgba(40,28,18,0.45)'; g.fillRect(x, y + 60, 84, 4); g.fillRect(x + 82, y, 3, 62);
+      for (let q = 0; q < 26; q++) { g.fillStyle = 'rgba(' + (rnd() < 0.5 ? '30,20,12' : '230,215,190') + ',' + (0.05 + rnd() * 0.12) + ')'; g.fillRect(x + rnd() * 80, y + rnd() * 58, 1 + rnd() * 2, 4 + rnd() * 16); }
+    }
+    g.fillStyle = 'rgba(50,34,20,0.7)'; for (const y of [30, 94, 158, 222]) g.fillRect(0, y, sz, 3);
+  });
+  sheets.repeat.set(0.25, 0.25); // one tile is about four metres
+  const barkMat = new THREE.MeshStandardMaterial({ map: sheets, roughness: 1, metalness: 0 }), darkMat = new THREE.MeshStandardMaterial({ color: 0x241a12, roughness: 1 });
+  const postMat = new THREE.MeshStandardMaterial({ color: 0x7a644c, map: barky, roughness: 1 });
+  const WIDE = 5.6, WALL = 3.1, RIDGE = 5.5; // metres, before the 1.5 times that everything in this world is drawn at
+  function house(len) { // one longhouse, length along x, standing on y = 0
+    const sec = new THREE.Shape([[-WIDE / 2, 0], [WIDE / 2, 0], [WIDE / 2, WALL], [0, RIDGE], [-WIDE / 2, WALL]].map(p => new THREE.Vector2(p[0], p[1])));
+    const body = new THREE.ExtrudeGeometry(sec, { depth: len, bevelEnabled: false }); body.rotateY(Math.PI / 2); body.translate(-len / 2, 0, 0);
+    const g = new THREE.Group(), m = new THREE.Mesh(body, barkMat); m.castShadow = m.receiveShadow = true; g.add(m);
+    for (const e of [-1, 1]) { const d = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.75, 1.0), darkMat); d.position.set(e * (len / 2 + 0.02), 0.88, 0); g.add(d); } // a door at each end
+    for (let x = -len / 2 + 4; x < len / 2 - 2; x += 5.5) { const h = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.12, 0.8), darkMat); h.position.set(x, RIDGE - 0.12, 0); g.add(h); } // smoke holes along the ridge
+    for (const y of [1.0, 2.1]) for (const z of [-1, 1]) { const p = new THREE.Mesh(new THREE.BoxGeometry(len, 0.09, 0.09), postMat); p.position.set(0, y, z * (WIDE / 2 + 0.04)); g.add(p); } // poles lashed along the walls
+    return g;
+  }
+  // The houses stand in clusters of three or four, side by side, the clusters turned different ways round the open
+  // middle. Twenty-four in all, inside the 20 to 30 of the estimate. This grouping is a choice, not a finding.
+  const RX = 125, RY = 100, houses = [];
+  for (let c = 0; c < 6; c++) {
+    const ca = [-0.9, 0, 0.9, Math.PI - 0.9, Math.PI, Math.PI + 0.9][c], // three clusters each side of the trail, which runs north through the middle
+      cx = SITE.x + Math.cos(ca) * RX * 0.72, cy = SITE.y + Math.sin(ca) * RY * 0.72, turn = ca + Math.PI / 2 + (hash(c, 90) - 0.5) * 0.5;
+    const n = 4;
+    for (let k = 0; k < n && houses.length < 24; k++) {
+      const id = c * 10 + k, len = [24.4, 30, 24.4, 38, 20, 27, 33][id % 7] + (hash(id, 91) - 0.5) * 4, off = (k - (n - 1) / 2) * 15.5;
+      const x = cx + Math.cos(turn + Math.PI / 2) * off + (hash(id, 92) - 0.5) * 6, y = cy + Math.sin(turn + Math.PI / 2) * off + (hash(id, 93) - 0.5) * 6;
+      const h = house(len); h.scale.setScalar(BIG); h.position.copy(P(x, y, 0)); h.rotation.y = turn + (hash(id, 94) - 0.5) * 0.12; // long side along the cluster's line, so the four stand side by side
+      village.add(h); houses.push({ x, y, a: -h.rotation.y, len: len * BIG });
+    }
+  }
+  // smoke rising from the hearths, through the holes in each roof
+  {
+    const puffMat = new THREE.MeshBasicMaterial({ color: 0xd9d4c8, transparent: true, opacity: 0.22, depthWrite: false });
+    const puffGeo = new THREE.SphereGeometry(1, 8, 6), puffs = [];
+    houses.forEach((h, k) => { for (let q = -1; q <= 1; q++) for (let n = 0; n < 4; n++) {
+      const off = q * h.len * 0.28, x = h.x + Math.cos(h.a) * off, y = h.y - Math.sin(h.a) * off, m = new THREE.Mesh(puffGeo, puffMat);
+      m.userData = { base: P(x, y, RIDGE * BIG), ph: hash(k * 31 + q * 7 + n, 99) }; village.add(m); puffs.push(m);
+    } });
+    YP.w17smoke = t => { for (const m of puffs) { const u = (t * 0.07 + m.userData.ph) % 1; m.position.copy(m.userData.base); m.position.y += u * 16; m.position.x += u * u * 9; m.scale.setScalar(0.5 + u * 3.2); m.visible = u < 0.96; } };
+  }
+  // the palisade: one line of posts round the houses, open where the trail comes in and goes out
+  {
+    const post = new THREE.CylinderGeometry(0.11, 0.14, 4, 6); post.translate(0, 2, 0);
+    const pts = [], PX = RX + 45, PY = RY + 40;
+    for (let a = 0; a < Math.PI * 2; a += 0.0052) {
+      const x = SITE.x + Math.cos(a) * PX, y = SITE.y + Math.sin(a) * PY;
+      if (Math.abs(x - trailAt(y)[0]) < 5) continue; // the gates
+      pts.push([x, y, a]);
+    }
+    const m = new THREE.InstancedMesh(post, postMat, pts.length), d = new THREE.Object3D();
+    pts.forEach(([x, y, a], k) => { d.position.copy(P(x, y, -0.4)); d.rotation.set((hash(k, 95) - 0.5) * 0.06, a, (hash(k, 96) - 0.5) * 0.06); d.scale.set(BIG, BIG * (0.92 + hash(k, 97) * 0.16), BIG); d.updateMatrix(); m.setMatrixAt(k, d.matrix); });
+    m.castShadow = true; m.computeBoundingSphere(); village.add(m);
+    YP.w17palisade = { PX, PY };
+  }
+  // the fields: corn in hills, beans climbing it, squash between, outside the palisade to the edge of the clearing
+  {
+    const corn = (() => { const c = document.createElement('canvas'); c.width = 64; c.height = 128; const g = c.getContext('2d');
+      g.strokeStyle = '#6f8a3a'; g.lineWidth = 4; g.beginPath(); g.moveTo(32, 128); g.lineTo(32, 14); g.stroke();
+      for (let i = 0; i < 9; i++) { const y = 112 - i * 11, sd = i % 2 ? 1 : -1; g.strokeStyle = ['#5f8a34', '#86a544', '#a3b24e'][i % 3]; g.lineWidth = 5; g.lineCap = 'round'; g.beginPath(); g.moveTo(32, y); g.quadraticCurveTo(32 + sd * 20, y - 16, 32 + sd * 28, y + 4); g.stroke(); }
+      g.fillStyle = '#d2bd6a'; g.beginPath(); g.ellipse(32, 10, 5, 11, 0, 0, 7); g.fill(); g.fillStyle = '#c9b25a'; g.beginPath(); g.ellipse(40, 62, 4, 9, 0.3, 0, 7); g.fill();
+      const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })();
+    const cornMat = new THREE.MeshStandardMaterial({ map: corn, alphaTest: 0.4, side: THREE.DoubleSide, roughness: 1 });
+    const stalk = (() => { const a = new THREE.PlaneGeometry(1.5, 2.4); a.translate(0, 1.2, 0); const b = a.clone(); b.rotateY(Math.PI / 3); const c = a.clone(); c.rotateY(-Math.PI / 3); return mergeGeometries([a, b, c]); })();
+    const pts = [], STEP = PHONE ? 7 : 4.2, PX = RX + 53, PY = RY + 48;
+    for (let y = SITE.y - 380; y < SITE.y + 380; y += STEP) for (let x = SITE.x - 380; x < SITE.x + 380; x += STEP) {
+      const id = Math.round(x) * 131 + Math.round(y) * 7, px = x + (hash(id, 81) - 0.5) * STEP * 0.7, py = y + (hash(id, 82) - 0.5) * STEP * 0.7;
+      if (((px - SITE.x) / PX) ** 2 + ((py - SITE.y) / PY) ** 2 < 1 || cleared(px, py) < 0.5 || kindAt(px, py) !== 0 || nearTrail(px, py, 4) || hash(id, 83) < 0.12) continue;
+      pts.push([px, py, id]);
+    }
+    const m = new THREE.InstancedMesh(stalk, cornMat, Math.max(1, pts.length)), d = new THREE.Object3D(); m.count = pts.length;
+    pts.forEach(([x, y, id], k) => { d.position.copy(P(x, y, 0)); d.rotation.set(0, hash(id, 84) * 3.14, 0); const sc = BIG * (0.85 + hash(id, 85) * 0.35); d.scale.set(sc, sc, sc); d.updateMatrix(); m.setMatrixAt(k, d.matrix); m.setColorAt(k, tmpC.setScalar(0.8 + hash(id, 86) * 0.4)); });
+    m.receiveShadow = true; m.computeBoundingSphere(); village.add(m);
+    // the hill each clump grows from, covered by the beans and squash planted with it: this is what shows from above
+    const hill = new THREE.SphereGeometry(1.25, 7, 4, 0, Math.PI * 2, 0, Math.PI / 2); hill.scale(1, 0.45, 1);
+    const hills = new THREE.InstancedMesh(hill, new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }), Math.max(1, pts.length)); hills.count = pts.length;
+    pts.forEach(([x, y, id], k) => { d.position.copy(P(x, y, -0.05)); d.rotation.set(0, hash(id, 87) * 6.28, 0); const sc = BIG * (0.75 + hash(id, 88) * 0.5); d.scale.set(sc, sc, sc); d.updateMatrix(); hills.setMatrixAt(k, d.matrix); hills.setColorAt(k, tmpC.set(hash(id, 89) < 0.3 ? '#7d9440' : '#5f8236').multiplyScalar(0.85 + hash(id, 86) * 0.3)); });
+    hills.receiveShadow = true; hills.computeBoundingSphere(); village.add(hills);
+    YP.w17corn = pts.length;
+  }
+  // people about the village: at the doors, between the houses, in the fields, at the gate
+  houses.forEach((h, k) => { for (let q = 0; q < 2; q++) {
+    const off = (q ? 1 : -1) * (h.len / 2 + 2.5 + hash(k, 98 + q) * 6), x = h.x + Math.cos(h.a) * off + (hash(k, 100 + q) - 0.5) * 8, y = h.y - Math.sin(h.a) * off + (hash(k, 102 + q) - 0.5) * 8;
+    if (hash(k, 104 + q) < 0.75) YP.w17stand(x, y, hash(k, 106 + q) * 6.28, village);
+  } });
+  for (let k = 0; k < 30; k++) { const a = hash(k, 110) * 6.28, r = 190 + hash(k, 111) * 120, x = SITE.x + Math.cos(a) * r, y = SITE.y + Math.sin(a) * r * 0.85; if (kindAt(x, y) === 0 && cleared(x, y) > 0.5) YP.w17stand(x, y, a, village); }
+}
+
+// About 1700, twenty years on: the houses are gone and the clearing is going back to brush.
+const after = new THREE.Group(); after.name = 'the clearing c.1700'; after.visible = false; scene.add(after);
+{
+  const pts = [];
+  for (let k = 0; k < (PHONE ? 500 : 1400); k++) { const a = hash(k, 120) * 6.28, r = Math.sqrt(hash(k, 121)) * 360, x = SITE.x + Math.cos(a) * r, y = SITE.y + Math.sin(a) * r; if (kindAt(x, y) === 0 && !nearTrail(x, y, 4)) pts.push([x, y, k]); }
+  const m = new THREE.InstancedMesh(GEO.bush, MAT.crown, pts.length), d = new THREE.Object3D();
+  pts.forEach(([x, y, k], n) => { const sc = 0.8 + hash(k, 122) * 2.4; d.position.copy(P(x, y, -0.2)); d.rotation.set(0, hash(k, 123) * 6.28, 0); d.scale.set(sc * 1.3, sc * (0.8 + hash(k, 124)), sc * 1.3); d.updateMatrix(); m.setMatrixAt(n, d.matrix); m.setColorAt(n, tmpC.setRGB(0.9 + hash(k, 125) * 0.4, 0.95, 0.7)); });
+  m.castShadow = m.receiveShadow = true; m.computeBoundingSphere(); after.add(m);
 }
 
 // ---------- labels ----------
@@ -600,7 +763,7 @@ const LABELS = [
   { name: 'Marsh', note: 'at the mouth of the Don', x: 5200, y: 1500, lift: 40 },
   { name: 'Humber River', x: mouth[0] - 260, y: mouth[1] + 500, water: true },
   { name: 'Don River', x: 2500, y: 3600, water: true },
-  { name: 'Teiaiagon', note: 'a Seneca village on the trail, left by 1701', x: SITE.x, y: SITE.y, lift: 70 },
+  { name: 'Teiaiagon', note: 'a Seneca village on the trail', then: 'a Seneca village on the trail', after: 'where the Seneca village stood, left by 1701', x: SITE.x, y: SITE.y, lift: 70 },
   { name: 'The Carrying Place', note: 'the trail north to Lake Simcoe', x: trailAt(1100)[0] + 60, y: 1100, lift: 90 }
 ];
 for (const l of LABELS) {
@@ -624,18 +787,29 @@ function placeLabels() {
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 - 0.02; controls.minDistance = 20; controls.maxDistance = 26000;
 const eye = (x, y, up) => { const p = P(x, y, up); return [p.x, p.y, p.z]; };
-const tA = trailAt(SITE.y - 350), tB = trailAt(SITE.y + 60); // the walk comes up the trail to the clearing where Teiaiagon stood
+const tA = trailAt(SITE.y - 215), tB = trailAt(SITE.y - 120); // the walk comes up the trail to the clearing where Teiaiagon stood
 const VIEWS = [
   { name: 'Above the bay', sub: 'The harbour before the town', pos: [6000, 2500, 5600], look: [200, 0, 900] },
-  { name: 'Down to the shore', sub: 'Where the carry began', pos: eye(...onBeach(26, 20), 2.6), look: eye(...onBeach(-90, -34), 1) },
+  { name: 'Down to the shore', sub: 'Where the carry began', pos: eye(...onBeach(6, 15), 2.5), look: eye(...onBeach(-34, 8), 1.6) },
   { name: 'On the trail', sub: 'Walking in to Teiaiagon', pos: eye(tA[0], tA[1], 2.7), look: eye(tB[0], tB[1], 4) },
-  { name: 'Teiaiagon', sub: 'Where the village stood', pos: [SITE.x + 1250, 760, -(SITE.y - 1150)], look: [SITE.x - 60, 70, -SITE.y] },
+  { name: 'Teiaiagon', sub: 'Where the village stood', pos: [SITE.x + 205, groundY(SITE.x, SITE.y) + 92, -(SITE.y - 275)], look: [SITE.x - 10, groundY(SITE.x, SITE.y) + 6, -(SITE.y + 10)] },
   { name: 'The mouth of the Humber', sub: 'River, sand and the trail’s start', pos: [mouth[0] + 1500, 620, -(mouth[1] - 1500)], look: [mouth[0] - 300, 0, -(mouth[1] + 500)] },
   { name: 'As a map', sub: 'Two rivers, a bay, a marsh', pos: [-1250, 21500, -745], look: [-1250, 0, -750] }
 ];
 
 // What each view is for. The words live in gallery.js, so the recording and the snapshots cannot disagree.
-for (const g of (YP.GALLERY || [])) if (VIEWS[g.view]) { VIEWS[g.view].what = g.what; VIEWS[g.view].real = g.real; }
+for (const g of (YP.GALLERY || [])) if (VIEWS[g.view]) Object.assign(VIEWS[g.view], { what: g.what, real: g.real, what1700: g.what1700, real1700: g.real1700 });
+
+// ---------- two moments ----------
+// About 1680 the village stands, with its fields. About 1700 it has been left and the clearing is going back to
+// brush. Everything else in the model is the same in both. The switch is on the picture.
+let when = 1680;
+function setWhen(year) {
+  when = year; village.visible = year === 1680; after.visible = year === 1700;
+  for (const l of LABELS) if (l.then) l.el.lastChild.textContent = year === 1680 ? l.then : l.after;
+  document.querySelectorAll('#w17-when button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.year === year)));
+  tour.at = -1; // the captions are about the moment too
+}
 
 // ---------- the recording ----------
 // One camera move through every view, in order, drawn live each time it plays (it is not a video file).
@@ -647,11 +821,11 @@ const turned = (v, deg, closer) => { // the same view from a little further roun
   return t.add(d).toArray();
 };
 {
-  const tA2 = trailAt(SITE.y - 255), tB2 = trailAt(SITE.y + 120); // about 80 m further on, the clearing opening ahead
+  const tA2 = trailAt(SITE.y - 172), tB2 = trailAt(SITE.y - 80); // about 80 m further on, the clearing opening ahead
   VIEWS[0].end = { pos: turned(VIEWS[0], -14, 0.86) };
-  VIEWS[1].end = { pos: eye(...onBeach(10, 24), 2.6), look: eye(...onBeach(-110, -20), 1) };
+  VIEWS[1].end = { pos: eye(...onBeach(-2, 19), 2.5), look: eye(...onBeach(-40, 4), 1.4) };
   VIEWS[2].end = { pos: eye(tA2[0], tA2[1], 2.7), look: eye(tB2[0], tB2[1], 4) };
-  VIEWS[3].end = { pos: turned(VIEWS[3], 16, 0.9) };
+  VIEWS[3].end = { pos: turned(VIEWS[3], 34, 0.72) };
   VIEWS[4].end = { pos: turned(VIEWS[4], -14, 0.88) };
   VIEWS[5].end = { pos: [VIEWS[5].pos[0], 17500, VIEWS[5].pos[2]] };
   for (const v of VIEWS) { v.p0 = new THREE.Vector3(...v.pos); v.l0 = new THREE.Vector3(...v.look); v.p1 = new THREE.Vector3(...v.end.pos); v.l1 = new THREE.Vector3(...(v.end.look || v.look)); }
@@ -680,7 +854,8 @@ function mark(i) { // show which view the recording is on
   if (tag) { tag.innerHTML = '<small></small><b></b>'; tag.firstChild.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(VIEWS.length).padStart(2, '0'); tag.lastChild.textContent = view.name; }
   if (about) { // what this view shows, and what in it is real
     about.innerHTML = '<h3></h3><p></p><p class="real"></p>';
-    about.children[0].textContent = view.name; about.children[1].textContent = view.what || ''; about.children[2].textContent = view.real || '';
+    about.children[0].textContent = view.name + ' · c.' + when;
+    about.children[1].textContent = (when === 1700 && view.what1700) || view.what || ''; about.children[2].textContent = (when === 1700 && view.real1700) || view.real || '';
   }
 }
 function setPlaying(on) {
@@ -689,7 +864,7 @@ function setPlaying(on) {
   stage.classList.toggle('playing', on);
 }
 function goTo(view, instant) { // jump the recording to a view; it plays on from there unless motion is switched off
-  tour.t = VIEWS.indexOf(view) * LEG; tour.at = -1;
+  tour.t = VIEWS.indexOf(view) * LEG + 0.001; tour.at = -1; // a hair past the start: 3 * 11.2 / 11.2 rounds down to view 2
   if (instant) pose(tour.t);
 }
 shown.forEach(view => {
@@ -704,7 +879,8 @@ shown.forEach(view => {
 if (playBtn) playBtn.addEventListener('click', () => setPlaying(!tour.on));
 controls.addEventListener('start', () => setPlaying(false)); // taking hold of the model stops the recording; Play picks it up again
 window.addEventListener('yp-motion', () => setPlaying(!still()));
-pose(0); setPlaying(tour.on);
+document.querySelectorAll('#w17-when button').forEach(b => b.addEventListener('click', () => setWhen(+b.dataset.year)));
+pose(0); setPlaying(tour.on); setWhen(1680);
 
 // ---------- loop ----------
 function resize() {
@@ -743,6 +919,7 @@ renderer.setAnimationLoop(now => {
   if (track) track.firstChild.style.transform = 'scaleX(' + (tour.t / TOUR).toFixed(4) + ')';
   if (!still()) clock += dt; // the water keeps still when Motion is off
   waterMat.uniforms.uTime.value = clock;
+  if (YP.w17smoke) YP.w17smoke(clock + 40);
   canoes.forEach((c, k) => { c.position.y = -0.12 + Math.sin(clock * 1.1 + k) * 0.07; c.rotation.z = Math.sin(clock * 0.9 + k * 2) * 0.03; }); // the ones afloat rock a little
   dress();
   renderer.render(scene, camera);
@@ -750,7 +927,8 @@ renderer.setAnimationLoop(now => {
 });
 
 // A still picture of one view at a given size, for the gallery (tools/shoot-world.js collects them).
-async function shot(i, w, h) {
+async function shot(i, w, h, year) {
+  const was = when; if (year) setWhen(year);
   const v = VIEWS[i], keep = { p: camera.position.clone(), t: controls.target.clone() };
   renderer.setPixelRatio(1); renderer.setSize(w, h, false);
   camera.aspect = w / h;
@@ -759,6 +937,7 @@ async function shot(i, w, h) {
   const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.88));
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
   camera.position.copy(keep.p); controls.target.copy(keep.t); camera.lookAt(keep.t); resize();
+  if (year) setWhen(was);
   return blob;
 }
-YP.w17 = { scene, camera, controls, VIEWS, goTo, shot, groundY, trailAt, SITE, tour, pose, setPlaying, TOUR, LEG };
+YP.w17 = { scene, camera, controls, VIEWS, goTo, shot, setWhen, groundY, trailAt, SITE, tour, pose, setPlaying, TOUR, LEG };

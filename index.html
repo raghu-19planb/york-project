@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111k">
+<link rel="stylesheet" href="style.css?v=20261111l">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -117,11 +117,11 @@
   <section class="band band-world" id="world">
     <div class="band-in split">
       <div>
-        <div class="kicker">03 / Reconstructing Toronto · c.1700</div>
+        <div class="kicker">03 / Reconstructing Toronto · c.1680 and c.1700</div>
         <h2 class="mega">A world <span>taking shape.</span></h2>
       </div>
       <div class="aside">
-        <p class="lead">I’m following old maps and the lie of the land back to the bay, the sandbar and the trail, before there was a town.</p>
+        <p class="lead">I’m following old maps, records and the lie of the land back to the bay, the trail and the Seneca village on it, before there was a town.</p>
         <p class="fine">A 3D reconstruction in progress</p>
       </div>
     </div>
@@ -131,6 +131,7 @@
         <canvas id="w17-gl" aria-label="3D model of the Toronto shore around 1700"></canvas>
         <div class="labels" id="w17-labels" aria-hidden="true"></div>
         <div class="view-tag" id="w17-tag"></div>
+        <div class="when" id="w17-when" role="group" aria-label="Choose a moment"><button type="button" data-year="1680" aria-pressed="true"><b>c.1680</b><span>the village stands</span></button><button type="button" data-year="1700" aria-pressed="false"><b>c.1700</b><span>twenty years on</span></button></div>
         <div class="world-track" id="w17-track" role="progressbar" aria-label="Progress through the recording"><span></span></div>
         <button class="world-play" id="w17-play" type="button" aria-pressed="true">Pause</button>
         <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The snapshots below show the same world.</div>
@@ -219,28 +220,28 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261111k"></script>
-<script src="world.js?v=20261111k"></script>
-<script src="scenery.js?v=20261111k"></script>
-<script src="references.js?v=20261111k"></script>
-<script src="draw.js?v=20261111k"></script>
-<script src="site.js?v=20261111k"></script>
-<script src="data/boundaries.js?v=20261111k"></script>
-<script src="data/history.js?v=20261111k"></script>
-<script src="data/today.js?v=20261111k"></script>
-<script src="data/shoreline.js?v=20261111k"></script>
-<script src="data/buildings.js?v=20261111k"></script>
-<script src="data/terrain.js?v=20261111k"></script>
-<script src="gallery.js?v=20261111k"></script>
+<script src="records.js?v=20261111l"></script>
+<script src="world.js?v=20261111l"></script>
+<script src="scenery.js?v=20261111l"></script>
+<script src="references.js?v=20261111l"></script>
+<script src="draw.js?v=20261111l"></script>
+<script src="site.js?v=20261111l"></script>
+<script src="data/boundaries.js?v=20261111l"></script>
+<script src="data/history.js?v=20261111l"></script>
+<script src="data/today.js?v=20261111l"></script>
+<script src="data/shoreline.js?v=20261111l"></script>
+<script src="data/buildings.js?v=20261111l"></script>
+<script src="data/terrain.js?v=20261111l"></script>
+<script src="gallery.js?v=20261111l"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
 // The film is 3D; if the 3D library or WebGL is unavailable, the flat film in redrawn.js takes over.
-import('./redrawn3d.js?v=20261111k').catch(() => {
+import('./redrawn3d.js?v=20261111l').catch(() => {
   document.getElementById('film').classList.add('flat');
-  const s = document.createElement('script'); s.src = 'redrawn.js?v=20261111k'; document.body.append(s);
+  const s = document.createElement('script'); s.src = 'redrawn.js?v=20261111l'; document.body.append(s);
 });
-import('./world1700.js?v=20261111k').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261111k').catch(() => {});
+import('./world1700.js?v=20261111l').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261111l').catch(() => {});
 </script>
 </body>
 </html>
