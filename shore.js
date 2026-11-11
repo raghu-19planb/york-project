@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 const D = window.YP.SHORE;
-const INK = 0x17202b, PAPER = 0xf3ecdd;
+const INK = 0x28231f, PAPER = 0xf2e9d7;
 const LAND_H = 6; // slab thickness, not a surveyed elevation
 
 // lat/lon -> scene position, using the same projection as the build script.
@@ -160,12 +160,12 @@ function placeLabels() {
 
 // ---------- camera views ----------
 const VIEWS = [
-  { name: 'Over the harbour', pos: [-2600, 2600, 4600], look: [0, 0, 300] },
-  { name: 'From the lake', pos: [300, 260, 3900], look: [-400, 150, -700] },
-  { name: 'Into downtown', pos: [1500, 620, 900], look: [-350, 90, -1350] },
-  { name: 'On the water', pos: [500, 60, 350], look: [-733, 230, -840] },
-  { name: 'Straight down', pos: [0, 9500, 420], look: [0, 0, 400] },
-  { name: 'Along the shore', pos: [-4600, 520, 1300], look: [200, 0, 100] }
+  { name: 'Over the harbour', sub: 'The lake edge from above', pos: [-2600, 2600, 4600], look: [0, 0, 300] },
+  { name: 'From the lake', sub: 'The skyline across the islands', pos: [300, 260, 3900], look: [-400, 150, -700] },
+  { name: 'Into downtown', sub: 'Over the towers', pos: [1500, 620, 900], look: [-350, 90, -1350] },
+  { name: 'On the water', sub: 'From the harbour, at boat height', pos: [500, 60, 350], look: [-733, 230, -840] },
+  { name: 'Straight down', sub: 'As a map', pos: [0, 9500, 420], look: [0, 0, 400] },
+  { name: 'Along the shore', sub: 'West to east, low over the lake', pos: [-4600, 520, 1300], look: [200, 0, 100] }
 ];
 let fly = null;
 function goTo(view, instant) {
@@ -175,10 +175,18 @@ function goTo(view, instant) {
   }
   fly = { p0: camera.position.clone(), t0: controls.target.clone(), p, t, start: performance.now() };
 }
+// A page can show a few views as cards (data-pick="0,3,5") instead of the full row of buttons.
 const viewBox = document.getElementById('views');
-VIEWS.forEach((view, i) => {
+const cards = viewBox.classList.contains('cards');
+const shown = viewBox.dataset.pick ? viewBox.dataset.pick.split(',').map(i => VIEWS[+i]) : VIEWS;
+shown.forEach((view, i) => {
   const b = document.createElement('button');
-  b.type = 'button'; b.textContent = view.name;
+  b.type = 'button';
+  if (cards) {
+    const n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span');
+    n.textContent = String(i + 1).padStart(2, '0'); t.textContent = view.name; d.textContent = view.sub;
+    b.append(n, t, d);
+  } else b.textContent = view.name;
   b.addEventListener('click', () => {
     goTo(view);
     viewBox.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
@@ -187,14 +195,16 @@ VIEWS.forEach((view, i) => {
   viewBox.append(b);
 });
 controls.addEventListener('start', () => { fly = null; });
-goTo(VIEWS[0], true);
+goTo(shown[0], true);
 
 // ---------- source notes ----------
-document.getElementById('src-link').href = D.sourceUrl;
-document.getElementById('src-date').textContent = 'data as of ' + (D.osmTimestamp || '').slice(0, 10);
-const islandPts = D.islands.reduce((n, r) => n + r.length, 0);
-document.getElementById('src-count').textContent =
-  D.shore.length + ' points of mainland shore and ' + D.islands.length + ' island outlines (' + islandPts + ' points)';
+if (document.getElementById('src-link')) { // the notes exist on the full page only
+  document.getElementById('src-link').href = D.sourceUrl;
+  document.getElementById('src-date').textContent = 'data as of ' + (D.osmTimestamp || '').slice(0, 10);
+  const islandPts = D.islands.reduce((n, r) => n + r.length, 0);
+  document.getElementById('src-count').textContent =
+    D.shore.length + ' points of mainland shore and ' + D.islands.length + ' island outlines (' + islandPts + ' points)';
+}
 
 // ---------- loop ----------
 function resize() {
@@ -208,7 +218,16 @@ function resize() {
 new ResizeObserver(resize).observe(canvas);
 resize();
 
+// Draw only while the model is on screen: the home page has two other 3D scenes.
+let onScreen = true;
+new IntersectionObserver(es => { onScreen = es[0].isIntersecting; }).observe(stage);
+// On the home page a wheel or one-finger swipe scrolls the page; zoom is a pinch or ctrl+wheel there.
+if (document.body.classList.contains('home')) {
+  controls.enableZoom = false;
+  canvas.addEventListener('wheel', e => { controls.enableZoom = e.ctrlKey; }, { capture: true, passive: true });
+}
 renderer.setAnimationLoop(now => {
+  if (!onScreen) return;
   if (fly) {
     const k = Math.min(1, (now - fly.start) / 1100), e = k * k * (3 - 2 * k);
     camera.position.lerpVectors(fly.p0, fly.p, e);

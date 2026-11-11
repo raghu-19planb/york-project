@@ -15,7 +15,24 @@ YP.REFERENCES = [
       { title: 'Former Municipality Boundaries (City of Toronto Open Data)', url: 'https://open.toronto.ca/dataset/former-municipality-boundaries/' }
     ],
     took: 'Every outline, its name, its number and its date, unchanged apart from simplifying the lines to about 15 m.',
-    caveat: 'The thirteen municipalities of 1954 are not drawn individually; the six shown are as they stood from 1967.'
+    caveat: 'The thirteen municipalities of 1954 are not drawn individually; the six shown are as they stood from 1967. The maple leaves, their colours and the terrace heights are a way of drawing the outlines, not data.'
+  },
+  {
+    item: 'Toronto, redrawn (the old shore, marsh and creeks)',
+    refs: [
+      { title: 'Historical Hydrography of Toronto, 1802-1886 (Marcel Fortin, University of Toronto Map & Data Library, CC BY-SA 4.0)', url: 'https://doi.org/10.5683/SP2/IYS0K9' }
+    ],
+    took: 'The shoreline, marsh and creeks as traced by the library from seven georeferenced maps: William Chewett 1802 and 1834, James Cane 1842, J.O. Browne 1851, Waterlow & Sons 1857, Wadsworth & Unwin 1872, Hart & Rawlinson 1878. Lines simplified to about 8 m.',
+    caveat: 'The tracings were used, not the map sheets themselves, which have not been looked at here. Each map covers a different area, so the film cannot show when a creek was buried. Three more tracings in the data file (Fleming 1853, Cotterell 1878, Speight & Van Nostrand 1886) are not in the film.'
+  },
+  {
+    item: 'Toronto, redrawn (land made since 1834)',
+    refs: [
+      { title: 'Historical Hydrography of Toronto: Chewett’s 1834 map', url: 'https://doi.org/10.5683/SP2/IYS0K9' },
+      { title: 'Lake Ontario shoreline today (OpenStreetMap relation 1206310, ODbL)', url: 'https://www.openstreetmap.org/relation/1206310' }
+    ],
+    took: 'Ground inside the 1834 limits that the 1834 tracing shows as water and today’s shoreline shows as land.',
+    caveat: 'Only the two ends are compared, sampled on a coarse grid, between about Bathurst Street and the Don. The film does not say when any of it was filled.'
   },
   {
     item: 'The canoe',
@@ -68,5 +85,6 @@ YP.UNCHECKED = [
   'Carts, cars, bicycles, ships and the 1853 train',
   'Gas lamps and modern street lights',
   'Obstacles on the track',
-  'The 2D fallback drawings'
+  'The 2D fallback drawings',
+  'The home page skyline at dusk: the footprints and recorded heights are real, the light and colour are not, and the blowing leaves are decoration'
 ];

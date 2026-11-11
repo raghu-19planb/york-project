@@ -7,19 +7,22 @@
     return n;
   };
 
-  // Rides strip
+  // Motion: one switch for everything that moves on its own (3D drift, the silent film glimpse).
+  const root = document.documentElement, motion = document.getElementById('motion');
+  const showMotion = () => motion.setAttribute('aria-pressed', String(!root.classList.contains('still')));
+  motion.addEventListener('click', () => {
+    const still = root.classList.toggle('still');
+    try { localStorage.setItem('yp-motion', still ? 'off' : 'on'); } catch (e) {}
+    showMotion(); window.dispatchEvent(new Event('yp-motion'));
+  });
+  showMotion();
+
+  // Rides: the four vehicles and the year each takes over
   const rides = document.getElementById('rides');
   YP.VEHICLES.forEach(v => {
-    const box = el('div', 'ride');
-    const c = document.createElement('canvas');
-    c.width = 260; c.height = 130;
-    const ctx = c.getContext('2d');
-    ctx.scale(2, 2);
-    ctx.strokeStyle = YP.C.ink; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(4, 58.5); ctx.lineTo(126, 58.5); ctx.stroke();
-    YP.drawVehicle(ctx, v.id, 14, 58, 0.3);
-    box.append(c, el('span', 'mono', v.era), el('b', null, v.name));
-    rides.append(box);
+    const li = el('li');
+    li.append(el('b', null, v.name), el('span', null, v.era));
+    rides.append(li);
   });
 
   // Pieces
@@ -27,11 +30,11 @@
   const pieces = document.getElementById('pieces');
   YP.PIECES.forEach((p, i) => {
     const card = el('article', 'piece ' + p.status);
-    const top = el('div', 'top mono');
+    const top = el('div', 'top kicker');
     top.append(el('span', null, String(i + 1).padStart(2, '0') + ' / ' + p.kind), el('span', 'status ' + p.status, statusText[p.status]));
     card.append(top, el('h3', null, p.title), el('p', 'line', p.line), el('p', null, p.body));
     if (p.href) {
-      const a = el('a', 'go', p.cta + ' →');
+      const a = el('a', 'go', p.cta);
       a.href = p.href;
       card.append(a);
     }
@@ -60,7 +63,7 @@
     body.append(el('h3', null, r.item), el('p', null, 'From the reference: ' + r.took));
     if (r.caveat) body.append(el('p', null, 'Still a guess: ' + r.caveat));
     r.refs.forEach(x => { const d = el('div', 'src'), a = el('a', null, x.title); a.href = x.url; a.target = '_blank'; a.rel = 'noopener'; d.append(a); body.append(d); });
-    li.append(el('div', 'yr', 'Checked'), body);
+    li.append(el('div', 'yr', 'Checked against a source'), body);
     refs.append(li);
   });
   YP.UNCHECKED.forEach(u => document.getElementById('unchecked').append(el('li', null, u)));

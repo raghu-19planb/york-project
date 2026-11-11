@@ -41,8 +41,8 @@ YP.PIECES = [
     kind: 'Watch',
     status: 'live',
     title: 'Toronto, redrawn',
-    line: 'The city\u2019s limits, growing from 1834 to 1998, drawn in code with sound.',
-    body: 'Fifty annexations in the order they happened, then thirteen municipalities, then six, then one. Every outline is a mapped boundary.',
+    line: 'The city\u2019s limits from 1834 to 1998, laid down in maple leaves, in 3D, with sound.',
+    body: 'The shore and creeks of seven old maps, fifty annexations in the order they happened, then thirteen municipalities, then six, then one. Every outline is a mapped boundary.',
     href: '#redrawn',
     cta: 'Watch the map change'
   },
@@ -57,6 +57,10 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'Toronto, redrawn is now drawn in 3D and in maple leaves: a leaf for each patch of ground, falling when that ground joined the city. Under it are the shore, marsh and creeks from seven maps of 1802 to 1878 (University of Toronto Map & Data Library), today\u2019s rivers and main roads, a timeline of every annexation, and a last scene showing the land made since 1834. The home page was rebuilt around three bands (play, watch, explore), with a live 3D skyline behind the title and the 3D shoreline on the page itself.'
+  },
   {
     date: '2026-11-11',
     text: 'Toronto, redrawn: a 41-second film in code and sound of the city\u2019s limits from 1834 to 1998, drawn from the University of Toronto\u2019s annexation boundaries and the City\u2019s former-municipality boundaries. It replaces the planned film "Lines". The site also now works on phones, and the home page title sits on a red band.'

@@ -3,118 +3,209 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f3ecdd">
-<title>The York Project · Toronto, a world in progress</title>
-<meta name="description" content="Toronto through play and record. A one-button history game, the sources behind it, and a world that keeps being added to.">
+<meta name="theme-color" content="#f2e9d7">
+<title>Toronto through play, code and a world in progress · The York Project</title>
+<meta name="description" content="Toronto through play and record. A one-button history game, a film of the city's limits drawn in maple leaves, and a 3D world that keeps being added to.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
 </head>
-<body>
-<div class="wrap">
-  <header class="bar">
-    <div class="brand">
-      <a class="name" href="./">The York Project<svg class="leaf" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,2 57,17 65,13 61,37 75,25 78,34 92,31 87,45 96,52 73,68 76,78 53,74 54,98 46,98 47,74 24,78 27,68 4,52 13,45 8,31 22,34 25,25 39,37 35,13 43,17"/></svg></a>
-      <div class="name-alt" lang="moh" title="Tkaronto: the Kanien’kéha (Mohawk) word the name Toronto comes from">Tkaronto</div>
-    </div>
-    <nav class="mono">
-      <a href="#world">World</a>
-      <a href="#redrawn">Film</a>
-      <a href="#record">Record</a>
-      <a href="#references">References</a>
-      <a href="#log">Log</a>
+<body class="home">
+<header class="bar">
+  <div class="brand">
+    <a class="name" href="./">The York Project<svg class="leaf" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,2 57,17 65,13 61,37 75,25 78,34 92,31 87,45 96,52 73,68 76,78 53,74 54,98 46,98 47,74 24,78 27,68 4,52 13,45 8,31 22,34 25,25 39,37 35,13 43,17"/></svg></a>
+    <div class="name-alt" lang="moh" title="Tkaronto: the Kanien’kéha (Mohawk) word the name Toronto comes from">Tkaronto</div>
+  </div>
+  <div class="bar-side">
+    <span class="by">An ongoing exploration by Raghu Devaguptapu</span>
+    <button class="pill" id="motion" type="button" aria-pressed="true"><span class="glyph" aria-hidden="true"></span>Motion</button>
+  </div>
+</header>
+
+<main>
+  <section class="arrival">
+    <p>My curiosity about Toronto became a game, a film and a world I’m still building.</p>
+    <nav aria-label="On this page">
+      <a href="#play"><span>01</span> Play</a>
+      <a href="#redrawn"><span>02</span> Watch</a>
+      <a href="#world"><span>03</span> Explore</a>
+      <a href="#record"><span>04</span> Read</a>
     </nav>
-  </header>
+  </section>
 
-  <main>
-    <div class="hero">
-      <div class="mono">Toronto · a world in progress</div>
-      <h1>A city you can <em>ride</em> through.</h1>
-      <p class="byline mono">An exploration by Raghu Devaguptapu</p>
-      <p class="lede">Toronto was a carrying place before it was York, and York before it was Toronto. This project follows that line, one sourced record at a time, and keeps adding to it.</p>
+  <!-- 01 · the game -->
+  <section class="band band-play" id="play">
+    <canvas id="hero-gl" aria-hidden="true"></canvas>
+    <div class="band-shade" aria-hidden="true"></div>
+    <div class="band-in">
+      <div class="kicker">01 / A browser game through Toronto</div>
+      <h1>Carrying <span>Place.</span></h1>
+      <p class="lead">Three centuries.<br>One line through the city.</p>
+      <p class="sublead">From canoe to subway. Ride through the years, catch the record, or take a slower trip and read every stop.</p>
       <div class="btn-row">
-        <a class="btn" href="game.html">Play Carrying Place</a>
-        <a class="btn ghost" href="#world">See what's here so far</a>
+        <a class="btn" href="game.html">Play Carrying Place <i aria-hidden="true">▶</i></a>
+        <a class="btn ghost" href="#record">Read the record</a>
       </div>
-      <div class="rides" id="rides" aria-label="The four rides in the game"></div>
+      <p class="fine">Free in your browser · Desktop &amp; phone</p>
+    </div>
+    <ol class="rides" id="rides" aria-label="The four rides in the game"></ol>
+    <p class="made-note" id="hero-note" hidden>The skyline is drawn live in 3D from mapped building footprints. The leaves are decoration.</p>
+  </section>
+
+  <!-- 02 · the film -->
+  <section class="band band-film" id="redrawn">
+    <div class="band-in split">
+      <div>
+        <div class="kicker">02 / A city drawn in maple leaves</div>
+        <h2 class="mega">Toronto, <span>Redrawn.</span></h2>
+      </div>
+      <div class="aside">
+        <p class="lead">The city’s limits from 1834 to 1998, laid down leaf by leaf, over the shore and creeks of seven old maps.</p>
+        <p class="fine"><span id="film-length"></span> · Code &amp; sound · In 3D</p>
+      </div>
     </div>
 
-    <section id="world">
-      <div class="sec-head">
-        <h2>The world so far</h2>
-        <span class="mono" id="world-count"></span>
+    <div class="film" id="film">
+      <canvas id="film-canvas" aria-label="Animated 3D map of Toronto's boundaries growing from 1834 to 1998, drawn in maple leaves"></canvas>
+      <div class="film-labels" id="film-labels" aria-hidden="true"></div>
+      <div class="film-cap" aria-live="off">
+        <div class="film-year" id="film-year"></div>
+        <div class="film-text" id="film-text"></div>
+        <div class="film-sub" id="film-sub"></div>
+        <div class="film-stat" id="film-stat"></div>
       </div>
-      <div class="pieces" id="pieces"></div>
-    </section>
-
-    <section id="redrawn">
-      <div class="sec-head">
-        <h2>Toronto, redrawn</h2>
-        <span class="mono">A film in code &amp; sound · <span id="film-length"></span></span>
-      </div>
-      <p class="subnote">In 1834 the city was a strip along the harbour. Its limits were redrawn outward fifty times by 1967, and in 1998 six municipalities became one. Every line is a mapped boundary, added in the order it happened.</p>
-      <div class="film">
-        <canvas id="film-canvas" aria-label="Animated map of Toronto's boundaries growing from 1834 to 1998"></canvas>
-        <div class="film-cap" aria-live="off">
-          <div class="film-year" id="film-year"></div>
-          <div class="film-text" id="film-text"></div>
-          <div class="mono" id="film-sub"></div>
-        </div>
-      </div>
-      <div class="film-ctl">
-        <button class="btn" id="film-play" type="button">Play with sound</button>
-        <button class="btn ghost" id="film-mute" type="button" aria-pressed="false">Sound on</button>
-        <input type="range" id="film-seek" min="0" max="1000" value="0" aria-label="Position in the film">
-        <span class="mono" id="film-time"></span>
+      <div class="film-key" id="film-key" aria-label="What the leaf colours mean"><div class="kicker">Leaf colour: when its ground joined</div></div>
+      <button class="plate" id="film-play" type="button"><i aria-hidden="true">▶</i><span><b>Watch the film</b><small>About a minute, with sound</small></span></button>
+    </div>
+    <canvas class="film-line" id="film-line" aria-label="Timeline: a bar for each year the city annexed land. Click to jump to a year."></canvas>
+    <div class="film-ctl">
+      <span class="fine" id="film-note">A silent glimpse. Play the film to hear the notes.</span>
+      <input type="range" id="film-seek" min="0" max="1000" value="0" aria-label="Position in the film">
+      <span class="fine" id="film-time"></span>
+      <button class="link" id="film-pause" type="button" hidden>Pause</button>
+      <button class="link" id="film-mute" type="button" aria-pressed="false">Sound on</button>
+    </div>
+    <div class="chapters" id="film-chapters" role="group" aria-label="Jump to a moment in the film"></div>
+    <div class="film-foot">
+      <div class="layers">
+        <label><input type="checkbox" id="film-layer-streets" checked> Today’s main roads &amp; railways</label>
+        <label><input type="checkbox" id="film-layer-rivers" checked> Today’s rivers</label>
+        <span class="fine">Drag the map to turn it.</span>
       </div>
       <details class="film-notes">
         <summary>How it was made, and what it leaves out</summary>
-        <p>The film is drawn live in your browser from boundary data, not played from a video. Older land is darker; each new piece flashes yellow as it joins. The notes are generated in code, one per annexation.</p>
+        <p>The film is drawn live in your browser, not played from a video. Each maple leaf stands for a patch of ground inside a mapped city limit: about <span id="film-ha"></span> hectares in the old city and <span id="film-ha2"></span> in the boroughs, <span id="film-leaves"></span> leaves in all. A leaf falls when its ground joins the city and keeps the colour of that year. Older ground stands on a higher terrace. In 1998 every leaf turns the same red.</p>
+        <p>The blue lines are the shore, marsh and creeks as seven maps drew them between 1802 and 1878, traced from the georeferenced sheets by the University of Toronto’s Map &amp; Data Library. Each map covers a different area, so a creek that vanishes between two maps may only have run off the sheet. Straight sheet edges are not drawn.</p>
+        <p>The last scene compares Chewett’s 1834 shore with today’s. The <span id="film-made"></span> gold leaves are ground inside the 1834 limits that his map shows as water and today’s shoreline shows as land. The film does not date that filling; it only shows both ends.</p>
         <ul id="film-sources"></ul>
-        <p>What it leaves out: Metropolitan Toronto began in 1954 with thirteen municipalities, but only the six that remained after 1967 are drawn, because boundaries for the other seven were not found. Annexation 48, Victoria Park Avenue, is a strip of road too narrow to show. Outlines are simplified to about 15 metres.</p>
+        <p>What it leaves out: Metropolitan Toronto began in 1954 with thirteen municipalities, but only the six that remained after 1967 are drawn, because boundaries for the other seven were not found. Annexation 48, Victoria Park Avenue, is a strip of road too narrow to show. The areas (<span id="film-old"></span> km² by 1967, <span id="film-all"></span> km² in 1998) are measured from the simplified outlines, which include some water. Terrace heights are a drawing device, not ground levels. Today’s roads, railways and rivers are there for orientation and are not historical.</p>
       </details>
-    </section>
+    </div>
+  </section>
 
-    <section id="record">
-      <div class="sec-head">
-        <h2>The record</h2>
-        <span class="mono" id="record-count"></span>
+  <!-- 03 · the 3D world -->
+  <section class="band band-world" id="world">
+    <div class="band-in split">
+      <div>
+        <div class="kicker">03 / Rebuilding the shoreline · today</div>
+        <h2 class="mega">A world <span>taking shape.</span></h2>
       </div>
-      <ol class="records" id="records"></ol>
-
-      <h3 class="sub">Also in the landscape</h3>
-      <p class="subnote">The game's scenery changes with the year. These are the dated things in it; the city's growth is paced by census counts (<a id="pop-src" target="_blank" rel="noopener"></a>). Ordinary houses, people, carts, cars and ships are an illustration of the period, not records.</p>
-      <ol class="records" id="scenery"></ol>
-    </section>
-
-    <section id="references">
-      <div class="sec-head">
-        <h2>Visual references</h2>
-        <span class="mono" id="ref-count"></span>
+      <div class="aside">
+        <p class="lead">I’m building Toronto’s lake edge in 3D, one mapped layer at a time. Everything older gets measured against this line.</p>
+        <p class="fine">A 3D model in progress · layer 01</p>
       </div>
-      <p class="subnote">What things look like should come from period paintings, plans and photographs, not from guesswork. These are the pictures each model was built from, what was taken from them, and what is still a guess.</p>
+    </div>
+
+    <div class="viewer">
+      <div class="world3d" id="world3d">
+        <canvas id="gl" aria-label="3D model of the Toronto shoreline and downtown buildings"></canvas>
+        <div class="labels" id="labels" aria-hidden="true"></div>
+        <div class="glfail" id="glfail" hidden>This view needs WebGL, which isn't available in this browser.</div>
+      </div>
+      <div class="views cards" id="views" role="group" aria-label="Camera views" data-pick="0,3,5"></div>
+    </div>
+    <div class="band-in viewer-foot">
+      <p class="fine">Live in your browser. Choose a view, or drag to orbit. The full page zooms and pans too.</p>
+      <div class="key inline" aria-label="Building height sources">
+        <span><i style="background:#fbf7ee"></i>Recorded height <b id="k-h"></b></span>
+        <span><i style="background:#d8bd92"></i>Estimated from storeys <b id="k-l"></b></span>
+        <span><i style="background:#b7b0a1"></i>Height unknown <b id="k-n"></b></span>
+      </div>
+      <a class="btn dark" href="shore.html">Open the full 3D shoreline <i aria-hidden="true">↗</i></a>
+    </div>
+
+    <div class="band-in">
+      <div class="sec-head">
+        <h3>The world so far</h3>
+        <span class="fine" id="world-count"></span>
+      </div>
+      <div class="pieces" id="pieces"></div>
+    </div>
+  </section>
+
+  <!-- 04 · the record -->
+  <section class="notes-band" id="record">
+    <div class="notes-side">
+      <div class="kicker">04 / Behind the game</div>
+      <h2>The record.</h2>
+      <p class="fine" id="record-count"></p>
+      <p>Every card in Carrying Place, with the source it was checked against.</p>
+    </div>
+    <ol class="records" id="records"></ol>
+  </section>
+
+  <section class="notes-band" id="landscape">
+    <div class="notes-side">
+      <div class="kicker">Also in the landscape</div>
+      <h2>What the years bring.</h2>
+      <p>The game’s scenery changes with the year. These are the dated things in it; the city’s growth is paced by census counts (<a id="pop-src" target="_blank" rel="noopener"></a>). Ordinary houses, people, carts, cars and ships are an illustration of the period, not records.</p>
+    </div>
+    <ol class="records" id="scenery"></ol>
+  </section>
+
+  <section class="notes-band" id="references">
+    <div class="notes-side">
+      <div class="kicker">Behind the drawing</div>
+      <h2>Drawn from the archive.</h2>
+      <p class="fine" id="ref-count"></p>
+      <p>What things look like should come from period paintings, plans and photographs, not from guesswork. These are the pictures and maps each model was built from, what was taken from them, and what is still a guess.</p>
+    </div>
+    <div>
       <ol class="records" id="refs"></ol>
       <h3 class="sub">Not yet checked against a reference</h3>
       <p class="subnote">These are illustrative for now and should not be read as accurate depictions.</p>
       <ul class="unchecked" id="unchecked"></ul>
-    </section>
+    </div>
+  </section>
 
-    <section id="log">
-      <div class="sec-head">
-        <h2>World log</h2>
-        <span class="mono">What was added, and when</span>
-      </div>
-      <ul class="log" id="loglist"></ul>
-    </section>
-  </main>
+  <section class="notes-band" id="log">
+    <div class="notes-side">
+      <div class="kicker">A world in progress</div>
+      <h2>World log.</h2>
+      <p>What was added, and when.</p>
+    </div>
+    <ul class="log" id="loglist"></ul>
+  </section>
+</main>
 
-  <footer>
-    An independent project about Toronto's history. Not affiliated with the City of Toronto or the TTC. Each record links to the source it was checked against.
-    <span class="inspired">Tkaronto is the Kanien’kéha (Mohawk) word the city’s name comes from. It means “where there are trees standing in the water” (<a href="https://thecanadianencyclopedia.ca/en/article/toronto" target="_blank" rel="noopener">The Canadian Encyclopedia</a>).</span>
-    <span class="inspired">Inspired by <a href="https://madras.v40.in/" target="_blank" rel="noopener">The Madras Project</a>.</span>
-  </footer>
-</div>
+<footer class="foot">
+  <div class="foot-in">
+    <p class="foot-lead">Toronto was a carrying place before it was York, and York before it was Toronto.</p>
+    <div>
+      <p>An independent project about Toronto’s history. Not affiliated with the City of Toronto or the TTC. Each record links to the source it was checked against.</p>
+      <p>Tkaronto is the Kanien’kéha (Mohawk) word the city’s name comes from. It means “where there are trees standing in the water” (<a href="https://thecanadianencyclopedia.ca/en/article/toronto" target="_blank" rel="noopener">The Canadian Encyclopedia</a>).</p>
+      <p>Inspired by <a href="https://madras.v40.in/" target="_blank" rel="noopener">The Madras Project</a>.</p>
+    </div>
+  </div>
+</footer>
 
 <script src="records.js"></script>
 <script src="world.js"></script>
@@ -123,6 +214,18 @@
 <script src="draw.js"></script>
 <script src="site.js"></script>
 <script src="data/boundaries.js"></script>
-<script src="redrawn.js"></script>
+<script src="data/history.js"></script>
+<script src="data/today.js"></script>
+<script src="data/shoreline.js"></script>
+<script src="data/buildings.js"></script>
+<script type="module">
+// The film is 3D; if the 3D library or WebGL is unavailable, the flat film in redrawn.js takes over.
+import('./redrawn3d.js').catch(() => {
+  document.getElementById('film').classList.add('flat');
+  const s = document.createElement('script'); s.src = 'redrawn.js'; document.body.append(s);
+});
+import('./shore.js').catch(() => { document.getElementById('glfail').hidden = false; });
+import('./hero3d.js').catch(() => {});
+</script>
 </body>
 </html>
