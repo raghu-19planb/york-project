@@ -220,13 +220,14 @@ let W = 0, H = 0, time = 0, lastTs = 0, onScreen = true, dirty = true;
 function draw() {
   const wide = camera.aspect > 1.15, sway = Math.sin(time * 0.07);
   camera.position.set(700 + sway * 260, 150 + Math.sin(time * 0.05) * 18, 4300);
-  camera.lookAt(wide ? -1700 : -650, wide ? 150 : 300, -900);
+  // Upright (a phone): the title sits over the sky, so the skyline is held in the lower half of the picture.
+  camera.lookAt(wide ? -1700 : -560, wide ? 150 : 520, -900);
   skyTex.offset.x = time * 0.0016; // clouds drift east
   waterTex.offset.set(time * 0.004, -time * 0.006);
   // the large leaf sits where the title leaves room: right of centre when wide, upper right on a phone
   const halfH = Math.tan(camera.fov * Math.PI / 360) * 9, halfW = halfH * camera.aspect;
-  big.position.set(wide ? halfW * 0.6 : halfW * 0.5, (wide ? 0.42 : 0.62) * halfH + Math.sin(time * 0.5) * 0.1, -9);
-  big.scale.setScalar(wide ? halfH * 0.62 : halfW * 0.55);
+  big.position.set(wide ? halfW * 0.6 : halfW * 0.42, (wide ? 0.42 : 0.16) * halfH + Math.sin(time * 0.5) * 0.1, -9);
+  big.scale.setScalar(wide ? halfH * 0.62 : halfW * 0.62);
   big.rotation.set(-0.4 + Math.sin(time * 0.33) * 0.15, 0.2 + Math.sin(time * 0.21) * 0.45, 0.3 + Math.sin(time * 0.27) * 0.12); // never edge-on
   for (let i = 0; i < N; i++) {
     const d = drift[i], hh = Math.tan(camera.fov * Math.PI / 360) * d.z, hw = hh * camera.aspect;

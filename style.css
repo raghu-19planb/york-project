@@ -105,13 +105,20 @@ html.still .btn { transition: none; }
 .rides li span { font-size: 0.74rem; opacity: 0.75; margin-left: 8px; letter-spacing: 0.04em; }
 .rides li { text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6); }
 .made-note { position: relative; margin: 14px var(--gutter) 0; font-size: 0.74rem; color: rgba(255, 246, 229, 0.6); }
+/* Phones: the painting gets the top of the band to itself, with only the title over its sky.
+   The tagline, buttons and rides sit below it on plain colour, so the picture is not buried. */
 @media (max-width: 720px) {
+  .band-play { --pic: clamp(340px, 60vh, 540px); --pic: clamp(340px, 60svh, 540px); display: block; padding-top: 0; background-image: none; }
+  .band-play #hero-gl, .band-play .band-shade { height: var(--pic); bottom: auto; }
+  .band-play .band-shade { background: linear-gradient(180deg, rgba(38, 16, 14, 0.62) 0%, rgba(38, 16, 14, 0.28) 30%, rgba(38, 16, 14, 0) 48%, rgba(74, 28, 26, 0) 88%, var(--oxide) 100%); }
+  .hero-title { min-height: var(--pic); padding-top: 26px; }
+  .band-play h1 { margin-top: 14px; text-shadow: 0 2px 18px rgba(30, 10, 8, 0.55); }
+  .band-play .lead { margin-top: 18px; }
   .band-play { min-height: 0; }
   .rides { grid-template-columns: repeat(2, 1fr); gap: 14px 20px; }
   .rides::before { display: none; }
   .rides li { font-size: 1rem; line-height: 1.25; padding: 8px 0 0; border-top: 1px solid rgba(255, 246, 229, 0.3); }
   .rides li span { display: block; margin: 2px 0 0; }
-  .band-shade { background: linear-gradient(180deg, rgba(42, 12, 10, 0.66) 0%, rgba(42, 12, 10, 0.34) 55%, rgba(10, 22, 24, 0.7) 100%); }
 }
 
 /* 02 · film */
