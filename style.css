@@ -108,10 +108,16 @@ html.still .btn { transition: none; }
 /* Phones: the painting gets the top of the band to itself, with only the title over its sky.
    The tagline, buttons and rides sit below it on plain colour, so the picture is not buried. */
 @media (max-width: 720px) {
-  .band-play { --pic: clamp(340px, 60vh, 540px); --pic: clamp(340px, 60svh, 540px); display: block; padding-top: 0; background-image: none; }
+  .band-play { --pic: clamp(340px, 60vh, 540px); display: block; padding-top: 0; background-image: none; }
+  /* svh must sit behind @supports: a custom property accepts any text, so a second --pic using svh would
+     win on a browser that lacks the unit and then make every height that reads it invalid. */
+  @supports (height: 1svh) { .band-play { --pic: clamp(340px, 60svh, 540px); } }
   .band-play #hero-gl, .band-play .band-shade { height: var(--pic); bottom: auto; }
   .band-play .band-shade { background: linear-gradient(180deg, rgba(38, 16, 14, 0.62) 0%, rgba(38, 16, 14, 0.28) 30%, rgba(38, 16, 14, 0) 48%, rgba(74, 28, 26, 0) 88%, var(--oxide) 100%); }
   .hero-title { min-height: var(--pic); padding-top: 26px; }
+  /* A page cached from before .hero-title existed has the title straight inside .band-in: hold its place too. */
+  .band-play .band-in > .kicker { padding-top: 26px; }
+  .band-play .band-in > h1 { margin-bottom: calc(var(--pic) - 150px); }
   .band-play h1 { margin-top: 14px; text-shadow: 0 2px 18px rgba(30, 10, 8, 0.55); }
   .band-play .lead { margin-top: 18px; }
   .band-play { min-height: 0; }

@@ -33,6 +33,10 @@ Toronto, a world in progress. A static site (plain HTML, CSS and JS, no build st
 - **A new piece** (a film, a map, a reconstruction): add an entry to `YP.PIECES` in `world.js`, or change an existing one's `status` and give it an `href`.
 - **Every addition:** add a dated line to the top of `YP.LOG` in `world.js`.
 
+## Cache stamp
+
+Every page loads its stylesheet and scripts with the same `?v=` stamp (for example `style.css?v=20261111e`). When any of those files changes, change the stamp in `index.html`, `game.html` and `shore.html` together. Without it a phone can pair a cached page with a newer stylesheet and lay the page out wrongly.
+
 ## Running it
 
 Open `index.html` directly, or serve the folder: `node .claude/server.js` then visit http://127.0.0.1:5180.
