@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2e9d7">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261112a">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261112a">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261112a">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261112a">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261112c">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261112c">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261112c">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261112c">
 <title>Toronto through play, code and a world in progress · The York Project</title>
 <meta name="description" content="Toronto through play and record. A one-button history game, a film of the city's limits drawn in maple leaves, and a 3D world that keeps being added to.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261112a">
+<link rel="stylesheet" href="style.css?v=20261112c">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -168,6 +168,45 @@
     <div class="band-in"><p class="fine" style="max-width:70ch">Dates and counts of people are from sources. Every ordinary house and street is drawn to match them, not taken from a map; the page says which is which.</p></div>
   </section>
 
+  <!-- today: the rapid transit lines, as in a car and on the map -->
+  <section class="band band-sub" id="subway" aria-labelledby="subway-title">
+    <div class="band-in split">
+      <div>
+        <div class="kicker">Getting around today</div>
+        <h2 class="mega" id="subway-title">Ride <span>the lines.</span></h2>
+      </div>
+      <div class="aside">
+        <p class="lead">Pick a line. The lights come on station by station, as on the map above the doors, and the same light moves across Toronto below, so you can see where each stop is.</p>
+        <p class="fine sub-count"></p>
+      </div>
+    </div>
+    <div class="sub">
+      <div class="sub-lines" role="group" aria-label="Choose a line"></div>
+      <div class="sub-stage">
+        <div class="sub-now" aria-live="polite">
+          <i class="num"></i>
+          <div><small></small><b></b><span></span></div>
+          <i class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></i>
+        </div>
+        <div class="car"><div class="car-row" role="group" aria-label="Stations on this line, in order. Choose one to light it here and on the map."></div></div>
+        <div class="sub-map"><svg role="img" aria-label="Map of Toronto with its limits, lake, rivers and main roads, and the rapid transit lines drawn on it; a light marks the station shown above"></svg><div class="sub-over" aria-hidden="true"></div></div>
+      </div>
+      <div class="sub-ctl">
+        <div><b class="sub-title"></b><span class="fine sub-ends"></span></div>
+        <button class="btn sub-play" type="button" aria-pressed="false">Ride the line</button>
+        <button class="btn ghost sub-next" type="button">Next stop</button>
+        <button class="btn ghost sub-turn" type="button">Ride the other way</button>
+        <button class="btn ghost sub-sound" type="button" aria-pressed="false">Chime off</button>
+      </div>
+      <details class="film-notes sub-notes">
+        <summary>What is real here, and what is not</summary>
+        <p>Real: the lines, their colours, the stations and their order, and the path of each track, from <a class="sub-source" target="_blank" rel="noopener"></a>. A line that has opened, closed or changed since then will be wrong here until the data is fetched again. The map under them is the city’s limits and its six old municipalities from the City of Toronto’s open data, and today’s rivers and main roads from OpenStreetMap.</p>
+        <p>Worked out: where you can change lines (a station of another line within 300 m), and which part of the city a station is in (the old municipality its point falls inside). Both are rules applied to the data, not the TTC’s own lists. The lake is drawn south of the city’s southern limit, which is close to the shore but is not a survey of it.</p>
+        <p>Drawn: the lights, the icons, the chime, and how long a ride takes. This is not a timetable and does not show where any real train is. For service, times and accessibility, use <a href="https://www.ttc.ca/" target="_blank" rel="noopener">ttc.ca</a>. This site is not affiliated with the TTC.</p>
+      </details>
+    </div>
+  </section>
+
   <!-- stories: each piece of the site as a short story to watch -->
   <section class="stories" id="stories">
     <div class="stories-head">
@@ -212,30 +251,32 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261112a"></script>
-<script src="world.js?v=20261112a"></script>
-<script src="scenery.js?v=20261112a"></script>
-<script src="references.js?v=20261112a"></script>
-<script src="draw.js?v=20261112a"></script>
-<script src="site.js?v=20261112a"></script>
-<script src="data/boundaries.js?v=20261112a"></script>
-<script src="data/history.js?v=20261112a"></script>
-<script src="data/today.js?v=20261112a"></script>
-<script src="data/shoreline.js?v=20261112a"></script>
-<script src="data/buildings.js?v=20261112a"></script>
-<script src="data/terrain.js?v=20261112a"></script>
-<script src="gallery.js?v=20261112a"></script>
-<script src="sketch.js?v=20261112a"></script>
-<script src="stories.js?v=20261112a"></script>
+<script src="records.js?v=20261112c"></script>
+<script src="world.js?v=20261112c"></script>
+<script src="scenery.js?v=20261112c"></script>
+<script src="references.js?v=20261112c"></script>
+<script src="draw.js?v=20261112c"></script>
+<script src="site.js?v=20261112c"></script>
+<script src="data/boundaries.js?v=20261112c"></script>
+<script src="data/history.js?v=20261112c"></script>
+<script src="data/today.js?v=20261112c"></script>
+<script src="data/shoreline.js?v=20261112c"></script>
+<script src="data/buildings.js?v=20261112c"></script>
+<script src="data/terrain.js?v=20261112c"></script>
+<script src="gallery.js?v=20261112c"></script>
+<script src="sketch.js?v=20261112c"></script>
+<script src="stories.js?v=20261112c"></script>
 <script>
 // The first story card shows its photograph as a sketch, like the story it opens.
 document.querySelectorAll("img.sketch-me").forEach(function (img) { function go() { try { var c = YP.sketch(img, 700); c.className = "sketch"; img.parentNode.insertBefore(c, img); img.parentNode.classList.add("drawn"); } catch (e) {} } if (img.complete && img.naturalWidth) go(); else img.addEventListener("load", go, { once: true }); });
 </script>
-<script src="leafline.js?v=20261112a"></script>
+<script src="leafline.js?v=20261112c"></script>
+<script src="data/subway.js?v=20261112c"></script>
+<script src="subway.js?v=20261112c"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
-import('./world1700.js?v=20261112a').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261112a').catch(() => {});
+import('./world1700.js?v=20261112c').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261112c').catch(() => {});
 </script>
 </body>
 </html>

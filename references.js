@@ -48,7 +48,7 @@ YP.REFERENCES = [
       { title: 'OpenStreetMap: TTC subway and light rail route relations (ODbL)', url: 'https://www.openstreetmap.org/relation/102388' }
     ],
     took: 'Five lines (1, 2, 4, 5 and 6), each with its colour, its stations in order and the path of its track, as mapped on the day data/subway.js was built.',
-    caveat: 'Where you can change lines is worked out (a station of another line within 300 m), not taken from the TTC. The train, the icons, the chime and the timing are drawn; it is not a timetable. Whether a line is in service is whatever OpenStreetMap showed that day.'
+    caveat: 'Where you can change lines is worked out (a station of another line within 300 m), not taken from the TTC, and so is the part of the city each station is in (the old municipality its point falls inside, from the City of Toronto boundaries already used on this site). The lake under the map is drawn south of the city\u2019s southern limit, not surveyed. The lights, the icons, the chime and the timing are drawn; it is not a timetable. Whether a line is in service is whatever OpenStreetMap showed that day.'
   },
   {
     item: 'How a tower went up (the CN Tower scrapbook)',
