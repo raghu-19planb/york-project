@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111n">
+<link rel="stylesheet" href="style.css?v=20261111o">
 <script type="importmap">
 { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
 </script>
@@ -40,17 +40,20 @@
   <div class="banner" id="banner" hidden></div>
 
   <div class="hud" id="hud" hidden>
-    <div>
+    <div class="hud-year">
       <div class="year" id="year">1690</div>
       <div class="mono" id="ride">Canoe</div>
       <div class="mono pop" id="pop"></div>
     </div>
+    <div class="hud-mile" id="mile" hidden><small id="mile-tag"></small><b id="mile-title"></b></div>
     <div class="right">
-      <div class="mono" id="found">0 / 21 punched</div>
       <div class="lives" id="lives" aria-label="Lives"></div>
-      <button class="pause" id="pause" type="button">Pause</button>
+      <div class="mono" id="found">Records 0 / 21</div>
+      <button class="round" id="pause" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg></button>
     </div>
   </div>
+  <button class="round sound" id="sound" type="button" aria-label="Sound" aria-pressed="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9z"/><path class="waves" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="off" d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  <div class="coach" id="coach" hidden></div>
 
   <div class="card" id="card" aria-live="polite" hidden>
     <div class="mono yr" id="card-yr"></div>
@@ -60,34 +63,57 @@
     <button class="btn" id="card-go" type="button" hidden>Ride on</button>
   </div>
 
-  <div class="overlay" id="menu">
-    <div class="mono">The York Project · 01</div>
-    <h1>Next Stop, <em>Toronto</em></h1>
-    <p>Three centuries of Toronto in one ride. Jump what's in the way and catch the transfers: each one is a record with a source.</p>
-    <div class="btn-row" style="justify-content:center">
-      <button class="btn" id="play-rush" type="button">Rush</button>
-      <button class="btn ghost" id="play-explore" type="button">Explore: stop and read</button>
+  <div class="overlay start" id="menu">
+    <div class="start-in">
+      <div class="mono">Three centuries. One Toronto</div>
+      <h1>Next Stop, <em>Toronto</em></h1>
+      <p class="story">Long before there was a city, <a href="https://en.wikipedia.org/wiki/Toronto_Carrying-Place_Trail" target="_blank" rel="noopener">a trail called the Carrying Place ran north from this shore<i aria-hidden="true">↗</i></a>. Ride the next <span id="story-years">336</span> years, from canoe to subway.</p>
+      <ul class="howto" aria-label="How to play">
+        <li><span class="pic"><kbd>Space</kbd><small>or</small><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v7" stroke="currentColor" stroke-width="1.6"/></svg></span>Jump</li>
+        <li><span class="pic"><svg viewBox="0 0 64 24" aria-hidden="true"><path d="M6 21Q32 -6 58 21" fill="none" stroke="#e9b44c" stroke-width="2.4" stroke-dasharray="5 4" stroke-linecap="round"/><path d="M14 21Q32 6 50 21" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="4 4" stroke-linecap="round" opacity="0.6"/></svg></span>Hold to jump higher</li>
+        <li><span class="pic"><svg viewBox="0 0 48 30" aria-hidden="true"><g transform="rotate(-8 24 15)"><rect x="6" y="5" width="36" height="20" fill="#fff6e5" stroke="#28231f" stroke-width="1.5"/><rect x="6" y="5" width="36" height="6" fill="#b8232f"/><circle cx="34" cy="18" r="2.4" fill="#28231f"/><path d="M11 17h14M11 21h9" stroke="#28231f" stroke-width="1.5"/></g></svg></span>Catch the transfers</li>
+        <li><span class="pic dots"><i></i><i></i><i></i></span>You only have 3 lives</li>
+      </ul>
+      <div class="btn-row">
+        <button class="btn" id="play-rush" type="button"><span>Start in <span id="start-year">1690</span></span></button>
+        <button class="btn ghost" id="play-explore" type="button">Explore the city</button>
+      </div>
+      <p class="fineprint">Explore: nothing in the way, and the ride stops at every record so you can read it.</p>
+      <p class="fineprint"><a href="./#log">What’s new</a> · 11 Nov 2026</p>
+      <p class="credit">A game by Raghu, built from his curiosity about the history of Toronto.</p>
     </div>
-    <p class="mono" style="margin-top:22px">Space, ↑, click or tap to jump · P to pause</p>
   </div>
 
-  <div class="overlay" id="paused" hidden>
-    <h1>Paused</h1>
-    <button class="btn" id="resume" type="button">Ride on</button>
+  <div class="overlay start ended" id="ended" hidden>
+    <div class="start-in">
+      <div class="mono" id="end-kicker">Your ride ended</div>
+      <h1 id="end-title"></h1>
+      <p class="story" id="end-sub"></p>
+      <p class="caught">Records caught <b id="end-n">0</b> of <span id="end-total">21</span></p>
+      <div class="line" id="end-line" aria-hidden="true"></div>
+      <div class="btn-row">
+        <button class="btn" id="again" type="button">Start over from 1690</button>
+        <button class="btn ghost" id="read" type="button">Read your records</button>
+        <a class="btn ghost" id="save" download="next-stop-toronto-transfer.png">Save your transfer</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay start" id="paused" hidden>
+    <div class="start-in">
+      <h1>Paused</h1>
+      <div class="btn-row"><button class="btn" id="resume" type="button">Ride on</button></div>
+    </div>
   </div>
 </div>
 
-<p class="help">No sound yet. Rush gives you three lives; Explore has nothing in the way and stops at every record.</p>
+<p class="help">Space, ↑, click or tap to jump; hold to jump higher · P to pause · the fiddle starts when you do, and the speaker button turns it off.</p>
 
 <div class="after" id="after" hidden>
   <div class="mono" id="after-kicker"></div>
   <h2 id="after-title"></h2>
   <p id="after-sub"></p>
   <canvas id="transfer" width="900" height="340" aria-label="Your transfer, punched with the records you found"></canvas>
-  <div class="btn-row">
-    <button class="btn" id="again" type="button">Ride again</button>
-    <a class="btn ghost" id="save" download="next-stop-toronto-transfer.png">Save your transfer</a>
-  </div>
   <ol class="records" id="after-records" style="margin-top:28px"></ol>
 </div>
 
@@ -107,11 +133,12 @@
   </footer>
 </div>
 
-<script src="records.js?v=20261111n"></script>
-<script src="draw.js?v=20261111n"></script>
-<script src="scenery.js?v=20261111n"></script>
-<script src="landscape.js?v=20261111n"></script>
-<script src="game.js?v=20261111n"></script>
-<script type="module" src="scene3d.js?v=20261111n"></script>
+<script src="records.js?v=20261111o"></script>
+<script src="draw.js?v=20261111o"></script>
+<script src="scenery.js?v=20261111o"></script>
+<script src="landscape.js?v=20261111o"></script>
+<script src="sound.js?v=20261111o"></script>
+<script src="game.js?v=20261111o"></script>
+<script type="module" src="scene3d.js?v=20261111o"></script>
 </body>
 </html>

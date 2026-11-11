@@ -79,6 +79,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'Next Stop, Toronto has a new start, a new finish and sound. The start screen tells the ride in two lines and shows how to play. Holding the button now carries a jump higher. The end screen shows how far you rode and which records you caught along the line. The music is a fiddle reel written for the game and played in the browser; it is not a period tune.'
+  },
+  {
+    date: '2026-11-11',
     text: 'A second layer of the 3D world: a timelapse of the harbour from 1700 to 1850. The forest is cut back, Fort Rouillé stands and burns, York is laid out in 1793 and grows to a city of about thirty thousand. Dates and populations are from sources; the houses, streets, wharves and ships are drawn to match them. Five pictures from one fixed camera show the change.'
   },
   {

@@ -12,6 +12,7 @@ Toronto, a world in progress. A static site (plain HTML, CSS and JS, no build st
 - `landscape.js` – draws the landscape for any given year. Ordinary buildings, people, carts, cars and ships are illustrative; anything with a caption comes from `scenery.js`.
 - `scene3d.js` – the 3D renderer for the game (three.js from a CDN). `game.js` owns the rules; if WebGL is unavailable the 2D drawings in `landscape.js` and `game.js` are used instead, so a new landmark needs a drawing in both.
 - `references.js` – the period pictures each model was built from, and the list of things not yet checked. **Rule: look at a period source before drawing anything historical, and record it here.**
+- `sound.js` – the game's sound: a fiddle reel in D written for the game, and a few effects, all synthesized with Web Audio (no recordings; not a period tune). `YP.sound.level()` is a test hook that reads how loud it is.
 - `leafline.js` – **Toronto, redrawn**, the film on the home page: a maple leaf is the pen, and one unbroken line draws the 1802 shore and creeks, the 1834 limits, every annexation, the six municipalities and today’s shore, as a function of time, with a few notes. Plain 2D canvas.
 - `hero3d.js` – the picture behind the home page title: downtown from the lake at dusk, built from `data/shoreline.js` and `data/buildings.js`. It is drawn small and repainted by a filter (Kuwahara, plus canvas weave and varnish) so it reads as an old oil painting. That look, the sky, the light and the blowing leaves are invented; no period painting was copied.
 - `data/history.js` – generated shore, marsh and creek lines from nine maps, 1802 to 1886. Rebuild with `node tools/build-history.js <folder>`; the script header says what to download (U of T Historical Hydrography of Toronto, CC BY-SA 4.0, so this one file is CC BY-SA 4.0 too).
@@ -42,7 +43,7 @@ You are welcome to draw inspiration from this site, but please do not copy it di
 
 ## Cache stamp
 
-Every page loads its stylesheet and scripts with the same `?v=` stamp (for example `style.css?v=20261111e`). When any of those files changes, change the stamp in `index.html`, `game.html` and `shore.html` together. Without it a phone can pair a cached page with a newer stylesheet and lay the page out wrongly.
+Every page loads its stylesheet and scripts with the same `?v=` stamp (for example `style.css?v=20261111e`). When any of those files changes, change the stamp in all five pages together (`index.html`, `game.html`, `shore.html`, `world.html`, `town.html`). Without it a phone can pair a cached page with a newer stylesheet and lay the page out wrongly.
 
 ## Running it
 

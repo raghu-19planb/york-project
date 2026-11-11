@@ -13,11 +13,18 @@
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const S = { state: 'menu', mode: 'rush' };
-  let cardTimer = 0;
+  let cardTimer = 0, coachTimer = 0;
+  const snd = YP.sound || { start() {}, stop() {}, jump() {}, catch() {}, hit() {}, ride() {}, end() {}, unlock() {}, setMuted() {}, muted: true };
+  const stageEl = $('stage');
+  const tall = () => stageEl.classList.toggle('tall', S.state === 'menu' || S.state === 'end'); // on a phone the start and end screens need more room than the ride does
+  function coach(text, secs) { // a line of advice, for a moment
+    clearTimeout(coachTimer); $('coach').textContent = text; $('coach').hidden = false;
+    coachTimer = setTimeout(() => { $('coach').hidden = true; }, (secs || 2.2) * 1000);
+  }
 
   function reset(mode) {
     S.mode = mode; S.state = 'run';
-    S.d = 0; S.t = 0; S.jy = 0; S.vy = 0; S.lives = 3; S.safe = 0;
+    S.d = 0; S.t = 0; S.jy = 0; S.vy = 0; S.lives = 3; S.safe = 0; S.hold = false; S.held = 0; S.jumps = 0;
     S.banner = null; S.ride = 'canoe';
     S.tokens = YP.RECORDS.map((r, i) => ({ r, d0: (r.at - Y0) * PXPY, high: mode === 'rush' && i % 3 === 1, got: false }));
     S.obstacles = [];
@@ -29,8 +36,10 @@
         S.obstacles.push({ d0: x, k: rnd() });
       }
     }
-    $('menu').hidden = true; $('paused').hidden = true; $('after').hidden = true;
-    $('hud').hidden = false; hideCard();
+    $('menu').hidden = true; $('paused').hidden = true; $('after').hidden = true; $('ended').hidden = true;
+    $('hud').hidden = false; $('mile').hidden = true; hideCard(); tall();
+    snd.start(true);
+    coach(mode === 'rush' ? 'Space, click or tap to jump' : 'Catch a transfer to read its record', 3.2);
     $('lives').hidden = mode !== 'rush';
     hud();
   }
@@ -43,11 +52,13 @@
     $('ride').textContent = YP.vehicleFor(year()).name;
     const pop = YP.populationAt(year());
     $('pop').textContent = pop ? pop[1].toLocaleString('en-CA') + ' people · ' + pop[0] + ' count' : '';
-    $('found').textContent = found() + ' / ' + S.tokens.length + ' punched';
+    $('found').textContent = 'Records ' + found() + ' / ' + S.tokens.length;
     $('lives').textContent = '●'.repeat(Math.max(0, S.lives)) + '○'.repeat(Math.max(0, 3 - S.lives));
   }
 
   function showCard(r) {
+    $('mile-tag').textContent = 'Record · ' + r.label; $('mile-title').textContent = r.title; $('mile').hidden = false;
+    if (S.mode === 'rush') return;
     $('card-yr').textContent = r.label;
     $('card-title').textContent = r.title;
     $('card-text').textContent = r.text;
@@ -67,22 +78,22 @@
   function hideCard() { clearTimeout(cardTimer); $('card').hidden = true; }
 
   function jump() {
-    if (S.state === 'run' && S.jy === 0) S.vy = 640;
+    if (S.state === 'run' && S.jy === 0) { S.vy = 640; S.held = 0; S.jumps++; snd.jump(); }
   }
   function act() {
     if (S.state === 'card') { hideCard(); S.state = 'run'; }
     else jump();
   }
   function pause(on) {
-    if (on && S.state === 'run') { S.state = 'paused'; $('paused').hidden = false; }
-    else if (!on && S.state === 'paused') { S.state = 'run'; $('paused').hidden = true; }
+    if (on && S.state === 'run') { S.state = 'paused'; $('paused').hidden = false; snd.stop(); }
+    else if (!on && S.state === 'paused') { S.state = 'run'; $('paused').hidden = true; snd.start(); }
   }
 
   // ---------- update ----------
   function update(dt) {
     S.t += dt;
     S.d += SPEED * dt;
-    S.vy -= 1750 * dt;
+    if (S.hold && S.vy > 0 && S.held < 0.34) { S.held += dt; S.vy -= 700 * dt; } else S.vy -= 1750 * dt;
     S.jy = Math.max(0, S.jy + S.vy * dt);
     if (S.jy === 0) S.vy = 0;
     if (S.safe > 0) S.safe -= dt;
@@ -91,22 +102,24 @@
     if (ride.id !== S.ride) {
       S.ride = ride.id;
       S.banner = { text: year() + ' · ' + ride.name, until: S.t + 2.4 };
+      snd.ride();
     }
 
     for (const t of S.tokens) {
       if (t.got) continue;
       const dx = t.d0 - S.d;
       if (Math.abs(dx) < 52 && (t.high ? S.jy > 48 : S.jy < 70)) {
-        t.got = true;
+        t.got = true; snd.catch();
         showCard(t.r);
         break;
       }
     }
+    for (const t of S.tokens) if (!t.got && !t.missed && t.d0 - S.d < -70) { t.missed = true; if (t.high && S.mode === 'rush') coach('Hold to jump higher'); }
     if (S.safe <= 0) {
       for (const o of S.obstacles) {
         const sx = PX + 46 + (o.d0 - S.d);
         if (sx + 30 > PX + 16 && sx < PX + 80 && S.jy < 30) {
-          S.lives--; S.safe = 1.4;
+          S.lives--; S.safe = 1.4; snd.hit(); if (S.lives > 0) coach(S.jumps ? 'Jump a little earlier' : 'Space, click or tap to jump');
           if (S.lives <= 0) { hud(); return finish(false); }
           break;
         }
@@ -210,8 +223,8 @@
   // ---------- end of run ----------
   function finish(completed) {
     S.state = 'end';
-    hideCard();
-    $('hud').hidden = true;
+    hideCard(); clearTimeout(coachTimer); $('coach').hidden = true;
+    $('hud').hidden = true; snd.stop(); snd.end(completed);
     const n = found(), total = S.tokens.length;
     $('after-kicker').textContent = 'Next Stop, Toronto · ' + (S.mode === 'rush' ? 'Rush' : 'Explore');
     $('after-title').textContent = completed ? 'End of the line: 2026.' : 'The ride stopped in ' + year() + '.';
@@ -225,7 +238,19 @@
       list.append(li);
     });
     $('after').hidden = false;
-    $('after').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const rode = year() - Y0, era = YP.vehicleFor(year());
+    $('end-kicker').textContent = completed ? 'You rode the whole line' : 'Your ride ended';
+    $('end-title').innerHTML = completed ? 'End of the line: <em>2026</em>' : 'Stopped in <em>' + year() + '</em>';
+    $('end-sub').textContent = (completed ? 'From canoe to subway. ' : 'By ' + era.name.toLowerCase() + '. ') + 'You rode ' + rode + ' of ' + (Y1 - Y0) + ' years.';
+    $('end-n').textContent = n; $('end-total').textContent = total;
+    $('read').textContent = n ? 'Read your ' + n + ' record' + (n === 1 ? '' : 's') : 'Read the records';
+    const line = $('end-line'); line.textContent = '';
+    const at = y => ((y - Y0) / (Y1 - Y0) * 100).toFixed(2) + '%';
+    const fill = document.createElement('i'); fill.className = 'rode'; fill.style.width = at(year()); line.append(fill);
+    S.tokens.forEach(t => { const dot = document.createElement('i'); dot.className = t.got ? 'dot got' : 'dot'; dot.style.left = at(t.r.at); line.append(dot); });
+    [Y0, 1800, 1900, 2000, Y1].forEach(y => { const tick = document.createElement('span'); tick.textContent = y; tick.style.left = at(y); line.append(tick); });
+    const here = document.createElement('b'); here.textContent = year(); here.style.left = at(year()); line.append(here);
+    $('ended').hidden = false; tall();
   }
 
   function drawTransfer(n, total, completed) {
@@ -239,7 +264,7 @@
     x.font = '14px "IBM Plex Mono", monospace';
     const now = new Date();
     const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-    x.fillText('CARRYING PLACE · ' + S.mode.toUpperCase() + ' · ISSUED ' + today, 40, 88);
+    x.fillText('NEXT STOP, TORONTO · ' + S.mode.toUpperCase() + ' · ISSUED ' + today, 40, 88);
     x.fillText(completed ? 'RODE THE WHOLE LINE TO 2026' : 'RODE AS FAR AS ' + year(), 40, 110);
 
     const x0 = 62, x1 = w - 62, y = 180;
@@ -279,21 +304,26 @@
 
   window.addEventListener('keydown', e => {
     if (e.target.closest && e.target.closest('button, a')) return;
-    if (e.code === 'Space' || e.code === 'ArrowUp') { if (S.state === 'run' || S.state === 'card') { e.preventDefault(); act(); } }
+    if (e.code === 'Space' || e.code === 'ArrowUp') { if (S.state === 'run' || S.state === 'card') { e.preventDefault(); if (!e.repeat) act(); S.hold = true; } }
     else if (e.code === 'KeyP' || e.code === 'Escape') pause(S.state === 'run');
   });
+  window.addEventListener('keyup', e => { if (e.code === 'Space' || e.code === 'ArrowUp') S.hold = false; });
   $('stage').addEventListener('pointerdown', e => {
     if (e.target.closest('button, a')) return;
-    act();
+    act(); S.hold = true;
   });
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(n => $('stage').addEventListener(n, () => { S.hold = false; }));
+  const soundBtn = $('sound'), showSound = () => { soundBtn.setAttribute('aria-pressed', String(!snd.muted)); soundBtn.setAttribute('aria-label', snd.muted ? 'Sound is off. Turn it on' : 'Sound is on. Turn it off'); };
+  soundBtn.addEventListener('click', () => { snd.unlock(); snd.setMuted(!snd.muted); showSound(); }); showSound();
+  $('read').addEventListener('click', () => $('after').scrollIntoView({ behavior: document.documentElement.classList.contains('still') ? 'auto' : 'smooth', block: 'start' }));
+  $('story-years').textContent = Y1 - Y0; $('start-year').textContent = Y0; tall();
   $('card-go').addEventListener('click', act);
   $('pause').addEventListener('click', () => pause(true));
   $('resume').addEventListener('click', () => pause(false));
   $('play-rush').addEventListener('click', () => reset('rush'));
   $('play-explore').addEventListener('click', () => reset('explore'));
   $('again').addEventListener('click', () => {
-    $('after').hidden = true; S.state = 'menu'; S.d = 0; $('menu').hidden = false;
-    window.scrollTo({ top: 0 });
+    reset(S.mode);
   });
   document.addEventListener('visibilitychange', () => { if (document.hidden) pause(true); });
 
