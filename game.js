@@ -1,4 +1,4 @@
-// Carrying Place: a one-button ride through Toronto's history.
+// Next Stop, Toronto: a one-button ride through Toronto's history.
 // The timeline is distance: every pixel travelled is a slice of a year.
 (function () {
   const { W, H, GROUND, Y0, Y1, PXPY } = YP.GEO; // set in landscape.js
@@ -213,7 +213,7 @@
     hideCard();
     $('hud').hidden = true;
     const n = found(), total = S.tokens.length;
-    $('after-kicker').textContent = 'Carrying Place · ' + (S.mode === 'rush' ? 'Rush' : 'Explore');
+    $('after-kicker').textContent = 'Next Stop, Toronto · ' + (S.mode === 'rush' ? 'Rush' : 'Explore');
     $('after-title').textContent = completed ? 'End of the line: 2026.' : 'The ride stopped in ' + year() + '.';
     $('after-sub').textContent = n + ' of ' + total + ' records punched. Every one is listed below with its source.';
     drawTransfer(n, total, completed);

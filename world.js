@@ -10,11 +10,11 @@ YP.PIECES = [
     id: 'carrying-place',
     kind: 'Play',
     status: 'live',
-    title: 'Carrying Place',
+    title: 'Next Stop, Toronto',
     line: 'A one-button ride from the portage trail to the subway.',
     body: 'Paddle, then ride, through three centuries of Toronto. Punch a transfer for every record you catch, or take Explore mode and stop to read each one.',
     href: 'game.html',
-    cta: 'Play Carrying Place'
+    cta: 'Play Next Stop, Toronto'
   },
   {
     id: 'the-record',
@@ -57,6 +57,10 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'The game has a new name: Next Stop, Toronto. It was Carrying Place, and older notes below still call it that. The picture behind the title is now painted: the live 3D skyline and the maple leaves go through a filter that makes them read as oil on canvas. It is a painted look, not a period painting.'
+  },
   {
     date: '2026-11-11',
     text: 'Toronto, redrawn is now drawn in 3D and in maple leaves: a leaf for each patch of ground, falling when that ground joined the city. Under it are the shore, marsh and creeks from seven maps of 1802 to 1878 (University of Toronto Map & Data Library), today\u2019s rivers and main roads, a timeline of every annexation, and a last scene showing the land made since 1834. The home page was rebuilt around three bands (play, watch, explore), with a live 3D skyline behind the title and the 3D shoreline on the page itself.'

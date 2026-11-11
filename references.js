@@ -86,5 +86,5 @@ YP.UNCHECKED = [
   'Gas lamps and modern street lights',
   'Obstacles on the track',
   'The 2D fallback drawings',
-  'The home page skyline at dusk: the footprints and recorded heights are real, the light and colour are not, and the blowing leaves are decoration'
+  'The home page picture: the footprints and recorded heights are real, but the oil-painting look is a filter and no period painting was consulted for its sky, light or colour; the blowing leaves are decoration'
 ];

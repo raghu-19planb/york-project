@@ -1,4 +1,4 @@
-// Carrying Place in 3D. This draws the same game state as the 2D canvas
+// Next Stop, Toronto in 3D. This draws the same game state as the 2D canvas
 // (game.js owns the rules; this file only renders), as a lit diorama seen
 // from the side. World units match the game's pixels: x = distance along the
 // timeline, y = up, z = toward the camera. A thing standing at x belongs to
