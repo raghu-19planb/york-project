@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111q">
+<link rel="stylesheet" href="style.css?v=20261111s">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -40,7 +40,7 @@
   <div class="shore-head">
     <div class="mono">03 / Reconstructing Toronto · 1700 to 1850 · in progress</div>
     <h1>A town <em>taking shape.</em></h1>
-    <p>One camera, a hundred and fifty years. In 1700 the forest ran down to the bay. In 1751 the French built a small fort and in 1759 burned it. In 1793 a garrison and ten blocks of town were laid out; by 1850 about thirty thousand people lived in a city with wharves reaching into the bay. Play the timelapse, or drag the years yourself. The dates and the counts of people are from sources; the houses and streets are drawn to match them, and the page says which is which.</p>
+    <p>Forest in 1700, a city of thirty thousand by 1850. Press play and watch it happen.</p>
   </div>
 </div>
 
@@ -56,10 +56,12 @@
 </div>
 
 <div class="wrap">
+  <p class="town-intro">One camera, a hundred and fifty years. In 1700 the forest ran down to the bay. In 1751 the French built a small fort and in 1759 burned it. In 1793 a garrison and ten blocks of town were laid out; by 1850 about thirty thousand people lived in a city with wharves reaching into the bay. Play the timelapse, or drag the years yourself. The dates and the counts of people are from sources; the houses and streets are drawn to match them, and the page says which is which.</p>
   <div class="town-years">
     <label for="town-range" class="mono">Year</label>
     <input type="range" id="town-range" min="1700" max="1850" step="1" value="1700" aria-label="Year, from 1700 to 1850">
     <span class="mono">1700</span><span class="mono" style="margin-left:auto">1850</span>
+    <button class="btn dark town-play2" id="town-play2" type="button">Play the timelapse from 1700</button>
   </div>
   <div class="views cards" id="town-eras" role="group" aria-label="Jump to a moment"></div>
   <div class="about" id="w17-about" aria-live="polite"></div>
@@ -107,9 +109,9 @@
   </footer>
 </div>
 
-<script src="data/history.js?v=20261111q"></script>
-<script src="data/terrain.js?v=20261111q"></script>
-<script type="module" src="world1700.js?v=20261111q"></script>
+<script src="data/history.js?v=20261111s"></script>
+<script src="data/terrain.js?v=20261111s"></script>
+<script type="module" src="world1700.js?v=20261111s"></script>
 <script>
 // The five pictures: one camera, a different year. And the counts in the notes, read from the model itself.
 (function () {
@@ -127,6 +129,7 @@
   }
   document.querySelectorAll('#town-pick button').forEach(function (b) { b.addEventListener('click', function () { pick(+b.dataset.y); }); });
   pick(1850);
+  document.getElementById('town-play2').addEventListener('click', function () { var w = window.YP && window.YP.w17; if (!w) return; w.town.cam.auto = true; w.town.jump(1700); w.setPlaying(true); window.YP.w17focus(); });
   var t = setInterval(function () {
     var w = window.YP && window.YP.w17; if (!w || !w.town || !w.town.houses) return; clearInterval(t);
     document.getElementById('town-count').textContent = w.town.houses(1850).toLocaleString('en-CA');

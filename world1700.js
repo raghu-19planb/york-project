@@ -1254,7 +1254,7 @@ if (TOWN) {
   };
   town.CARDS = [1700, 1751, 1793, 1813, 1834, 1850];
   const eras = document.getElementById('town-eras');
-  if (eras) town.CARDS.forEach(y => { const e = town.ERAS.find(k => k.at === y), b = document.createElement('button'), n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span'); b.type = 'button'; b.dataset.year = y; n.textContent = y === 1700 ? 'c.1700' : y; t.textContent = e.title; d.textContent = e.what.split('. ')[0] + '.'; b.append(n, t, d); b.addEventListener('click', () => { setPlaying(false); cam.auto = true; town.jump(y + (y === 1813 ? 0.45 : 0)); }); eras.append(b); });
+  if (eras) town.CARDS.forEach(y => { const e = town.ERAS.find(k => k.at === y), b = document.createElement('button'), n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span'); b.type = 'button'; b.dataset.year = y; n.textContent = y === 1700 ? 'c.1700' : y; t.textContent = e.title; d.textContent = e.what.split('. ')[0] + '.'; b.append(n, t, d); b.addEventListener('click', () => { setPlaying(false); cam.auto = true; town.jump(y + (y === 1813 ? 0.45 : 0)); focusStage(); }); eras.append(b); });
   if (range) range.addEventListener('input', () => { setPlaying(false); cam.auto = true; lapse.t = tAtYear(+range.value); town.set(+range.value, true); });
 }
 
@@ -1371,6 +1371,10 @@ function mark(i) { // show which view the recording is on
     about.children[1].textContent = (when === 1700 && view.what1700) || view.what || ''; about.children[2].textContent = (when === 1700 && view.real1700) || view.real || '';
   }
 }
+function focusStage() { // bring the picture into view if any of it is off the screen
+  const r = stage.getBoundingClientRect(), bar = 64;
+  if (r.top < bar || r.bottom > window.innerHeight) window.scrollTo({ top: Math.max(0, window.scrollY + r.top - bar - 8), behavior: still() ? 'auto' : 'smooth' });
+}
 function setPlaying(on) {
   if (TOWN) { town.lapse.on = on; if (on) town.cam.auto = true; } else tour.on = on;
   if (playBtn) { playBtn.textContent = on ? 'Pause' : TOWN ? 'Play the timelapse' : 'Play the recording'; playBtn.setAttribute('aria-pressed', String(on)); }
@@ -1386,14 +1390,15 @@ shown.forEach(view => {
     const n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span');
     n.textContent = String(VIEWS.indexOf(view) + 1).padStart(2, '0'); t.textContent = view.name; d.textContent = view.sub; btn.append(n, t, d);
   } else btn.textContent = view.name;
-  btn.addEventListener('click', () => { goTo(view, true); if (TOWN) town.cam.auto = false; else setPlaying(!still()); });
+  btn.addEventListener('click', () => { goTo(view, true); if (TOWN) town.cam.auto = false; else setPlaying(!still()); focusStage(); });
   viewBox.append(btn);
 });
-if (playBtn) playBtn.addEventListener('click', () => setPlaying(TOWN ? !town.lapse.on : !tour.on));
+if (playBtn) playBtn.addEventListener('click', () => { setPlaying(TOWN ? !town.lapse.on : !tour.on); if (TOWN ? town.lapse.on : tour.on) focusStage(); });
 controls.addEventListener('start', () => { if (TOWN) town.cam.auto = false; else setPlaying(false); }); // taking hold of the model stops the recording; Play picks it up again
 window.addEventListener('yp-motion', () => setPlaying(!still()));
 const playingNow = () => TOWN ? town.lapse.on : tour.on;
 document.querySelectorAll('#w17-when button').forEach(b => b.addEventListener('click', () => setWhen(+b.dataset.year)));
+YP.w17focus = focusStage; // the page's own controls (a second Play button under the picture) use it too
 pose(0); if (TOWN) { setWhen(1700); town.set(still() ? 1850 : 1700); if (still()) town.jump(1850); setPlaying(!still()); } else { setPlaying(tour.on); setWhen(1680); }
 
 // ---------- loop ----------

@@ -43,6 +43,16 @@ YP.REFERENCES = [
     caveat: 'Nothing was mapped in 1700, so the shore is a century late. The ground is today\u2019s, stretched 2.5 times in height. The trail\u2019s exact line, every tree outside High Park, and the canoes and people are not from any source. No picture of this place around 1700 has been looked at, and no dwellings are modelled.'
   },
   {
+    item: 'How a tower went up (the CN Tower scrapbook)',
+    refs: [
+      { title: 'Wikipedia, CN Tower', url: 'https://en.wikipedia.org/wiki/CN_Tower' },
+      { title: 'Wikimedia Commons: photographs by Robert Taylor of Stirling, Ontario, 1970 to 1976 (CC BY 2.0 and CC BY 3.0)', url: 'https://commons.wikimedia.org/wiki/Category:CN_Tower' },
+      { title: 'Wikimedia Commons: CN Tower - Bathurst Yard, by TooMuchFrixion, 2023 (CC BY-SA 4.0)', url: 'https://commons.wikimedia.org/wiki/File:CN_Tower_-_Bathurst_Yard.jpg' }
+    ],
+    took: 'Eleven photographs, at 1100 pixels wide, in images/tower/src/, with each one’s photographer, licence and Commons page in credits.json beside them; and from the article, every date and figure in the captions and the note on each page headed “Not many people know”.',
+    caveat: 'The sketches are made from the photographs by a filter in the browser and are adaptations under the same licence as each photograph. Nothing is drawn in and no colour is added. The little tower on each page is drawn, and between the recorded heights it is filled by eye. The article gives two counts for the antenna’s sections (36 and 44), so the story gives neither.'
+  },
+  {
     item: 'The 3D worlds (photographed sand, forest floor and bark; a scanned fern)',
     refs: [
       { title: 'Poly Haven: Coast Sand 01 (CC0)', url: 'https://polyhaven.com/a/coast_sand_01' },

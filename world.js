@@ -47,6 +47,16 @@ YP.PIECES = [
     cta: 'Play the timelapse'
   },
   {
+    id: 'tower-scrapbook',
+    kind: 'Watch',
+    status: 'live',
+    title: 'How a tower went up',
+    line: 'A scrapbook of the CN Tower, from railway tracks in 1970 to today: eleven archive photographs redrawn as sketches.',
+    body: 'Each page is a photograph taken at the time, turned into a pencil-and-wash sketch in the browser, with the date, what was happening, how high the tower stood, and one thing few visitors know. Every picture is credited and can be seen as it was taken.',
+    href: 'tower.html',
+    cta: 'Open the scrapbook'
+  },
+  {
     id: 'shoreline',
     kind: 'Walk',
     status: 'building',
@@ -77,6 +87,10 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'A new kind of piece: stories. The first is a scrapbook of the CN Tower going up, in eleven pages that turn themselves. The pictures are archive photographs from Wikimedia Commons, most by Robert Taylor, redrawn in the browser as pencil-and-wash sketches; a button shows each as it was taken. Every page carries its date, what was being built, how high the tower stood and one thing few visitors know. The home page now has a row of stories, with the timelapse, the leaf-drawn film and the village on the trail beside it.'
+  },
   {
     date: '2026-11-11',
     text: 'The timelapse now names eight buildings you can still visit, each going up in its year at its address: The Grange (1817), the Bank of Upper Canada (1827), Osgoode Hall (1832), Little Trinity (1843), the city hall on Front Street (1844), Holy Trinity (1847), St Michael\u2019s (1848) and St Lawrence Hall (1850).'

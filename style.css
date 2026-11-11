@@ -547,3 +547,80 @@ body.game footer { margin-top: 48px; }
 }
 @supports (height: 1svh) { @media (max-width: 820px) { .stage.tall { height: min(88svh, 680px); } } }
 @media (max-width: 820px) { body.town .world-play { bottom: auto; top: 96px; } } /* on a phone the camera buttons run along the bottom, so Play sits under the year */
+.town-intro { max-width: 78ch; margin: 18px 0 0; }
+.town-years .town-play2 { flex: 1 1 100%; justify-content: center; margin-top: 6px; }
+@media (min-width: 821px) { .town-years .town-play2 { flex: 0 0 auto; margin-left: 18px; } }
+
+/* Stories: a row of tall cards on the home page, each one a piece of the site to watch */
+.stories { padding: clamp(48px, 7vw, 90px) var(--gutter) 0; scroll-margin-top: 70px; }
+.stories-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px 24px; margin-bottom: clamp(20px, 3vw, 34px); }
+.stories-head h2 { font: 550 clamp(2rem, 5vw, 3.6rem) var(--display); letter-spacing: -0.045em; line-height: 1; margin: 0; max-width: 14ch; }
+.story-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 2vw, 28px); }
+.story-card { position: relative; display: block; aspect-ratio: 3 / 5; overflow: hidden; background: #3a1a14; color: var(--chalk); text-decoration: none; }
+.story-card img, .story-card canvas.sketch { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.story-card.drawn img { visibility: hidden; }
+.story-card.is-leaf { background: radial-gradient(circle at 50% 42%, #4a2019, #22100d); }
+.story-card.is-leaf svg { position: absolute; left: 18%; top: 16%; width: 64%; filter: drop-shadow(0 0 18px rgba(255, 190, 120, 0.45)); }
+.story-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(30, 12, 10, 0) 38%, rgba(30, 12, 10, 0.86) 100%); }
+.story-card .play { position: absolute; z-index: 2; right: 14px; top: 14px; width: 54px; height: 54px; border-radius: 50%; background: var(--chalk); color: var(--ink); display: grid; place-items: center; font-size: 0.9rem; padding-left: 4px; transition: transform 0.15s ease; }
+.story-card:hover .play, .story-card:focus-visible .play { transform: scale(1.1); }
+.story-card .words { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 16px; display: grid; gap: 4px; }
+.story-card small { font: 600 0.62rem var(--body); letter-spacing: 0.18em; text-transform: uppercase; color: var(--sun); }
+.story-card b { font: 550 clamp(1.25rem, 2.2vw, 1.9rem) var(--display); letter-spacing: -0.03em; line-height: 1.05; }
+.story-card .words > span { font-size: 0.9rem; opacity: 0.92; }
+html.still .story-card .play { transition: none; }
+@media (max-width: 820px) {
+  .stories { padding-left: 0; padding-right: 0; }
+  .stories-head { padding: 0 var(--gutter); }
+  .story-row { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 68vw; overflow-x: auto; padding: 0 var(--gutter) 12px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+  .story-card { scroll-snap-align: start; }
+}
+
+/* The scrapbook (tower.html): a spiral-bound page that flips up and away, in a tall frame like a story */
+.story { position: relative; width: min(560px, 100%); margin: 6px auto 0; padding: 0 0 6px; perspective: 1800px; outline-offset: 6px; }
+.story-bars { display: flex; gap: 4px; padding: 0 4px 10px; }
+.story-bars i { flex: 1; height: 4px; background: rgba(40, 35, 31, 0.18); overflow: hidden; }
+.story-bars b { display: block; height: 100%; background: var(--oxide); transform: scaleX(0); transform-origin: left; }
+.binding { position: relative; z-index: 30; height: 22px; margin: 0 18px -11px; background: radial-gradient(circle at 50% 50%, #2c2622 0 5px, transparent 5.5px) 0 0 / 34px 22px repeat-x, radial-gradient(circle at 50% 30%, #b9b2a6 0 8px, transparent 8.5px) 0 0 / 34px 22px repeat-x; }
+.pages { display: grid; transform-style: preserve-3d; }
+.page { grid-area: 1 / 1; position: relative; background: #f6ecd6 repeating-linear-gradient(180deg, rgba(120, 100, 80, 0) 0 31px, rgba(120, 100, 80, 0.13) 31px 32px); border: 1px solid #cdbfa5; box-shadow: 0 10px 26px rgba(40, 20, 12, 0.22); padding: 30px clamp(16px, 4vw, 30px) 26px; transform-origin: 50% 0; transition: transform 0.85s cubic-bezier(0.5, 0, 0.3, 1), opacity 0.5s ease 0.35s; backface-visibility: hidden; }
+.page.turned { transform: rotateX(104deg); opacity: 0; pointer-events: none; }
+.page:not(.current):not(.turned) { box-shadow: none; }
+html.still .page { transition: none; }
+.snap { position: relative; margin: 0 auto 20px; background: #fffdf6; padding: 9px 9px 8px; box-shadow: 0 3px 10px rgba(40, 20, 12, 0.28); width: 100%; }
+.snap.tall { width: 54%; }
+.snap.lean-l { transform: rotate(-1.6deg); } .snap.lean-r { transform: rotate(1.4deg); }
+.snap img, .snap canvas.sketch { display: block; width: 100%; height: auto; }
+.snap.drawn img { display: none; }
+.as-photo .snap.drawn img { display: block; } .as-photo .snap.drawn canvas.sketch { display: none; }
+.snap figcaption { font: 500 1.02rem/1.25 'Caveat', var(--body); color: #4a3d33; margin-top: 6px; }
+.snap figcaption span { display: block; font: 500 0.62rem var(--body); letter-spacing: 0.04em; color: #8a7a6a; margin-top: 2px; }
+.tape { position: absolute; z-index: 2; width: 84px; height: 24px; background: rgba(233, 180, 76, 0.62); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
+.tape.t1 { left: -22px; top: 8px; transform: rotate(-38deg); } .tape.t2 { right: -22px; top: 8px; transform: rotate(38deg); background: rgba(143, 184, 164, 0.7); }
+.note { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 18px; align-items: start; }
+.note .dated { grid-column: 1 / -1; font: 700 1.5rem/1 'Caveat', var(--display); color: var(--red); transform: rotate(-1.2deg); transform-origin: left; }
+.note h2 { grid-column: 1; font: 700 clamp(1.9rem, 6vw, 2.6rem)/0.98 'Caveat', var(--display); color: #2c2622; margin: 2px 0 8px; }
+.note p { grid-column: 1; margin: 0; font-size: 1rem; line-height: 1.5; color: #3a302a; }
+.gauge { grid-column: 2; grid-row: 2 / span 2; display: grid; justify-items: center; gap: 4px; text-align: center; width: 92px; }
+.gauge svg { width: 54px; height: auto; }
+.gauge small { display: block; font: 600 0.56rem var(--body); letter-spacing: 0.14em; text-transform: uppercase; color: #8a7a6a; }
+.gauge b { font: 700 1.1rem/1.05 'Caveat', var(--display); color: var(--red); }
+.folio { position: absolute; right: 14px; bottom: 6px; font: 500 0.95rem 'Caveat', var(--body); color: #9a8a78; }
+.turn { position: absolute; z-index: 40; top: 34px; bottom: 6px; width: 30%; background: none; border: 0; cursor: pointer; color: transparent; font-size: 2.4rem; display: flex; align-items: center; }
+.turn.prev { left: 0; justify-content: flex-start; padding-left: 4px; } .turn.next { right: 0; justify-content: flex-end; padding-right: 4px; }
+.turn:hover, .turn:focus-visible { color: rgba(74, 28, 26, 0.55); }
+.story-ctl { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 22px 0 6px; }
+.story-ctl .btn { border-color: var(--ink); }
+.story-years { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0; margin: 18px 0 0; border-top: 1px solid var(--rule); }
+.story-years button { text-align: left; background: none; border: 0; border-bottom: 1px solid var(--rule); padding: 10px 10px 10px 0; cursor: pointer; color: inherit; font: inherit; }
+.story-years button b { display: block; font: 550 1.15rem var(--display); letter-spacing: -0.02em; }
+.story-years button span { font-size: 0.8rem; color: var(--muted); }
+.story-years button.on b { color: var(--red); }
+.credits { padding-left: 22px; font-size: 0.9rem; line-height: 1.5; }
+.credits li { margin-bottom: 4px; }
+@media (max-width: 820px) { .snap.tall { width: 62%; } .note { grid-template-columns: minmax(0, 1fr) 78px; gap: 4px 10px; } .gauge { width: 78px; } .gauge svg { width: 44px; } }
+.sticky { position: relative; margin: 18px 6px 10px; padding: 14px 16px 14px; background: #f7e27a; box-shadow: 0 6px 12px rgba(40, 20, 12, 0.22); max-width: 34ch; }
+.sticky.lean-l { transform: rotate(-1.4deg); } .sticky.lean-r { transform: rotate(1.2deg); margin-left: auto; }
+.sticky::before { content: ''; position: absolute; left: 50%; top: -9px; width: 70px; height: 20px; margin-left: -35px; background: rgba(184, 35, 47, 0.45); }
+.sticky small { display: block; font: 600 0.6rem var(--body); letter-spacing: 0.16em; text-transform: uppercase; color: #6d5a1a; margin-bottom: 4px; }
+.sticky p { margin: 0; font: 500 1.28rem/1.18 'Caveat', var(--body); color: #2c2622; }
