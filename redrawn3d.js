@@ -497,7 +497,7 @@ function ui() {
 }
 function tick(ts) {
   requestAnimationFrame(tick);
-  const dt = Math.min(0.1, (ts - last) / 1000); last = ts;
+  const dt = Math.min(0.5, (ts - last) / 1000); last = ts; // keeps real time even on a slow phone
   const run = watching ? playing : visible && motionOn();
   if (run) {
     const before = now;
@@ -509,11 +509,11 @@ function tick(ts) {
   dirty = false;
 }
 function seek(t) { now = Math.max(0, Math.min(TOTAL, t)); dirty = true; ui(); }
-$('film-play').addEventListener('click', () => {
+function unlock() { // sound may only start from a tap or click
   if (!ac) { const AC = window.AudioContext || window.webkitAudioContext; if (AC) ac = new AC(); }
   if (ac && ac.state === 'suspended') ac.resume();
-  watching = true; playing = true; seek(0);
-});
+}
+$('film-play').addEventListener('click', () => { unlock(); watching = true; playing = true; seek(0); });
 $('film-pause').addEventListener('click', () => { if (now >= TOTAL) seek(0); playing = !playing; ui(); });
 $('film-mute').addEventListener('click', () => {
   muted = !muted;
@@ -530,7 +530,12 @@ CHAPTERS.forEach(c => {
   const b = document.createElement('button');
   b.type = 'button'; b.innerHTML = '<b></b><span></span>';
   b.firstChild.textContent = c.year; b.lastChild.textContent = c.name;
-  b.addEventListener('click', () => { watching = true; playing = false; seek(Math.min(TOTAL, c.t + (c.t === T_ANNEX ? 0.2 : 2.4))); });
+  // A chapter plays from its start. On a phone the buttons sit below the film, so bring the film back into view.
+  b.addEventListener('click', () => {
+    unlock(); watching = true; playing = true; seek(c.t);
+    const r = stage.getBoundingClientRect();
+    if (r.top < 60 || r.bottom > window.innerHeight) window.scrollTo({ top: window.scrollY + r.top - 76, behavior: motionOn() ? 'smooth' : 'auto' });
+  });
   chapBox.append(b);
 });
 for (const key of Object.keys(layer)) {

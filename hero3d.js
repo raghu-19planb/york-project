@@ -115,7 +115,7 @@ resize();
 band.classList.add('live');
 document.getElementById('hero-note').hidden = false;
 renderer.setAnimationLoop(ts => {
-  const dt = Math.min(0.1, (ts - lastTs) / 1000); lastTs = ts;
+  const dt = Math.min(0.5, (ts - lastTs) / 1000); lastTs = ts;
   const moving = onScreen && !document.documentElement.classList.contains('still');
   if (moving) time += dt;
   if (moving || dirty) { draw(); dirty = false; }
