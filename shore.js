@@ -23,7 +23,7 @@ try {
   document.getElementById('glfail').hidden = false;
   throw e;
 }
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, matchMedia('(max-width: 820px), (pointer: coarse)').matches ? 1.5 : 2));
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(PAPER);
@@ -149,7 +149,7 @@ for (const l of LABELS) {
 }
 const v = new THREE.Vector3();
 function placeLabels() {
-  const w = stage.clientWidth, h = stage.clientHeight;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
   for (const l of LABELS) {
     v.copy(l.pos).project(camera);
     const show = v.z < 1 && Math.abs(v.x) < 1 && Math.abs(v.y) < 1;
@@ -198,12 +198,14 @@ document.getElementById('src-count').textContent =
 
 // ---------- loop ----------
 function resize() {
-  const w = stage.clientWidth, h = stage.clientHeight;
+  // Sized from the canvas, not its container: on phones the legend and view buttons sit below it.
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  labelBox.style.height = h + 'px';
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
-new ResizeObserver(resize).observe(stage);
+new ResizeObserver(resize).observe(canvas);
 resize();
 
 renderer.setAnimationLoop(now => {

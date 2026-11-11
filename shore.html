@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f3ecdd">
 <title>The shoreline, today · The York Project</title>
 <meta name="description" content="A 3D model of Toronto's present-day Lake Ontario shoreline near downtown, built from OpenStreetMap. The first layer of a world in progress.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,5 +68,9 @@
 <script src="data/shoreline.js"></script>
 <script src="data/buildings.js"></script>
 <script type="module" src="shore.js"></script>
+<script>
+// Older phones may not be able to load the 3D scene at all: say so rather than show a blank box.
+setTimeout(function () { if (!window.YP.shore) { var f = document.getElementById("glfail"); f.textContent = "This 3D view could not start in this browser. Try a current version of Safari or Chrome."; f.hidden = false; } }, 8000);
+</script>
 </body>
 </html>

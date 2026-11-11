@@ -6,7 +6,8 @@
 //
 // As in landscape.js: captioned things come from YP.SCENERY, growth is paced
 // by census counts, and everything else is an illustration of the period.
-import * as THREE from 'three';
+// A full URL rather than an import map, so older iPhones (before iOS 16.4) can load it too.
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 const { Y0, Y1, PXPY } = YP.GEO;
 const { dev, hash, sky, clamp, pick } = YP.land;
@@ -20,7 +21,9 @@ const canvas = document.getElementById('c3d');
 let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); }
 catch (e) { canvas.remove(); throw e; } // no WebGL: the 2D canvas stays in charge
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+// Phones get a lighter load: fewer pixels and a smaller shadow map.
+const PHONE = matchMedia('(max-width: 820px), (pointer: coarse)').matches;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -31,7 +34,7 @@ const camera = new THREE.PerspectiveCamera(40, 16 / 9, 20, 6000);
 const hemi = new THREE.HemisphereLight(0xffffff, 0x8a8170, 1.25);
 const sun = new THREE.DirectionalLight(0xfff0d0, 1.7);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.mapSize.set(PHONE ? 1024 : 2048, PHONE ? 1024 : 2048);
 Object.assign(sun.shadow.camera, { left: -1100, right: 1100, top: 700, bottom: -500, near: 50, far: 2600 });
 sun.shadow.bias = -0.0008;
 scene.add(hemi, sun, sun.target);
@@ -550,9 +553,17 @@ function buildRun(S) {
 const banner = document.getElementById('banner');
 let skyKey = null;
 const col = new THREE.Color();
+let lead = 370; // how far ahead of the ride the camera sits
 function resize() {
   const w = stage.clientWidth, h = stage.clientHeight;
-  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  renderer.setSize(w, h, false);
+  const aspect = w / h;
+  camera.aspect = aspect;
+  // On a tall or square stage (a phone held upright) keep a fixed width of track in view:
+  // enough to see what is coming, close enough that the ride is not tiny.
+  if (aspect < 1.5) { const half = 300; camera.fov = 2 * Math.atan(half / aspect / 735) * 180 / Math.PI; lead = half * 0.6; }
+  else { camera.fov = 40; lead = 370; }
+  camera.updateProjectionMatrix();
 }
 new ResizeObserver(resize).observe(stage);
 resize();
@@ -561,7 +572,7 @@ YP.view = {
   draw(S, d, yearF) {
     const t = S.state === 'menu' ? performance.now() / 1000 : S.t;
     if ((S.tokens || null) !== tokenRef) buildRun(S);
-    const camX = d + 370;
+    const camX = d + lead;
     camera.position.set(camX, 165, 730); camera.lookAt(camX, 132, -70);
     sun.position.set(camX - 420, 760, 520); sun.target.position.set(camX, 0, -120);
     skyRig.position.x = camX;
