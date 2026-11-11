@@ -204,7 +204,7 @@
   }
 
   // ---------- controls ----------
-  D.lines.forEach(l => { const b = el('button'); b.type = 'button'; b.dataset.ref = l.ref; b.style.setProperty('--c', l.colour); b.style.setProperty('--t', textOn(l.colour)); b.append(el('i', null, l.ref), el('span', null, l.name.replace(/^Line \d+\s*/, ''))); b.setAttribute('aria-label', l.name); b.addEventListener('click', () => { if (story) startTour(l); else { choose(l); if (!still()) setPlaying(true); } }); picker.append(b); });
+  D.lines.forEach(l => { const b = el('button'); b.type = 'button'; b.dataset.ref = l.ref; b.style.setProperty('--c', l.colour); b.style.setProperty('--t', textOn(l.colour)); b.append(el('i', null, l.ref), el('span', null, l.name.replace(/^Line \d+\s*/, ''))); b.setAttribute('aria-label', l.name); b.addEventListener('click', () => { if (story) startTour(l); else choose(l); }); picker.append(b); });
   $('.sub-play').addEventListener('click', () => { if (story) { if (ended) startTour(); else if (touring) pauseTour(); else resumeTour(); return; } if (!playing && idx === lastIdx()) { idx = dirn > 0 ? 0 : line.stops.length - 1; arrive(true); } setPlaying(!playing); }); // at the end of the line: back to the start
   $('.sub-next').addEventListener('click', () => { const n = idx + dirn; if (n < 0 || n >= line.stops.length) return; go(n); });
   $('.sub-turn').addEventListener('click', () => { dirn = -dirn; arrive(true); $('.sub-turn').textContent = 'Ride toward ' + (dirn > 0 ? line.from : line.to); setPlaying(!still()); });
@@ -217,8 +217,8 @@
 
   choose(D.lines[0]);
   if (story) { view = fit(line); showView(); sizeMap(); label(); }
-  // the ride starts by itself the first time the section comes on screen, unless Motion is off
-  let started = false; new IntersectionObserver(es => { if (es[0].isIntersecting && !started && !still()) { started = true; if (story) startTour(); else setPlaying(true); } }, { threshold: 0.35 }).observe($('.sub-stage'));
+  // On the home page nothing moves until Ride the line is pressed. The story (opened by its own play button) starts when it is on screen, unless Motion is off.
+  let started = false; new IntersectionObserver(es => { if (es[0].isIntersecting && !started && !still()) { started = true; if (story) startTour(); } }, { threshold: 0.35 }).observe($('.sub-stage'));
   requestAnimationFrame(frame);
   YP.subway = { choose, go, setPlaying, step, startTour, pauseTour, get tour() { return { touring, ended, hold, view }; }, get state() { return { line: line.ref, idx, dirn, phase, playing, station: line.stops[idx].name, place: line.stops[idx].place }; }, lines: D.lines };
 })();
