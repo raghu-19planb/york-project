@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'Five lines, one city: Ride the lines as a story in the Stories row. All five rapid transit lines are ridden one after another in about a minute; a title comes up for each line, the map of Toronto closes in on it, and its stations light one by one on the strip and on the map. It ends with every line on the whole city. Same OpenStreetMap data as the section on the home page; the pace is quicker than the section\u2019s and is a drawing, not a timetable.'
+  },
+  {
+    date: '2026-11-11',
     text: 'Ride the lines: a new section on the home page. Pick one of the TTC\u2019s five rapid transit lines and its stations light up one by one on a strip like the map above a subway car\u2019s doors, while the same light moves across a map of Toronto (the city\u2019s limits, its six old municipalities, the lake, rivers and main roads), so each stop is shown where it is in the city. Choose any station, on the strip or on the map, to light it. Lines and stations are from OpenStreetMap; it is a drawing, not a timetable.'
   },
   {

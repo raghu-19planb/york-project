@@ -18,6 +18,9 @@
   const $ = s => root.querySelector(s), el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
   const NS = 'http://www.w3.org/2000/svg', svgEl = (tag, attrs) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); return n; };
   const still = () => document.documentElement.classList.contains('still');
+  // Story mode (subway.html): the same thing as a short film. Every line is ridden in turn, quicker, and the map
+  // closes in on the line being ridden.
+  const story = root.hasAttribute('data-story'), PACE = story ? 0.36 : 1;
   const svg = $('.sub-map svg'), over = $('.sub-over'), car = $('.car-row'), carBox = $('.car'), picker = $('.sub-lines');
   const ICON = { // drawn here, not anyone's signage
     stop: '<path d="M5 4h14v16H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 4v16" stroke="currentColor" stroke-width="2"/><path d="M9.5 12H7m7.5 0H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
@@ -50,14 +53,16 @@
   const grow = p => { x0 = Math.min(x0, p[0]); x1 = Math.max(x1, p[0]); y0 = Math.min(y0, p[1]); y1 = Math.max(y1, p[1]); };
   for (const f of PLACES) for (const r of f.rings) r.forEach(grow);
   for (const l of D.lines) l.track.forEach(grow);
-  const PAD = 1200, view = { x: x0 - PAD, y: -(y1 + PAD), w: x1 - x0 + 2 * PAD, h: y1 - y0 + 2 * PAD };
-  svg.setAttribute('viewBox', [view.x, view.y, view.w, view.h].join(' '));
+  const PAD = 1200, FAR = 60000, whole = { x: x0 - PAD, y: -(y1 + PAD), w: x1 - x0 + 2 * PAD, h: y1 - y0 + 2 * PAD };
+  let view = Object.assign({}, whole), flight = null;
+  const showView = () => svg.setAttribute('viewBox', [view.x, view.y, view.w, view.h].map(n => n.toFixed(0)).join(' '));
+  showView();
   const base = svgEl('g', { class: 'sub-base' });
-  base.append(svgEl('rect', { x: view.x, y: view.y, width: view.w, height: view.h, class: 'land' }));
+  base.append(svgEl('rect', { x: view.x - FAR, y: view.y - FAR, width: view.w + 2 * FAR, height: view.h + 2 * FAR, class: 'land' })); // wider than the picture, for a frame of another shape
   if (PLACES.length) {
     // the lake: everything south of the city's southern limit
     const south = []; for (let x = x0; x <= x1; x += 250) { let low = 1e9; for (const f of PLACES) for (const r of f.rings) for (let i = 0, j = r.length - 1; i < r.length; j = i++) { const a = r[i], b = r[j]; if ((a[0] > x) !== (b[0] > x)) low = Math.min(low, a[1] + (b[1] - a[1]) * (x - a[0]) / (b[0] - a[0])); } if (low < 1e9) south.push([x, low]); }
-    if (south.length) base.append(svgEl('path', { d: path([[view.x, -(view.y + view.h)], [view.x, south[0][1]], ...south, [view.x + view.w, south[south.length - 1][1]], [view.x + view.w, -(view.y + view.h)]]) + 'Z', class: 'lake' }));
+    if (south.length) base.append(svgEl('path', { d: path([[view.x, -(view.y + view.h + FAR)], [view.x, south[0][1]], ...south, [view.x + view.w, south[south.length - 1][1]], [view.x + view.w, -(view.y + view.h + FAR)]]) + 'Z', class: 'lake' }));
     for (const f of PLACES) base.append(svgEl('path', { d: f.rings.map(r => path(r) + 'Z').join(''), class: 'city' }));
   }
   if (TODAY) {
@@ -70,6 +75,22 @@
   const screen = p => { const u = unit(), ox = (svg.clientWidth - view.w / u) / 2, oy = (svg.clientHeight - view.h / u) / 2; return [ox + (p[0] - view.x) / u, oy + (-p[1] - view.y) / u]; };
   const names = PLACES.map(f => { const r = f.rings[0]; let sx = 0, sy = 0; for (const p of r) { sx += p[0]; sy += p[1]; } const n = el('span', 'sub-place', f.name.replace(/^old /, 'Old ')); over.append(n); return { n, at: [sx / r.length, sy / r.length] }; });
   if (PLACES.length) { const n = el('span', 'sub-place water', 'Lake Ontario'); over.append(n); names.push({ n, at: [(x0 + x1) / 2 + 3000, y0 + 1500] }); }
+
+  // the part of the map a line needs, widened to the shape of the box so the map fills it
+  function fit(l) {
+    let a = 1e9, b = -1e9, c = 1e9, d = -1e9; for (const p of l.track) { a = Math.min(a, p[0]); b = Math.max(b, p[0]); c = Math.min(c, p[1]); d = Math.max(d, p[1]); }
+    let w = Math.max(b - a + 3600, 11000), h = d - c + 3600; const shape = (svg.clientWidth || 1) / (svg.clientHeight || 1);
+    if (w / h < shape) w = h * shape; else h = w / shape;
+    return { x: (a + b) / 2 - w / 2, y: -(c + d) / 2 - h / 2, w, h };
+  }
+  function fly(to) { if (still()) { view = to; flight = null; showView(); sizeMap(); } else flight = { from: Object.assign({}, view), to, t: 0 }; }
+  function flying(dt) {
+    if (!flight) return;
+    flight.t += dt; const k = ease(flight.t / 1.3), f = flight.from, g = flight.to;
+    view = { x: f.x + (g.x - f.x) * k, y: f.y + (g.y - f.y) * k, w: f.w + (g.w - f.w) * k, h: f.h + (g.h - f.h) * k };
+    if (k >= 1) flight = null;
+    showView(); sizeMap();
+  }
 
   const layer = {};
   for (const l of D.lines) {
@@ -91,8 +112,8 @@
   // ---------- the ride ----------
   const now = { kicker: $('.sub-now small'), name: $('.sub-now b'), say: $('.sub-now span'), ico: $('.sub-now .ico svg'), num: $('.sub-now .num') };
   let line = null, idx = 0, dirn = 1, phase = 'dwell', t = 0, playing = false, last = 0, ac = null, sound = false;
-  const hop = () => Math.max(0.7, Math.min(1.5, Math.abs(line.stops[idx + dirn].d - line.stops[idx].d) / 1500)); // seconds between two stations
-  const DWELL = 1.05, ease = k => { k = Math.max(0, Math.min(1, k)); return k * k * (3 - 2 * k); };
+  const hop = () => PACE * Math.max(0.7, Math.min(1.5, Math.abs(line.stops[idx + dirn].d - line.stops[idx].d) / 1500)); // seconds between two stations
+  const DWELL = 1.05 * PACE, ease = k => { k = Math.max(0, Math.min(1, k)); return k * k * (3 - 2 * k); };
   const lastIdx = () => dirn > 0 ? line.stops.length - 1 : 0;
 
   function chime() { // two soft notes as the doors open; made here, not a recording of anyone's
@@ -115,7 +136,7 @@
     now.kicker.textContent = (phase === 'run' ? 'Next stop' : 'Now at') + ' · station ' + n + ' of ' + line.stops.length;
     now.name.textContent = s.name; now.say.textContent = sayOf(line, s); now.ico.innerHTML = ICON[kind];
     tag.firstChild.textContent = s.name;
-    const cell = car.children[target]; if (cell) carBox.scrollTo({ left: cell.offsetLeft - carBox.clientWidth / 2 + cell.offsetWidth / 2, behavior: still() ? 'auto' : 'smooth' });
+    const cell = car.children[target]; if (cell) carBox.scrollTo({ left: cell.offsetLeft - carBox.clientWidth / 2 + cell.offsetWidth / 2, behavior: still() || story ? 'auto' : 'smooth' });
   }
   function placeLamp() { // the light on the map, and the name beside it
     if (!line) return;
@@ -125,9 +146,10 @@
     tag.style.transform = 'translate(' + sx.toFixed(1) + 'px,' + sy.toFixed(1) + 'px)'; tag.classList.toggle('left', sx > svg.clientWidth * 0.6); tag.classList.toggle('below', sy < 60);
   }
   function arrive(quiet) { phase = 'dwell'; t = 0; lights(); say(); placeLamp(); root.classList.add('at'); if (!quiet) chime(); }
-  function go(i) { idx = i; setPlaying(false); arrive(); }
+  function go(i) { idx = i; setPlaying(false); arrive(); if (story) pauseTour(); }
   function setPlaying(on) {
     playing = on && !!line; root.classList.toggle('playing', playing);
+    if (story) return;
     $('.sub-play').textContent = playing ? 'Pause' : line && idx === lastIdx() ? 'Ride it again' : 'Ride the line'; $('.sub-play').setAttribute('aria-pressed', String(playing));
   }
   function choose(l) {
@@ -155,23 +177,48 @@
     else if (t >= hop()) { idx += dirn; arrive(); if (idx === lastIdx()) setPlaying(false); }
     placeLamp();
   }
-  function frame(ts) { requestAnimationFrame(frame); const dt = Math.min(0.1, (ts - last) / 1000); last = ts; step(dt); }
+  function frame(ts) { requestAnimationFrame(frame); const dt = Math.min(0.1, (ts - last) / 1000); last = ts; flying(dt); tourStep(dt); step(dt); }
+
+  // ---------- the story: a title for each line, the ride, then the next line; at the end, all five on the whole city ----------
+  let touring = false, ended = false, hold = 0, gap = 0, card = null;
+  if (story) { card = el('div', 'sub-card'); card.append(el('i'), el('b'), el('span'), el('small')); over.append(card); }
+  const playBtn = $('.sub-play'), label = () => { if (!story) return; playBtn.textContent = ended ? 'Watch again' : touring ? 'Pause' : 'Play'; playBtn.setAttribute('aria-pressed', String(touring)); };
+  function open(l) { // a line comes up: its title over the map while the map closes in on it
+    ended = false; svg.classList.remove('all'); choose(l); fly(fit(l));
+    const k = card.children; k[0].textContent = l.ref; k[0].hidden = false; k[1].textContent = l.name.replace(/^Line \d+\s*/, ''); k[2].textContent = l.kind + ' · ' + l.stops.length + ' stations'; k[3].textContent = l.from + ' to ' + l.to;
+    card.classList.add('show'); hold = still() ? 0.01 : 1.9; gap = 0;
+  }
+  function finish() {
+    ended = true; touring = false; fly(whole); svg.classList.add('all');
+    const k = card.children; k[0].hidden = true; k[1].textContent = D.lines.length + ' lines. One city.'; k[2].textContent = D.lines.reduce((n, l) => n + l.stops.length, 0) + ' stations'; k[3].textContent = 'A drawing from OpenStreetMap' + String.fromCharCode(8217) + 's map, not a timetable.';
+    now.kicker.textContent = 'Toronto' + String.fromCharCode(8217) + 's rapid transit'; now.name.textContent = 'All ' + D.lines.length + ' lines'; now.say.textContent = k[2].textContent + ', as OpenStreetMap shows them'; now.num.textContent = D.lines.length; now.ico.innerHTML = ICON.end;
+    card.classList.add('show'); label();
+  }
+  function startTour(l) { touring = true; open(l || D.lines[0]); label(); }
+  function pauseTour() { touring = false; setPlaying(false); label(); }
+  function resumeTour() { touring = true; if (hold <= 0 && idx !== lastIdx()) setPlaying(true); label(); }
+  function tourStep(dt) {
+    if (!story || !touring) return;
+    if (hold > 0) { hold -= dt; if (hold <= 0) { card.classList.remove('show'); setPlaying(true); } return; }
+    if (!playing && idx === lastIdx() && phase === 'dwell') { gap += dt; if (gap > 1.1) { const n = D.lines.indexOf(line) + 1; if (n < D.lines.length) open(D.lines[n]); else finish(); } }
+  }
 
   // ---------- controls ----------
-  D.lines.forEach(l => { const b = el('button'); b.type = 'button'; b.dataset.ref = l.ref; b.style.setProperty('--c', l.colour); b.style.setProperty('--t', textOn(l.colour)); b.append(el('i', null, l.ref), el('span', null, l.name.replace(/^Line \d+\s*/, ''))); b.addEventListener('click', () => { choose(l); if (!still()) setPlaying(true); }); picker.append(b); });
-  $('.sub-play').addEventListener('click', () => { if (!playing && idx === lastIdx()) { idx = dirn > 0 ? 0 : line.stops.length - 1; arrive(true); } setPlaying(!playing); }); // at the end of the line: back to the start
+  D.lines.forEach(l => { const b = el('button'); b.type = 'button'; b.dataset.ref = l.ref; b.style.setProperty('--c', l.colour); b.style.setProperty('--t', textOn(l.colour)); b.append(el('i', null, l.ref), el('span', null, l.name.replace(/^Line \d+\s*/, ''))); b.setAttribute('aria-label', l.name); b.addEventListener('click', () => { if (story) startTour(l); else { choose(l); if (!still()) setPlaying(true); } }); picker.append(b); });
+  $('.sub-play').addEventListener('click', () => { if (story) { if (ended) startTour(); else if (touring) pauseTour(); else resumeTour(); return; } if (!playing && idx === lastIdx()) { idx = dirn > 0 ? 0 : line.stops.length - 1; arrive(true); } setPlaying(!playing); }); // at the end of the line: back to the start
   $('.sub-next').addEventListener('click', () => { const n = idx + dirn; if (n < 0 || n >= line.stops.length) return; go(n); });
   $('.sub-turn').addEventListener('click', () => { dirn = -dirn; arrive(true); $('.sub-turn').textContent = 'Ride toward ' + (dirn > 0 ? line.from : line.to); setPlaying(!still()); });
   const snd = $('.sub-sound'); snd.addEventListener('click', () => { sound = !sound; snd.textContent = sound ? 'Chime on' : 'Chime off'; snd.setAttribute('aria-pressed', String(sound)); if (sound) chime(); });
-  new ResizeObserver(sizeMap).observe(svg);
-  window.addEventListener('yp-motion', () => { if (still()) setPlaying(false); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) setPlaying(false); });
+  new ResizeObserver(() => { if (story && !flight) { view = ended ? whole : fit(line); showView(); } sizeMap(); }).observe(svg);
+  window.addEventListener('yp-motion', () => { if (still()) { if (story) pauseTour(); else setPlaying(false); } });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) { if (story && touring) pauseTour(); else setPlaying(false); } });
   const src = $('.sub-source'); if (src) { src.href = D.sourceUrl; src.textContent = 'OpenStreetMap, as mapped on ' + (D.osmTimestamp || '').slice(0, 10); }
   const count = $('.sub-count'); if (count) count.textContent = D.lines.length + ' lines · ' + D.lines.reduce((n, l) => n + l.stops.length, 0) + ' stations';
 
   choose(D.lines[0]);
+  if (story) { view = fit(line); showView(); sizeMap(); label(); }
   // the ride starts by itself the first time the section comes on screen, unless Motion is off
-  let started = false; new IntersectionObserver(es => { if (es[0].isIntersecting && !started && !still()) { started = true; setPlaying(true); } }, { threshold: 0.35 }).observe($('.sub-stage'));
+  let started = false; new IntersectionObserver(es => { if (es[0].isIntersecting && !started && !still()) { started = true; if (story) startTour(); else setPlaying(true); } }, { threshold: 0.35 }).observe($('.sub-stage'));
   requestAnimationFrame(frame);
-  YP.subway = { choose, go, setPlaying, step, get state() { return { line: line.ref, idx, dirn, phase, playing, station: line.stops[idx].name, place: line.stops[idx].place }; }, lines: D.lines };
+  YP.subway = { choose, go, setPlaying, step, startTour, pauseTour, get tour() { return { touring, ended, hold, view }; }, get state() { return { line: line.ref, idx, dirn, phase, playing, station: line.stops[idx].name, place: line.stops[idx].place }; }, lines: D.lines };
 })();
