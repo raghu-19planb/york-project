@@ -43,29 +43,40 @@ YP.REFERENCES = [
     caveat: 'Nothing was mapped in 1700, so the shore is a century late. The ground is today\u2019s, stretched 2.5 times in height. The trail\u2019s exact line, every tree outside High Park, and the canoes and people are not from any source. No picture of this place around 1700 has been looked at, and no dwellings are modelled.'
   },
   {
+    item: 'A town taking shape, 1700 to 1850 (the timelapse)',
+    refs: [
+      { title: 'Wikipedia, York, Upper Canada', url: 'https://en.wikipedia.org/wiki/York,_Upper_Canada' },
+      { title: 'Wikipedia, History of Toronto', url: 'https://en.wikipedia.org/wiki/History_of_Toronto' },
+      { title: 'Wikipedia, Gibraltar Point Lighthouse', url: 'https://en.wikipedia.org/wiki/Gibraltar_Point_Lighthouse' },
+      { title: 'The Friends of Fort York, History', url: 'https://friendsoffortyork.ca/history/' }
+    ],
+    took: 'The dates of the French posts, the founding of York, parliament, the market, the church, the lighthouse, the Battle of York, incorporation and the fire of 1849; the counts of people at nine dates; the first town plot of ten blocks and its extension west to Peter Street in 1797.',
+    caveat: 'Every ordinary house, street, wharf and ship is drawn, not mapped, and so is the pace at which the forest is cut. Two population figures on those pages (600 for 1796, 1,460 for 1812) do not fit the rest and are left out. The named buildings are simple stand-ins; no plan or picture of them was used. The shore is held as it was about 1800 throughout.'
+  },
+  {
     item: 'Toronto, redrawn (the boundaries)',
     refs: [
       { title: 'City of Toronto Historical Annexation Boundaries, 1834-1967 (Marcel Fortin, University of Toronto Map & Data Library, CC BY 4.0)', url: 'https://doi.org/10.5683/SP3/XN2NRW' },
       { title: 'Former Municipality Boundaries (City of Toronto Open Data)', url: 'https://open.toronto.ca/dataset/former-municipality-boundaries/' }
     ],
     took: 'Every outline, its name, its number and its date, unchanged apart from simplifying the lines to about 15 m.',
-    caveat: 'The thirteen municipalities of 1954 are not drawn individually; the six shown are as they stood from 1967. The maple leaves, their colours and the terrace heights are a way of drawing the outlines, not data.'
+    caveat: 'The thirteen municipalities of 1954 are not drawn individually; the six shown are as they stood from 1967. The film draws them as one line with a maple leaf for a pen. The dotted strokes where the leaf crosses from one outline to the next, the order within a year and the colours are drawing, not data.'
   },
   {
     item: 'Toronto, redrawn (the old shore, marsh and creeks)',
     refs: [
       { title: 'Historical Hydrography of Toronto, 1802-1886 (Marcel Fortin, University of Toronto Map & Data Library, CC BY-SA 4.0)', url: 'https://doi.org/10.5683/SP2/IYS0K9' }
     ],
-    took: 'The shoreline, marsh and creeks as traced by the library from seven georeferenced maps: William Chewett 1802 and 1834, James Cane 1842, J.O. Browne 1851, Waterlow & Sons 1857, Wadsworth & Unwin 1872, Hart & Rawlinson 1878. Lines simplified to about 8 m.',
-    caveat: 'The tracings were used, not the map sheets themselves, which have not been looked at here. Each map covers a different area, so the film cannot show when a creek was buried. Three more tracings in the data file (Fleming 1853, Cotterell 1878, Speight & Van Nostrand 1886) are not in the film.'
+    took: 'In the film: the shore and creeks as traced by the library from William Chewett’s map of 1802, with the straight edges of the sheet left out. Lines simplified to about 8 m. The 3D world also uses the tracings of 1834 and 1851.',
+    caveat: 'The tracings were used, not the map sheets themselves, which have not been looked at here. The film cannot show when a creek was buried. The other tracings in the data file (1834 to 1886) are not in the film; an earlier version of it drew seven of them.'
   },
   {
-    item: 'Toronto, redrawn (land made since 1834)',
+    item: 'Toronto, redrawn (the shore now)',
     refs: [
-      { title: 'Historical Hydrography of Toronto: Chewett’s 1834 map', url: 'https://doi.org/10.5683/SP2/IYS0K9' },
+      { title: 'Historical Hydrography of Toronto: Chewett’s 1802 map', url: 'https://doi.org/10.5683/SP2/IYS0K9' },
       { title: 'Lake Ontario shoreline today (OpenStreetMap relation 1206310, ODbL)', url: 'https://www.openstreetmap.org/relation/1206310' }
     ],
-    took: 'Ground inside the 1834 limits that the 1834 tracing shows as water and today’s shoreline shows as land.',
+    took: 'Today’s shoreline, drawn in gold over the shore of 1802 so the two can be compared. The film does not date the filling between them.',
     caveat: 'Only the two ends are compared, sampled on a coarse grid, between about Bathurst Street and the Don. The film does not say when any of it was filled.'
   },
   {

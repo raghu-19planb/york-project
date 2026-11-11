@@ -37,6 +37,16 @@ YP.PIECES = [
     cta: 'Open the c.1700 world'
   },
   {
+    id: 'town-1850',
+    kind: 'Watch',
+    status: 'building',
+    title: 'A town taking shape, 1700 to 1850',
+    line: 'A 3D timelapse of the same ground: forest, Fort Rouillé, York, the battle of 1813, the city of 1834, and thirty thousand people by 1850.',
+    body: 'One camera and a hundred and fifty years. The dates, the counts of people and the places of the forts, parliament, market, church and lighthouse are from sources. Every ordinary house and street is drawn to keep pace with them, and the page says so.',
+    href: 'town.html',
+    cta: 'Play the timelapse'
+  },
+  {
     id: 'shoreline',
     kind: 'Walk',
     status: 'building',
@@ -51,8 +61,8 @@ YP.PIECES = [
     kind: 'Watch',
     status: 'live',
     title: 'Toronto, redrawn',
-    line: 'The city\u2019s limits from 1834 to 1998, laid down in maple leaves, in 3D, with sound.',
-    body: 'The shore and creeks of seven old maps, fifty annexations in the order they happened, then thirteen municipalities, then six, then one. Every outline is a mapped boundary.',
+    line: 'One unbroken line, drawn by a maple leaf: the shore of 1802, the city of 1834, every annexation, the shape Toronto has now. With sound.',
+    body: 'The leaf is the pen. It draws the shore and creeks of 1802, the first city limits, each annexation in the order it happened, then the six municipalities that became one city, and last the shore as it is today. Every solid line is a mapped line; nothing is erased.',
     href: '#redrawn',
     cta: 'Watch the map change'
   },
@@ -67,6 +77,14 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'A second layer of the 3D world: a timelapse of the harbour from 1700 to 1850. The forest is cut back, Fort Rouillé stands and burns, York is laid out in 1793 and grows to a city of about thirty thousand. Dates and populations are from sources; the houses, streets, wharves and ships are drawn to match them. Five pictures from one fixed camera show the change.'
+  },
+  {
+    date: '2026-11-11',
+    text: 'Toronto, redrawn is drawn again, this time by a maple leaf rather than in maple leaves. The leaf is the pen: one unbroken line through the shore of 1802, the city of 1834, each annexation, the six municipalities and today\u2019s shore, ending as the outline of the city. In the 3D world the people are rebuilt as jointed bodies: they stand with their weight on one leg, bend to the corn, and walk the trail, the village and the beach. The light is warmer and hazier. They are still shapes made in code, not modelled or scanned people.'
+  },
   {
     date: '2026-11-11',
     text: 'The 3D world now has two moments. About 1680 the Seneca village of Teiaiagon stands on its bluff above the Humber: longhouses of bark inside a palisade, corn round them, people at the doors and in the fields. About 1700 it is gone and the clearing is going back to brush. The houses follow what is recorded of Haudenosaunee longhouses and the one rebuilt at Ganondagan; the people\u2019s dress follows portraits painted in 1710. Where each house stood is invented, because no plan survives, and the page says so. The world was also redrawn with sunlight and shadow, water with shallows and foam, and trees with leaves, and every view now explains what it shows.'

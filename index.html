@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111l">
+<link rel="stylesheet" href="style.css?v=20261111n">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -66,17 +66,17 @@
   <section class="band band-film" id="redrawn">
     <div class="band-in split">
       <div>
-        <div class="kicker">02 / A city drawn in maple leaves</div>
+        <div class="kicker">02 / A city drawn by one maple leaf</div>
         <h2 class="mega">Toronto, <span>Redrawn.</span></h2>
       </div>
       <div class="aside">
-        <p class="lead">The city’s limits from 1834 to 1998, laid down leaf by leaf, over the shore and creeks of seven old maps.</p>
-        <p class="fine"><span id="film-length"></span> · Code &amp; sound · In 3D</p>
+        <p class="lead">A maple leaf is the pen. One unbroken line draws the shore of 1802, the city of 1834, every annexation, and the shape Toronto has now.</p>
+        <p class="fine"><span id="film-length"></span> · Code &amp; sound</p>
       </div>
     </div>
 
     <div class="film" id="film">
-      <canvas id="film-canvas" aria-label="Animated 3D map of Toronto's boundaries growing from 1834 to 1998, drawn in maple leaves"></canvas>
+      <canvas id="film-canvas" aria-label="Animated map: a maple leaf draws one continuous line through the 1802 shore, the 1834 city limits, each annexation to 1967, the six municipalities and today's shore, ending as the outline of Toronto"></canvas>
       <div class="film-labels" id="film-labels" aria-hidden="true"></div>
       <div class="film-cap" aria-live="off">
         <div class="film-year" id="film-year"></div>
@@ -84,10 +84,9 @@
         <div class="film-sub" id="film-sub"></div>
         <div class="film-stat" id="film-stat"></div>
       </div>
-      <div class="film-key" id="film-key" aria-label="What the leaf colours mean"><div class="kicker">Leaf colour: when its ground joined</div></div>
+      <div class="film-key" id="film-key" aria-label="What the line colours mean"><div class="kicker">The line</div></div>
       <button class="plate" id="film-play" type="button"><i aria-hidden="true">▶</i><span><b>Watch the film</b><small>About a minute, with sound</small></span></button>
     </div>
-    <canvas class="film-line" id="film-line" aria-label="Timeline: a bar for each year the city annexed land. Click to jump to a year."></canvas>
     <div class="film-ctl">
       <span class="fine" id="film-note">A silent glimpse. Play the film to hear the notes.</span>
       <input type="range" id="film-seek" min="0" max="1000" value="0" aria-label="Position in the film">
@@ -97,18 +96,13 @@
     </div>
     <div class="chapters" id="film-chapters" role="group" aria-label="Jump to a moment in the film"></div>
     <div class="film-foot">
-      <div class="layers">
-        <label><input type="checkbox" id="film-layer-streets" checked> Today’s main roads &amp; railways</label>
-        <label><input type="checkbox" id="film-layer-rivers" checked> Today’s rivers</label>
-        <span class="fine">Drag the map to turn it.</span>
-      </div>
       <details class="film-notes">
         <summary>How it was made, and what it leaves out</summary>
-        <p>The film is drawn live in your browser, not played from a video. Each maple leaf stands for a patch of ground inside a mapped city limit: about <span id="film-ha"></span> hectares in the old city and <span id="film-ha2"></span> in the boroughs, <span id="film-leaves"></span> leaves in all. A leaf falls when its ground joins the city and keeps the colour of that year. Older ground stands on a higher terrace. In 1998 every leaf turns the same red.</p>
-        <p>The blue lines are the shore, marsh and creeks as seven maps drew them between 1802 and 1878, traced from the georeferenced sheets by the University of Toronto’s Map &amp; Data Library. Each map covers a different area, so a creek that vanishes between two maps may only have run off the sheet. Straight sheet edges are not drawn.</p>
-        <p>The last scene compares Chewett’s 1834 shore with today’s. The <span id="film-made"></span> gold leaves are ground inside the 1834 limits that his map shows as water and today’s shoreline shows as land. The film does not date that filling; it only shows both ends.</p>
+        <p>The film is drawn live in your browser, not played from a video. A maple leaf is the pen: it moves over the ground and leaves one line behind it, about <span id="film-km"></span> km of it across <span id="film-outlines"></span> outlines. Nothing is erased, so later lines cross earlier ones, and at the end the whole drawing is the shape of the city.</p>
+        <p>Every solid line is from a source. The shore and creeks are William Chewett’s map of 1802, traced from the georeferenced sheet by the University of Toronto’s Map &amp; Data Library; the straight edges of the sheet are not drawn. The limits are the city’s annexations in the order they happened, then the six municipalities as they stood from 1967. The gold line is today’s shore.</p>
+        <p>What is drawing, not data: the dotted strokes are the leaf crossing from one outline to the next, and stand for nothing on a map. The order within a year, where each outline begins, the colours, the leaf and the notes are choices.</p>
         <ul id="film-sources"></ul>
-        <p>What it leaves out: Metropolitan Toronto began in 1954 with thirteen municipalities, but only the six that remained after 1967 are drawn, because boundaries for the other seven were not found. Annexation 48, Victoria Park Avenue, is a strip of road too narrow to show. The areas (<span id="film-old"></span> km² by 1967, <span id="film-all"></span> km² in 1998) are measured from the simplified outlines, which include some water. Terrace heights are a drawing device, not ground levels. Today’s roads, railways and rivers are there for orientation and are not historical.</p>
+        <p>What it leaves out: Metropolitan Toronto began in 1954 with thirteen municipalities, but only the six that remained after 1967 are drawn, because boundaries for the other seven were not found. The film does not date the filling of the waterfront; it only shows the shore of 1802 and the shore now. The outlines are simplified.</p>
       </details>
     </div>
   </section>
@@ -159,6 +153,29 @@
       </div>
       <div class="pieces" id="pieces"></div>
     </div>
+  </section>
+
+  <!-- 03, continued · the town, 1700 to 1850 -->
+  <section class="band band-world town-band" id="town">
+    <div class="band-in split">
+      <div>
+        <div class="kicker">03 / Reconstructing Toronto · 1700 to 1850</div>
+        <h2 class="mega">A town <span>taking shape.</span></h2>
+      </div>
+      <div class="aside">
+        <p class="lead">The same ground, followed for a hundred and fifty years: forest, a French fort that burned, ten blocks of York, a battle, and by 1850 a city of thirty thousand on a working harbour.</p>
+        <p class="fine">A 3D timelapse · one camera, five moments below</p>
+      </div>
+    </div>
+    <div class="town-row">
+      <figure><a href="town.html"><img src="images/town/town-1700.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1700, from one fixed camera above the bay"></a><figcaption>c.1700 · forest to the water</figcaption></figure>
+      <figure><a href="town.html"><img src="images/town/town-1793.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1793, from one fixed camera above the bay"></a><figcaption>1793 · York is founded</figcaption></figure>
+      <figure><a href="town.html"><img src="images/town/town-1813.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1813, from one fixed camera above the bay"></a><figcaption>1813 · after the battle</figcaption></figure>
+      <figure><a href="town.html"><img src="images/town/town-1834.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1834, from one fixed camera above the bay"></a><figcaption>1834 · a city</figcaption></figure>
+      <figure><a href="town.html"><img src="images/town/town-1850.jpg" width="1600" height="900" loading="lazy" alt="The 3D model in 1850, from one fixed camera above the bay"></a><figcaption>1850 · 30,000 people</figcaption></figure>
+    </div>
+    <p class="town-go"><a class="btn dark" href="town.html">Play the timelapse, 1700 to 1850 <i aria-hidden="true">↗</i></a></p>
+    <div class="band-in"><p class="fine" style="max-width:70ch">Dates and counts of people are from sources. Every ordinary house and street is drawn to match them, not taken from a map; the page says which is which.</p></div>
   </section>
 
   <!-- 04 · the record -->
@@ -220,28 +237,24 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261111l"></script>
-<script src="world.js?v=20261111l"></script>
-<script src="scenery.js?v=20261111l"></script>
-<script src="references.js?v=20261111l"></script>
-<script src="draw.js?v=20261111l"></script>
-<script src="site.js?v=20261111l"></script>
-<script src="data/boundaries.js?v=20261111l"></script>
-<script src="data/history.js?v=20261111l"></script>
-<script src="data/today.js?v=20261111l"></script>
-<script src="data/shoreline.js?v=20261111l"></script>
-<script src="data/buildings.js?v=20261111l"></script>
-<script src="data/terrain.js?v=20261111l"></script>
-<script src="gallery.js?v=20261111l"></script>
+<script src="records.js?v=20261111n"></script>
+<script src="world.js?v=20261111n"></script>
+<script src="scenery.js?v=20261111n"></script>
+<script src="references.js?v=20261111n"></script>
+<script src="draw.js?v=20261111n"></script>
+<script src="site.js?v=20261111n"></script>
+<script src="data/boundaries.js?v=20261111n"></script>
+<script src="data/history.js?v=20261111n"></script>
+<script src="data/today.js?v=20261111n"></script>
+<script src="data/shoreline.js?v=20261111n"></script>
+<script src="data/buildings.js?v=20261111n"></script>
+<script src="data/terrain.js?v=20261111n"></script>
+<script src="gallery.js?v=20261111n"></script>
+<script src="leafline.js?v=20261111n"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
-// The film is 3D; if the 3D library or WebGL is unavailable, the flat film in redrawn.js takes over.
-import('./redrawn3d.js?v=20261111l').catch(() => {
-  document.getElementById('film').classList.add('flat');
-  const s = document.createElement('script'); s.src = 'redrawn.js?v=20261111l'; document.body.append(s);
-});
-import('./world1700.js?v=20261111l').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261111l').catch(() => {});
+import('./world1700.js?v=20261111n').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261111n').catch(() => {});
 </script>
 </body>
 </html>

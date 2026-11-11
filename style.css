@@ -464,3 +464,22 @@ body.game footer { margin-top: 48px; }
   .overlay p { font-size: 0.85rem; margin-bottom: 8px; }
   body.shore .world3d canvas { height: 100vh; height: 100dvh; }
 }
+
+/* the town page (town.html): the year on the picture, the year slider under it, the five stills */
+.town-clock { position: absolute; right: 16px; top: 16px; text-align: right; color: var(--chalk); background: rgba(27, 46, 46, 0.82); padding: 8px 16px 10px; pointer-events: none; }
+.town-clock b { display: block; font: 550 clamp(2.4rem, 6vw, 4.2rem) var(--display); letter-spacing: -0.05em; line-height: 0.95; font-variant-numeric: tabular-nums; }
+.town-clock span { font: 600 0.72rem var(--body); letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.9; }
+.town-years { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 18px 0 6px; }
+.town-years input[type=range] { flex: 1 1 100%; order: -1; height: 40px; accent-color: var(--oxide, #8a2f1f); }
+.town-years label { display: none; }
+.when.town-pick { position: static; flex-wrap: wrap; margin-bottom: 12px; }
+.town-still { margin: 0; }
+.town-still img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); }
+.town-still figcaption { margin-top: 10px; max-width: 70ch; }
+.town-band .town-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: clamp(24px, 4vw, 44px) var(--gutter) 0; }
+.town-band .town-row figure { margin: 0; }
+.town-band .town-row img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); }
+.town-band .town-row figcaption { font: 600 0.78rem var(--body); letter-spacing: 0.08em; margin-top: 6px; }
+.town-band .town-go { margin: 22px var(--gutter) 0; }
+@media (max-width: 820px) { .town-band .town-row { grid-template-columns: repeat(2, 1fr); } .town-band .town-row figure:first-child { grid-column: 1 / -1; } }
+@media (max-width: 820px) { body.town .world3d .views { bottom: 66px; } }

@@ -39,16 +39,16 @@ let renderer;
 try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true }); }
 catch (e) { document.getElementById('w17-fail').hidden = false; throw e; }
 renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.12;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.2;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-const HAZE = new THREE.Color('#efe4cc'), ZENITH = new THREE.Color('#9fbccb');
+const HAZE = new THREE.Color('#f3e9d6'), ZENITH = new THREE.Color('#c3d3d9'); // a warm, bright haze: late-summer light, not a clear blue day
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(HAZE.getHex(), 9000, 30000);
 const camera = new THREE.PerspectiveCamera(38, 16 / 9, 2, 90000);
 const SUN = new THREE.Vector3(-0.68, 0.56, 0.47).normalize(); // toward the sun: low in the south-west
-scene.add(new THREE.HemisphereLight(0xe6eef2, 0x9a8f72, 1.75));
-const sun = new THREE.DirectionalLight(0xffe2b4, 2.5);
+scene.add(new THREE.HemisphereLight(0xf4eee2, 0xa8956f, 1.8));
+const sun = new THREE.DirectionalLight(0xffe4bc, 2.7);
 sun.castShadow = true; sun.shadow.mapSize.set(PHONE ? 1024 : 2048, PHONE ? 1024 : 2048); sun.shadow.bias = -0.0004;
 scene.add(sun, sun.target);
 { // the sky: warm haze at the horizon rising to a pale blue, with a soft glow round the sun
@@ -57,7 +57,7 @@ scene.add(sun, sun.target);
     uniforms: { uHaze: { value: HAZE }, uZenith: { value: ZENITH }, uSun: { value: SUN } },
     vertexShader: 'varying vec3 vDir; void main() { vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
     fragmentShader: `uniform vec3 uHaze, uZenith, uSun; varying vec3 vDir;
-      void main() { vec3 d = normalize(vDir); float up = pow(clamp(d.y, 0.0, 1.0), 0.55);
+      void main() { vec3 d = normalize(vDir); float up = pow(clamp(d.y, 0.0, 1.0), 0.85);
         vec3 c = mix(uHaze, uZenith, up); float g = max(dot(d, uSun), 0.0);
         c += vec3(1.0, 0.86, 0.6) * (pow(g, 220.0) * 0.9 + pow(g, 12.0) * 0.16);
         gl_FragColor = vec4(c, 1.0);
@@ -212,6 +212,32 @@ const SITE = { x: (-79.494 - T.origin.lon) * Math.cos(T.origin.lat * Math.PI / 1
 const openness = (x, y) => clamp((1 - (((x + 6850) / 800) ** 2 + ((y - 1350) / 900) ** 2)) * 2.2, 0, 1); // High Park, where black oak savannah survives: 1 at its heart, 0 outside
 const savannah = (x, y) => openness(x, y) > 0.5;
 const cleared = (x, y) => clamp((1 - Math.hypot(x - SITE.x, y - SITE.y) / 380) * 3, 0, 1); // the old village clearing, fading into the forest at its edge
+// ---------- the town page: the same ground, followed from 1700 to 1850 ----------
+// town.html sets data-world="town" on its body. Everything for it is drawn further down (search: "the town, 1700").
+const TOWN = document.body.dataset.world === 'town';
+const TO = [540, 1548], TE = [0.958, 0.287], TN = [-0.287, 0.958]; // George and Front streets; the way Front Street runs; the way up from the lake
+const toUV = (x, y) => [(x - TO[0]) * TE[0] + (y - TO[1]) * TE[1], (x - TO[0]) * TN[0] + (y - TO[1]) * TN[1]];
+// year, west, east, north (metres along and up from Front Street): how far the cleared ground had reached. The
+// first two rows follow the record (ten blocks in 1793; west to Peter Street in 1797). The rest are drawn to keep
+// pace with the population, not taken from a survey.
+const REACH = [[1793, -150, 760, 480], [1797, -1900, 800, 600], [1813, -2000, 900, 750], [1825, -2400, 1100, 950], [1834, -2900, 1500, 1300], [1842, -3300, 1800, 1900], [1850, -3700, 2100, 2600]];
+const FORT = [-2054, 442], ROUILLE = [-3760, -475]; // Fort York; the Fort Rouillé monument at Exhibition Place
+function clearYear(x, y, rough) { // the year the forest at this point was cut; 9999 if it still stood in 1850
+  const j = rough ? (hash(Math.round(x) * 7 + Math.round(y) * 131, 150) - 0.5) * 9 : 0;
+  if (Math.hypot(x - ROUILLE[0], y - ROUILLE[1]) < 130) return 1751;
+  if (Math.hypot(x - FORT[0], y - FORT[1]) < 260) return 1793 + Math.max(0, j);
+  const [u, v] = toUV(x, y); if (v < -700) return 9999;
+  for (let i = 0; i < REACH.length; i++) {
+    const r = REACH[i];
+    if (u > r[1] && u < r[2] && v < r[3]) { // inside this stage: when did its edge pass, between the stage before and this one?
+      if (i === 0) return 1793 + Math.max(0, j);
+      const p = REACH[i - 1], k = Math.max(u < p[1] ? (p[1] - u) / (p[1] - r[1]) : 0, u > p[2] ? (u - p[2]) / (r[2] - p[2]) : 0, v > p[3] ? (v - p[3]) / (r[3] - p[3]) : 0);
+      return Math.min(1850, Math.max(1793, p[0] + (r[0] - p[0]) * k + j));
+    }
+  }
+  return 9999;
+}
+const townTrees = [];
 {
   const pos = new Float32Array(N * 3), col = new Float32Array(N * 3), uv = new Float32Array(N * 2), c = new THREE.Color(), c2 = new THREE.Color();
   for (let j = 0; j < maskNy; j++) for (let i = 0; i < maskNx; i++) {
@@ -245,7 +271,7 @@ const cleared = (x, y) => clamp((1 - Math.hypot(x - SITE.x, y - SITE.y) / 380) *
   geo.setIndex(new THREE.BufferAttribute(idx, 1));
   geo.computeVertexNormals();
   const ground = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ vertexColors: true, map: grain, bumpMap: grain, bumpScale: 0.5, roughness: 1, metalness: 0 }));
-  ground.receiveShadow = true; scene.add(ground);
+  ground.receiveShadow = true; scene.add(ground); scene.userData.ground = ground;
 }
 
 // ---------- the lake and the bay ----------
@@ -353,14 +379,14 @@ const trail = [];
 const trailAt = y => { for (let i = 0; i < trail.length - 1; i++) if (trail[i + 1][1] >= y) { const a = trail[i], b = trail[i + 1], k = (y - a[1]) / (b[1] - a[1]); return [a[0] + (b[0] - a[0]) * k, y]; } return trail[trail.length - 1]; };
 const nearTrail = (x, y, gap) => Math.abs(x - trailAt(clamp(y, trail[0][1], trail[trail.length - 1][1]))[0]) < (gap || 16) && y > trail[0][1] - 30;
 {
-  const v = [], uvs = [], HALF = 2.2; // a footpath would be invisible from any height; this is drawn about 4 m wide
+  const v = [], uvs = [], HALF = 1.5; // a footpath would be invisible from any height; this is drawn about 3 m wide
   for (let y = trail[0][1]; y < trail[trail.length - 1][1] - 20; y += 20) {
     const a = trailAt(y), b = trailAt(y + 20), dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy), ox = -dy / len * HALF, oy = dx / len * HALF;
     const q = [P(a[0] - ox, a[1] - oy, 0.35), P(a[0] + ox, a[1] + oy, 0.35), P(b[0] + ox, b[1] + oy, 0.35), P(b[0] - ox, b[1] - oy, 0.35)];
     for (const k of [0, 1, 2, 0, 2, 3]) { v.push(q[k].x, q[k].y, q[k].z); uvs.push(q[k].x / 6, q[k].z / 6); }
   }
   const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(v, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2)); g.computeVertexNormals();
-  const path = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: 0xcdb78a, map: grain, roughness: 1, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
+  const path = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: 0xbda57c, map: grain, roughness: 1, side: THREE.DoubleSide, polygonOffset: true, polygonOffsetFactor: -2 }));
   path.receiveShadow = true; scene.add(path);
 }
 
@@ -397,7 +423,7 @@ const MAT = {
   lo: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 }),
   crown: new THREE.MeshStandardMaterial({ vertexColors: true, map: leafy, roughness: 1, metalness: 0 }),
   conCrown: new THREE.MeshStandardMaterial({ vertexColors: true, map: leafy, roughness: 1, metalness: 0, side: THREE.DoubleSide }),
-  trunk: new THREE.MeshStandardMaterial({ color: 0x6a5240, map: barky, roughness: 1, metalness: 0 }),
+  trunk: new THREE.MeshStandardMaterial({ color: 0x8a735c, map: barky, roughness: 1, metalness: 0 }),
   rock: new THREE.MeshStandardMaterial({ color: 0x8f8a7e, roughness: 1, metalness: 0 })
 };
 const CHUNK = 1600, chunks = new Map();
@@ -421,6 +447,7 @@ const CHUNK = 1600, chunks = new Map();
     if (cleared(px, py) > 0.3 || hash(k, 4) < cleared(px, py) * 0.97) continue; // the clearing where Teiaiagon stood: no tree inside it
     if (nearTrail(px, py)) continue;
     const oak = savannah(px, py);
+    if (TOWN && clearYear(px, py) < 9999) { townTrees.push({ x: px, y: py, conifer: hash(k, 7) < 0.24, id: k, cy: hash(k, 153) < 0.07 ? 9999 : clearYear(px, py, true) }); continue; }
     if (hash(k, 6) < openness(px, py) * 0.72) continue;                        // savannah: scattered trees over grass
     id--; add(px, py, !oak && hash(k, 7) < 0.24, oak);
   }
@@ -444,7 +471,7 @@ const CHUNK = 1600, chunks = new Map();
       list.forEach((t, k) => {
         const w = t.h * (conifer ? 1.05 : t.oak ? 1.35 : 1.12); // a little wide, so the canopy closes when seen from far off
         d.position.set(t.x, t.base, -t.y); d.rotation.set(0, hash(t.id, 9) * 6.28, 0); d.scale.set(w, t.h, w); d.updateMatrix(); m.setMatrixAt(k, d.matrix);
-        const v = 0.82 + hash(t.id, 11) * 0.42; m.setColorAt(k, tmpC.setRGB(v * (0.95 + hash(t.id, 10) * 0.2), v, v * (0.85 + hash(t.id, 12) * 0.2)));
+        const v = 0.82 + hash(t.id, 11) * 0.42; m.setColorAt(k, tmpC.setRGB(v * (1.08 + hash(t.id, 10) * 0.22), v * 0.98, v * (0.7 + hash(t.id, 12) * 0.2))); // toward olive: leaves in haze, not signal green
       });
       m.castShadow = !PHONE; m.receiveShadow = false; m.computeBoundingSphere(); scene.add(m); ch.lo.push(m);
     }
@@ -459,7 +486,7 @@ function detail(ch) { // the close-up version of one patch of forest, built the 
   conM.count = cons.length; broadM.count = broads.length;
   const place = (m, k, t, w) => {
     d.position.set(t.x, t.base, -t.y); d.rotation.set((hash(t.id, 14) - 0.5) * 0.06, hash(t.id, 9) * 6.28, (hash(t.id, 15) - 0.5) * 0.06); d.scale.set(w, t.h, w); d.updateMatrix(); m.setMatrixAt(k, d.matrix);
-    const v = 0.85 + hash(t.id, 11) * 0.4; m.setColorAt(k, tmpC.setRGB(v * (0.95 + hash(t.id, 10) * 0.2), v, v * (0.85 + hash(t.id, 12) * 0.2)));
+    const v = 0.85 + hash(t.id, 11) * 0.4; m.setColorAt(k, tmpC.setRGB(v * (1.08 + hash(t.id, 10) * 0.22), v * 0.98, v * (0.7 + hash(t.id, 12) * 0.2)));
   };
   ch.trees.forEach((t, k) => {
     const girth = t.h * (t.conifer ? 0.016 : t.oak ? 0.03 : 0.022), up = t.h * (t.conifer ? 0.34 : 0.56);
@@ -553,47 +580,128 @@ const part = (g, geo, m, x, y, z, rx, rz) => { const o = new THREE.Mesh(geo, m);
 //     men's hair shaved to a tuft on the crown, a married woman's in one braid; hide first, then red and blue trade
 //     cloth, which had become the usual material by the 1700s.
 // So: hide and trade cloth together, as it was in these decades. No two figures are dressed quite alike.
-const cloth = hex => new THREE.MeshStandardMaterial({ color: hex, roughness: 1, metalness: 0 });
+const cloth = hex => new THREE.MeshStandardMaterial({ color: hex, roughness: 1, metalness: 0, side: THREE.DoubleSide });
 const DRESS = {
   linen: cloth(0xe9e2d0), scarlet: cloth(0x8e2f26), blue: cloth(0x2f4a6b), hide: cloth(0xb08d63), hideDark: cloth(0x8a6a48),
   sash: cloth(0x6a2f2a), moc: cloth(0x9a6b3e), cuff: cloth(0xc5552f), basket: cloth(0xb9995e)
 };
-function person(seated, k) { // a figure 1.7 m tall; k picks who it is, so the same figure is the same on every visit
-  const g = new THREE.Group(), id = k == null ? 0 : k, r = n => hash(id * 13 + 5, n);
-  const woman = !seated && r(1) < 0.45, up = seated ? 0.3 : 0.82;
-  const wrap = r(2) < 0.36 ? DRESS.scarlet : r(2) < 0.58 ? DRESS.blue : null; // a cloth cloak or blanket, or none
-  const bare = !woman && r(3) < 0.22;                                          // some men in warm weather: no shirt
-  // legs: leggings of hide or cloth, or bare below the shirt as in the portraits; moccasins with a wrapped cuff
-  const legMat = r(4) < 0.4 ? skin : r(4) < 0.75 ? DRESS.hide : DRESS.blue;
-  for (const sd of [-1, 1]) {
-    if (seated) part(g, new THREE.CapsuleGeometry(0.07, 0.34, 4, 8), legMat, sd * 0.09, 0.3, 0.2, Math.PI / 2);
-    else {
-      part(g, new THREE.CapsuleGeometry(0.072, 0.62, 4, 8), legMat, sd * 0.09, 0.43, 0);
-      part(g, new THREE.BoxGeometry(0.12, 0.07, 0.25), DRESS.moc, sd * 0.09, 0.04, 0.03);
-      part(g, new THREE.CylinderGeometry(0.085, 0.08, 0.09, 8), DRESS.cuff, sd * 0.09, 0.13, 0);
-    }
+// A figure 1.7 m tall, built like a body: hips, knees, a spine, shoulders, elbows and a neck, each a joint that
+// turns, so a figure can stand with its weight on one leg, bend to the corn, sit in a canoe or walk. k picks who
+// it is, so the same figure is the same on every visit. It faces +z.
+const GEOS = new Map(), geo = (key, make) => { if (!GEOS.has(key)) GEOS.set(key, make()); return GEOS.get(key); };
+const hang = (r0, r1, len) => geo('h' + r0 + '/' + r1 + '/' + len, () => { const g = new THREE.CylinderGeometry(r0, r1, len, 10, 1); g.translate(0, -len / 2, 0); return g; }); // a limb, hanging from its joint
+const lathed = (key, prof, flat, a0, aLen, folds) => geo(key, () => { // cloth and trunk shapes, turned on a lathe, pressed flatter front to back, with folds if asked
+  const g = new THREE.LatheGeometry(prof.map(p => new THREE.Vector2(p[0], p[1])), 18, a0 || 0, aLen || Math.PI * 2);
+  if (folds) { const p = g.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i), z = p.getZ(i), k = 1 + Math.sin(Math.atan2(z, x) * folds) * 0.05; p.setX(i, x * k); p.setZ(i, z * k); } }
+  g.scale(1, 1, flat); g.computeVertexNormals(); return g;
+});
+const SKINS = [0xa9764f, 0x9a6844, 0xb58560].map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.85 }));
+function person(seated, k, pose) {
+  const id = k == null ? 0 : k, r = n => hash(id * 13 + 5, n);
+  pose = seated ? 'sit' : pose || 'stand';
+  const woman = !seated && r(1) < 0.45, sk = SKINS[Math.floor(r(9) * 3) % 3];
+  const wrap = pose === 'sit' || pose === 'work' ? null : r(2) < 0.3 ? DRESS.scarlet : r(2) < 0.5 ? DRESS.blue : null; // a cloth cloak or blanket, or none
+  const bare = !woman && r(3) < 0.25;                                          // some men in warm weather: no shirt
+  const top = woman ? (r(6) < 0.6 ? DRESS.linen : DRESS.hideDark) : bare ? sk : DRESS.linen;
+  const legMat = woman ? DRESS.hide : r(4) < 0.35 ? sk : r(4) < 0.72 ? DRESS.hide : DRESS.blue; // leggings of hide or cloth, or bare legs as in the portraits
+  const g = new THREE.Group(), body = new THREE.Group(), J = { body }; g.add(body);
+  const add = (parent, geom, mat, x, y, z) => { const m = new THREE.Mesh(geom, mat); m.position.set(x || 0, y || 0, z || 0); m.castShadow = true; parent.add(m); return m; };
+  const pivot = (parent, x, y, z) => { const j = new THREE.Group(); j.position.set(x, y, z); parent.add(j); return j; };
+  for (const sd of [-1, 1]) { // legs: thigh, knee, shin, a moccasin with its cuff wrapped at the ankle
+    const hip = pivot(body, sd * 0.088, 0.9, 0), knee = pivot(hip, 0, -0.43, 0);
+    add(hip, hang(0.078, 0.056, 0.43), legMat); add(knee, hang(0.054, 0.038, 0.4), legMat);
+    add(knee, geo('kneecap', () => new THREE.SphereGeometry(0.056, 10, 8)), legMat);
+    if (legMat !== sk) add(knee, geo('garter', () => new THREE.CylinderGeometry(0.058, 0.056, 0.035, 10)), DRESS.cuff, 0, -0.06, 0); // leggings are tied below the knee
+    add(knee, geo('cuff', () => new THREE.CylinderGeometry(0.05, 0.045, 0.07, 10)), DRESS.moc, 0, -0.37, 0);
+    add(knee, geo('foot', () => { const f = new THREE.SphereGeometry(0.06, 10, 8); f.scale(0.75, 0.55, 2); return f; }), DRESS.moc, 0, -0.415, 0.055);
+    J[sd < 0 ? 'hipL' : 'hipR'] = hip; J[sd < 0 ? 'kneeL' : 'kneeR'] = knee;
   }
-  if (woman) { // a skirt to the calf, a shirt or cape over it, hair in one braid down the back
-    part(g, new THREE.CylinderGeometry(0.2, 0.3, 0.62, 12), r(5) < 0.5 ? DRESS.hide : DRESS.blue, 0, 0.62, 0);
-    part(g, new THREE.CylinderGeometry(0.17, 0.24, 0.5, 12), r(6) < 0.6 ? DRESS.linen : DRESS.hideDark, 0, up + 0.3, 0);
-  } else if (bare) { // a short kilt and a bare chest
-    part(g, new THREE.CapsuleGeometry(0.16, 0.34, 4, 10), skin, 0, up + 0.36, 0);
-    part(g, new THREE.CylinderGeometry(0.19, 0.23, 0.3, 12), DRESS.hide, 0, up + 0.08, 0);
-  } else { // a linen shirt to the thigh, tied with a woven sash
-    part(g, new THREE.CylinderGeometry(0.17, 0.25, seated ? 0.6 : 0.78, 12), DRESS.linen, 0, up + (seated ? 0.32 : 0.2), 0);
-    part(g, new THREE.CylinderGeometry(0.21, 0.21, 0.06, 12), DRESS.sash, 0, up + 0.16, 0);
+  const spine = pivot(body, 0, 0.9, 0); J.spine = spine; // trunk: hips, waist, chest, shoulders, neck
+  add(spine, lathed('torso', [[0.001, -0.07], [0.15, -0.05], [0.168, 0.03], [0.142, 0.17], [0.158, 0.33], [0.178, 0.46], [0.15, 0.545], [0.062, 0.585], [0.05, 0.66]], 0.62), top);
+  add(spine, geo('neck', () => new THREE.CylinderGeometry(0.047, 0.052, 0.1, 10)), sk, 0, 0.625, 0);
+  const head = pivot(spine, 0, 0.735, 0.012); J.head = head;
+  add(head, geo('head', () => { const h = new THREE.SphereGeometry(0.1, 14, 12); h.scale(0.9, 1.14, 1); return h; }), sk);
+  add(head, geo('nose', () => { const n = new THREE.SphereGeometry(0.02, 8, 6); n.scale(0.8, 1.4, 1); return n; }), sk, 0, -0.012, 0.094);
+  if (woman) { // hair drawn back into one braid
+    const cap = add(head, geo('hairW', () => { const h = new THREE.SphereGeometry(0.106, 14, 10, 0, Math.PI * 2, 0, 1.8); h.scale(0.92, 1.14, 1.02); return h; }), hair); cap.rotation.x = -0.42;
+    add(head, hang(0.03, 0.018, 0.46), hair, 0, -0.03, -0.1).rotation.x = -0.08;
+  } else if (r(7) < 0.5) add(head, geo('lock', () => new THREE.CylinderGeometry(0.03, 0.05, 0.11, 8)), hair, 0, 0.115, -0.02); // shaved to a tuft on the crown
+  else add(head, geo('hairM', () => { const h = new THREE.SphereGeometry(0.105, 14, 10, 0, Math.PI * 2, 0, 1.45); h.scale(0.92, 1.14, 1.02); return h; }), hair).rotation.x = -0.3; // or cut short, as in the portraits
+  for (const sd of [-1, 1]) { // arms: shoulder, elbow, hand
+    const sh = pivot(spine, sd * 0.205, 0.49, 0), el = pivot(sh, 0, -0.29, 0); sh.rotation.z = sd * 0.09;
+    add(sh, geo('shoulder', () => new THREE.SphereGeometry(0.056, 10, 8)), top); add(sh, hang(0.05, 0.042, 0.29), top);
+    add(el, hang(0.042, 0.033, 0.26), top);
+    add(el, geo('hand', () => { const h = new THREE.SphereGeometry(0.042, 8, 6); h.scale(0.7, 1.25, 0.45); return h; }), sk, 0, -0.3, 0);
+    J[sd < 0 ? 'armL' : 'armR'] = sh; J[sd < 0 ? 'elbowL' : 'elbowR'] = el;
   }
-  for (const sd of [-1, 1]) part(g, new THREE.CapsuleGeometry(0.05, 0.42, 4, 8), woman || !bare ? (woman && r(6) >= 0.6 ? DRESS.hideDark : DRESS.linen) : skin, sd * 0.215, up + 0.33, seated ? 0.12 : 0, seated ? -0.9 : 0, sd * 0.12);
-  part(g, new THREE.SphereGeometry(0.112, 12, 10), skin, 0, up + 0.78, 0);
-  if (woman) { part(g, new THREE.SphereGeometry(0.12, 12, 10, 0, 6.3, 0, 1.9), hair, 0, up + 0.8, -0.012); part(g, new THREE.CapsuleGeometry(0.035, 0.42, 4, 6), hair, 0, up + 0.5, -0.13); }
-  else if (r(7) < 0.5) part(g, new THREE.CylinderGeometry(0.035, 0.055, 0.13, 8), hair, 0, up + 0.92, -0.02);     // shaved to a tuft on the crown
-  else part(g, new THREE.SphereGeometry(0.118, 12, 10, 0, 6.3, 0, 1.5), hair, 0, up + 0.795, -0.01);              // or cut short, as in the portraits
-  if (wrap && !seated) { // the cloak: a wide piece of cloth over both shoulders, open at the front, falling to the calf
-    const c = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.34, 0.9, 14, 1, true, Math.PI * 0.68, Math.PI * 1.64), wrap); c.material.side = THREE.DoubleSide;
-    c.position.set(0, up + 0.24, -0.01); c.castShadow = true; g.add(c);
+  if (woman) { // a wrapped skirt to the calf, an overdress or shirt to the hip
+    add(body, lathed('skirt', [[0.168, 0.1], [0.2, -0.18], [0.232, -0.5], [0.238, -0.57]], 0.78, 0, 0, 7), r(5) < 0.5 ? DRESS.hide : DRESS.blue, 0, 0.9, 0);
+    add(body, lathed('hemW', [[0.172, 0.07], [0.205, -0.2]], 0.74), top, 0, 0.9, 0);
+  } else if (bare) { // a breechcloth hanging front and back from a belt
+    const flap = geo('flap', () => new THREE.BoxGeometry(0.17, 0.34, 0.012)), m = r(5) < 0.5 ? DRESS.hide : r(5) < 0.8 ? DRESS.blue : DRESS.scarlet;
+    add(body, flap, m, 0, 0.77, 0.112); add(body, flap, m, 0, 0.77, -0.112);
+    add(body, geo('belt', () => { const c = new THREE.CylinderGeometry(0.168, 0.168, 0.035, 16); c.scale(1, 1, 0.66); return c; }), DRESS.hideDark, 0, 0.94, 0);
+  } else { // a linen shirt to the thigh, tied with a woven sash whose ends hang at the side
+    add(body, lathed('tail', [[0.17, 0.07], [0.19, -0.12], [0.206, -0.36]], 0.72, 0, 0, 6), DRESS.linen, 0, 0.9, 0);
+    add(spine, geo('sash', () => { const c = new THREE.CylinderGeometry(0.174, 0.174, 0.07, 16); c.scale(1, 1, 0.66); return c; }), DRESS.sash, 0, 0.09, 0);
+    add(spine, geo('sashEnd', () => new THREE.BoxGeometry(0.035, 0.26, 0.02)), DRESS.sash, 0.17, -0.04, 0.03);
   }
-  if (woman && r(8) < 0.5) part(g, new THREE.CylinderGeometry(0.17, 0.13, 0.2, 10), DRESS.basket, 0.3, up + 0.02, 0.1); // a basket on the hip
+  if (wrap) add(spine, lathed('cloak', [[0.075, 0.6], [0.2, 0.535], [0.235, 0.3], [0.262, -0.1], [0.29, -0.45]], 0.74, Math.PI * 0.24, Math.PI * 1.52, 9), wrap); // over both shoulders, open at the front, to the knee
+  if (woman && r(8) < 0.5) add(spine, geo('basket', () => new THREE.CylinderGeometry(0.17, 0.12, 0.34, 10)), DRESS.basket, 0, 0.3, wrap ? -0.3 : -0.2); // a burden basket on the back
+  // how it is standing
+  const set = (j, x) => { J[j].rotation.x = x; };
+  if (pose === 'sit') { body.position.y = -0.62; set('hipL', -1.45); set('hipR', -1.45); set('kneeL', 1.35); set('kneeR', 1.35); set('armL', -0.8); set('armR', -0.8); set('elbowL', -0.5); set('elbowR', -0.5); }
+  else if (pose === 'work') { // bent to the hill of corn, a digging stick in both hands
+    body.position.y = -0.04; set('spine', 0.78); set('hipL', -0.42); set('hipR', -0.2); set('kneeL', 0.55); set('kneeR', 0.4); set('armL', -1.25); set('armR', -1.15); set('elbowL', -0.25); set('elbowR', -0.35); J.head.rotation.x = -0.35;
+    const stick = add(body, geo('stick', () => new THREE.CylinderGeometry(0.016, 0.02, 1.05, 6)), dark, 0.04, 0.43, 0.6); stick.rotation.x = 0.28;
+  } else if (pose === 'stand') { // weight on one leg, arms easy
+    const lean = r(10) < 0.5 ? 1 : -1; set('hipL', lean * 0.07); set('hipR', -lean * 0.07); set('kneeL', lean > 0 ? 0.14 : 0.02); set('kneeR', lean > 0 ? 0.02 : 0.14);
+    set('armL', 0.05 - r(11) * 0.25); set('armR', 0.05 - r(12) * 0.25); set('elbowL', -0.15 - r(13) * 0.6); set('elbowR', -0.15 - r(14) * 0.3); J.head.rotation.y = (r(15) - 0.5) * 0.9; body.rotation.z = lean * 0.025;
+  }
+  g.userData = { J, cloaked: !!wrap, phase: r(16) * 6.28 };
+  if (pose === 'walk') stride(g, g.userData.phase);
   return g;
+}
+function stride(g, ph) { // one walking step: legs swing from the hip, the knee bends as its leg comes forward, the arms swing against the legs
+  const J = g.userData.J, s = Math.sin(ph), c = Math.cos(ph), arm = g.userData.cloaked ? 0.1 : 0.4;
+  J.hipL.rotation.x = -s * 0.46; J.hipR.rotation.x = s * 0.46;
+  J.kneeL.rotation.x = 0.1 + 0.7 * Math.max(0, c); J.kneeR.rotation.x = 0.1 + 0.7 * Math.max(0, -c);
+  J.armL.rotation.x = s * arm; J.armR.rotation.x = -s * arm;
+  J.elbowL.rotation.x = -0.25 - 0.25 * Math.max(0, -s); J.elbowR.rotation.x = -0.25 - 0.25 * Math.max(0, s);
+  J.body.position.y = Math.abs(c) * 0.025 - 0.02; J.spine.rotation.x = 0.06;
+}
+// Figures that stay where they are are joined into one mesh for each group they belong to, so a village of people
+// costs one draw. Figures that walk stay jointed.
+const CROWDS = new Map();
+function settle(fig, parent) {
+  if (!CROWDS.has(parent)) CROWDS.set(parent, []);
+  fig.updateMatrixWorld(true);
+  fig.traverse(o => {
+    if (!o.isMesh) return;
+    const gm = o.geometry.clone().applyMatrix4(o.matrixWorld), n = gm.attributes.position.count, col = new Float32Array(n * 3), c = o.material.color;
+    for (let i = 0; i < n; i++) { col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+    gm.setAttribute('color', new THREE.BufferAttribute(col, 3)); CROWDS.get(parent).push(gm);
+  });
+}
+function gather() {
+  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, side: THREE.DoubleSide });
+  for (const [parent, list] of CROWDS) { if (!list.length) continue; const m = new THREE.Mesh(mergeGeometries(list), mat); m.castShadow = true; m.frustumCulled = false; parent.add(m); list.length = 0; }
+}
+// People who walk: each goes back and forth along a line of points, at a walking pace, and keeps to the ground.
+const walkers = [];
+function walker(pts, k, parent, start) {
+  const fig = person(false, k, 'walk'); fig.scale.setScalar(BIG); parent.add(fig);
+  const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  walkers.push({ fig, pts, cum, total: cum[cum.length - 1], off: (start || 0) * cum[cum.length - 1], pace: 1.75 + hash(k, 140) * 0.5 });
+}
+function walk(t) {
+  for (const w of walkers) {
+    let d = (w.off + t * w.pace) % (2 * w.total); const back = d > w.total; if (back) d = 2 * w.total - d;
+    let i = 1; while (i < w.cum.length - 1 && w.cum[i] < d) i++;
+    const a = w.pts[i - 1], b = w.pts[i], k = (d - w.cum[i - 1]) / ((w.cum[i] - w.cum[i - 1]) || 1), x = a[0] + (b[0] - a[0]) * k, y = a[1] + (b[1] - a[1]) * k;
+    w.fig.position.copy(P(x, y, 0)); w.fig.rotation.y = Math.atan2((b[0] - a[0]) * (back ? -1 : 1), -(b[1] - a[1]) * (back ? -1 : 1));
+    stride(w.fig, w.fig.userData.phase + (w.off + t * w.pace) / (1.6 * BIG) * Math.PI * 2);
+  }
 }
 function canoe(x, y, heading, crew) { // a birchbark canoe, 5.5 m: the type checked against the references listed for the game
   const g = new THREE.Group(), s = new THREE.Shape();
@@ -632,7 +740,7 @@ for (const [dx, up, r] of [[-22, 7, 1.15], [-38, 9, 1.5]]) { // two more drawn u
 }
 {
   let folk = 0;
-  const stand = (x, y, r, into) => { const f = person(false, ++folk); f.scale.setScalar(BIG); f.position.copy(P(x, y, 0)); f.rotation.y = r; (into || scene).add(f); return f; };
+  const stand = (x, y, r, into, pose) => { const f = person(false, ++folk, pose); f.scale.setScalar(BIG); f.position.copy(P(x, y, 0)); f.rotation.y = r; settle(f, into || scene); };
   YP.w17stand = stand;
   for (const [dx, up, r] of [[-14, 12, 2.2], [-18, 15, 2.6], [-52, 16, 1]]) { const [x, y] = onBeach(dx, up); stand(x, y, r); }
   for (const [dx, y, r] of [[0, 300, 0], [1.2, 318, 0.4], [-1, 760, 3], [0.9, SITE.y - 196 - trail[0][1], 3.3], [-1.6, SITE.y - 186 - trail[0][1], 0.5], [1.3, SITE.y - 150 - trail[0][1], 2.9], [-1.8, SITE.y - 128 - trail[0][1], 1.2]]) { const p = trailAt(trail[0][1] + y); stand(p[0] + dx, p[1], r); }
@@ -740,7 +848,18 @@ const village = new THREE.Group(); village.name = 'Teiaiagon c.1680'; scene.add(
     const off = (q ? 1 : -1) * (h.len / 2 + 2.5 + hash(k, 98 + q) * 6), x = h.x + Math.cos(h.a) * off + (hash(k, 100 + q) - 0.5) * 8, y = h.y - Math.sin(h.a) * off + (hash(k, 102 + q) - 0.5) * 8;
     if (hash(k, 104 + q) < 0.75) YP.w17stand(x, y, hash(k, 106 + q) * 6.28, village);
   } });
-  for (let k = 0; k < 30; k++) { const a = hash(k, 110) * 6.28, r = 190 + hash(k, 111) * 120, x = SITE.x + Math.cos(a) * r, y = SITE.y + Math.sin(a) * r * 0.85; if (kindAt(x, y) === 0 && cleared(x, y) > 0.5) YP.w17stand(x, y, a, village); }
+  for (let k = 0; k < 30; k++) { const a = hash(k, 110) * 6.28, r = 190 + hash(k, 111) * 120, x = SITE.x + Math.cos(a) * r, y = SITE.y + Math.sin(a) * r * 0.85; if (kindAt(x, y) === 0 && cleared(x, y) > 0.5) YP.w17stand(x, y, a, village, hash(k, 112) < 0.7 ? 'work' : 'stand'); }
+  // people walking: in and out by the south gate, across the open middle, travellers on the trail in either year, and on the beach
+  {
+    const line = (y0, y1, dx) => { const pts = []; for (let y = y0; y <= y1; y += 15) { const p = trailAt(y); pts.push([p[0] + dx, y]); } return pts; };
+    for (let k = 0; k < 4; k++) walker(line(SITE.y - 330, SITE.y + 30, (k - 1.5) * 1.3), 300 + k, village, k / 4 + 0.07);
+    for (let k = 0; k < 2; k++) walker(line(SITE.y - 520, SITE.y + 260, k ? 1.4 : -1.2), 320 + k, scene, k * 0.45 + 0.2);
+    const inner = houses.filter((h, i) => i % 4 === 3), door = h => [h.x + Math.cos(h.a) * (h.len / 2 + 5), h.y - Math.sin(h.a) * (h.len / 2 + 5)];
+    for (let k = 0; k < 8; k++) { const h1 = inner[k % inner.length], h2 = inner[(k * 2 + 3) % inner.length]; if (h1 === h2) continue; walker([door(h1), [SITE.x + 30 + (hash(k, 141) - 0.5) * 50, SITE.y + (hash(k, 142) - 0.5) * 60], door(h2)], 340 + k, village, hash(k, 143)); }
+    for (let k = 0; k < 3; k++) walker([onBeach(-64 + k * 6, 9 + k * 3), onBeach(-20, 11 + k * 3), onBeach(30 + k * 8, 10 + k * 2)], 360 + k, scene, k * 0.3 + 0.1);
+  }
+  gather();
+  YP.w17walk = walk;
 }
 
 // About 1700, twenty years on: the houses are gone and the clearing is going back to brush.
@@ -751,6 +870,232 @@ const after = new THREE.Group(); after.name = 'the clearing c.1700'; after.visib
   const m = new THREE.InstancedMesh(GEO.bush, MAT.crown, pts.length), d = new THREE.Object3D();
   pts.forEach(([x, y, k], n) => { const sc = 0.8 + hash(k, 122) * 2.4; d.position.copy(P(x, y, -0.2)); d.rotation.set(0, hash(k, 123) * 6.28, 0); d.scale.set(sc * 1.3, sc * (0.8 + hash(k, 124)), sc * 1.3); d.updateMatrix(); m.setMatrixAt(n, d.matrix); m.setColorAt(n, tmpC.setRGB(0.9 + hash(k, 125) * 0.4, 0.95, 0.7)); });
   m.castShadow = m.receiveShadow = true; m.computeBoundingSphere(); after.add(m);
+}
+
+// ---------- the town, 1700 to 1850 (only on the town page) ----------
+// The same ground as the c.1700 world, followed for a hundred and fifty years.
+// Sourced (references.js): the dates; the counts of people; that the town began as ten blocks near the Don and a
+// garrison at the harbour mouth; roughly where the forts, parliament, market, church and lighthouse stood.
+// Drawn: every ordinary house and street. The houses go up at the pace of the population (one drawn house for a
+// fixed number of people, so the last goes up in 1850), on a regular grid the real streets only partly followed. The
+// pace of clearing, the wharves and the ships are drawn too. The page says all this.
+const town = { year: 1700, set: () => {}, tick: () => {}, ERAS: [] };
+if (TOWN) {
+  const tc = new THREE.Color(), tc2 = new THREE.Color(), o = new THREE.Object3D(), S = BIG;
+  const xy = (u, v) => [TO[0] + u * TE[0] + v * TN[0], TO[1] + u * TE[1] + v * TN[1]];
+  const land = (x, y) => kindAt(x, y) === 0 && meshY(x, y) > 0.5;
+  const ANG = Math.atan2(TE[1], TE[0]);
+  const ontoLand = (x, y) => { for (let r = 0; r < 500; r += 25) for (let a = 0; a < 6.28; a += 0.4) { const px = x + Math.cos(a) * r, py = y + Math.sin(a) * r; if (land(px, py)) return [px, py]; } return [x, y]; };
+  const POP = [[1793, 3], [1799, 240], [1808, 500], [1813, 720], [1825, 1600], [1830, 2860], [1832, 5500], [1834, 9250], [1851, 30000]]; // as counted or estimated; see the page for where each is from
+  const popAt = y => { if (y < POP[0][0]) return 0; for (let i = 1; i < POP.length; i++) if (y <= POP[i][0]) { const a = POP[i - 1], b = POP[i], k = (y - a[0]) / (b[0] - a[0]); return Math.exp(Math.log(a[1]) + (Math.log(b[1]) - Math.log(a[1])) * k); } return POP[POP.length - 1][1]; };
+  town.popAt = popAt;
+  const updaters = [];
+
+  // the forest inside the town's reach: each tree stands until its year
+  for (const conifer of [true, false]) {
+    const list = townTrees.filter(t => t.conifer === conifer); if (!list.length) continue;
+    const m = new THREE.InstancedMesh(conifer ? GEO.conLo : GEO.broadLo, MAT.lo, list.length), state = new Float32Array(list.length).fill(-1);
+    list.forEach((t, k) => { t.h = (conifer ? 30 + hash(t.id, 8) * 14 : 22 + hash(t.id, 8) * 11) * BIG; t.base = groundY(t.x, t.y); const v = 0.82 + hash(t.id, 11) * 0.42; m.setColorAt(k, tc.setRGB(v * (1.08 + hash(t.id, 10) * 0.22), v * 0.98, v * (0.7 + hash(t.id, 12) * 0.2))); });
+    m.castShadow = !PHONE; m.frustumCulled = false; scene.add(m);
+    updaters.push(year => {
+      let dirty = false;
+      list.forEach((t, k) => {
+        const s = clamp(t.cy - year, 0, 1); if (s === state[k]) return; state[k] = s; dirty = true;
+        const w = t.h * (conifer ? 1.05 : 1.12) * s; o.position.set(t.x, t.base, -t.y); o.rotation.set(0, hash(t.id, 9) * 6.28, 0); o.scale.set(w, t.h * s, w); o.updateMatrix(); m.setMatrixAt(k, o.matrix);
+      });
+      if (dirty) m.instanceMatrix.needsUpdate = true;
+    });
+  }
+  YP.w17townTrees = townTrees.length;
+
+  // the ground itself: forest floor turns to field, and to trodden earth where the town is thickest
+  {
+    const ground = scene.userData.ground, col = ground.geometry.attributes.color, verts = [];
+    for (let n = 0; n < N; n++) {
+      if (T.kind[n] !== '0' || isSand(n) || hs[n] < 0.5) continue;
+      const i = n % maskNx, j = (n - i) / maskNx, x = box.x0 + i * maskCell, y = box.y0 + j * maskCell, cy = clearYear(x, y, true); if (cy > 1850) continue;
+      const [u, v] = toUV(x, y), dense = clamp(1 - Math.hypot((u + 300) / 1900, (v - 250) / 700), 0, 1);
+      const parcel = Math.floor(u / 230) * 53 + Math.floor(v / 190) * 17, kind = hash(parcel, 152);
+      tc.set(kind < 0.34 ? '#98a45c' : kind < 0.58 ? '#aaae68' : kind < 0.82 ? '#c3b272' : '#8f7a52').lerp(tc2.set('#c7b490'), clamp(dense * 1.5, 0, 1)).offsetHSL(0, 0, (hash(n, 151) - 0.5) * 0.04);
+      verts.push({ n, cy, r0: col.getX(n), g0: col.getY(n), b0: col.getZ(n), r1: tc.r, g1: tc.g, b1: tc.b, k: -1 });
+    }
+    updaters.push(year => {
+      let dirty = false;
+      for (const p of verts) { const k = clamp((year - p.cy) / 4, 0, 1); if (k === p.k) continue; p.k = k; dirty = true; col.setXYZ(p.n, p.r0 + (p.r1 - p.r0) * k, p.g0 + (p.g1 - p.g0) * k, p.b0 + (p.b1 - p.b0) * k); }
+      if (dirty) col.needsUpdate = true;
+    });
+  }
+
+  // streets: a regular grid inside the cleared ground, and Yonge Street cut north through the forest
+  {
+    const segs = [], LEN = 55;
+    const lay = (u0, v0, u1, v1, yr, wide) => {
+      const n = Math.max(1, Math.round(Math.hypot(u1 - u0, v1 - v0) / LEN));
+      for (let i = 0; i < n; i++) { const [x, y] = xy(u0 + (u1 - u0) * (i + 0.5) / n, v0 + (v1 - v0) * (i + 0.5) / n); if (!land(x, y)) continue; let cy = yr || clearYear(x, y); if (cy > 1850) continue; if (!yr && cy > 1797) cy = Math.min(1850, cy + 10); segs.push({ x, y, len: Math.hypot(u1 - u0, v1 - v0) / n, across: u0 === u1, yr: cy, wide: wide || 6 }); }
+    };
+    let line = 0;
+    for (let u = -3740; u <= 2100; u += 110, line++) { lay(u, -650, u, 1150); if (line % 4 === 0) lay(u, 1150, u, 2600); }
+    line = 0;
+    for (let v = -620; v <= 2600; v += 95, line++) if (v < 1150 || line % 4 === 0) lay(-3740, v, 2100, v);
+    lay(-480, 0, -480, 9500, 1795, 9); // Yonge Street
+    const g = new THREE.PlaneGeometry(1, 1); g.rotateX(-Math.PI / 2);
+    const m = new THREE.InstancedMesh(g, new THREE.MeshStandardMaterial({ color: 0xbda77f, roughness: 1, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }), segs.length), state = new Int8Array(segs.length).fill(-1);
+    m.receiveShadow = true; m.frustumCulled = false; scene.add(m);
+    updaters.push(year => {
+      let dirty = false;
+      segs.forEach((s, k) => { const on = year >= s.yr ? 1 : 0; if (on === state[k]) return; state[k] = on; dirty = true; o.position.copy(P(s.x, s.y, 0.7)); o.rotation.set(0, ANG + (s.across ? Math.PI / 2 : 0), 0); o.scale.set(s.len * on, 1, s.wide * on); o.updateMatrix(); m.setMatrixAt(k, o.matrix); });
+      if (dirty) m.instanceMatrix.needsUpdate = true;
+    });
+  }
+
+  // houses: as many as the people of each year would fill, the oldest nearest the first ten blocks
+  {
+    const lots = [];
+    for (let bu = -3740; bu < 2100; bu += 110) for (let bv = -620; bv < 2600; bv += 95) for (let lu = bu + 14; lu < bu + 100; lu += 15) for (const lv of [bv + 14, bv + 81]) {
+      const id = Math.round(lu) * 37 + Math.round(lv) * 911; if (hash(id, 160) < 0.12) continue;
+      const [x, y] = xy(lu + (hash(id, 161) - 0.5) * 4, lv + (hash(id, 162) - 0.5) * 5); if (!land(x, y)) continue;
+      const cy = clearYear(x, y); if (cy > 1850) continue;
+      if (Math.hypot(x - FORT[0], y - FORT[1]) < 300) continue; // the garrison's ground
+      lots.push({ x, y, id, u: lu, v: lv, cy, key: cy + Math.abs(lv - 200) / 55 + Math.abs(lu + 300) / 260 + hash(id, 163) * 9 });
+    }
+    lots.sort((a, b) => a.key - b.key);
+    const COUNT = Math.min(lots.length, PHONE ? 2300 : 4600), PER = 30000 / (COUNT + 1); // people to a drawn house, so the last house goes up in 1850
+    const built = lots.slice(0, COUNT);
+    { let yr = 1793; built.forEach((b, k) => { while (yr < 1850 && popAt(yr) / PER < k + 1) yr += 0.1; b.yr = Math.max(yr, Math.min(b.cy, 1849)); }); }
+    const sec = new THREE.Shape([[-0.5, 0], [0.5, 0], [0.5, 1], [0, 1.42], [-0.5, 1]].map(p => new THREE.Vector2(p[0], p[1])));
+    let geom = new THREE.ExtrudeGeometry(sec, { depth: 1, bevelEnabled: false }); geom.translate(0, 0, -0.5); geom = geom.toNonIndexed(); geom.computeVertexNormals();
+    { const p = geom.attributes.position, nrm = geom.attributes.normal, c = new Float32Array(p.count * 3); // the roof is darker than the walls
+      for (let i = 0; i < p.count; i++) { const roof = nrm.getY(i) > 0.3 && p.getY(i) > 0.99; c[i * 3] = roof ? 0.42 : 1; c[i * 3 + 1] = roof ? 0.38 : 1; c[i * 3 + 2] = roof ? 0.34 : 1; }
+      geom.setAttribute('color', new THREE.BufferAttribute(c, 3)); }
+    const m = new THREE.InstancedMesh(geom, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 }), COUNT), state = new Float32Array(COUNT).fill(-1);
+    const WOOD = ['#8f7a5c', '#a18a68', '#7c6a52', '#b19c7a'], PAINT = ['#ddd5c2', '#cfc5ad', '#e4dccb', '#b9a98a'], BRICK = ['#96483a', '#a5553f', '#8a4034', '#c9b488', '#d3c095'];
+    built.forEach((b, k) => {
+      const r = n => hash(b.id, n), core = Math.abs(b.v - 200) < 240 && b.u > -1700 && b.u < 800;
+      const era = b.yr < 1815 ? 0 : b.yr < 1834 ? 1 : 2;
+      b.w = (era === 2 && core ? 11 + r(164) * 4 : 7 + r(164) * 3) * S; b.d = (7 + r(165) * 4) * S;
+      b.h = (era === 0 ? 2.8 + r(166) * 1.4 : era === 1 ? 3.4 + r(166) * 3 : core ? 7 + r(166) * 4.5 : 3.6 + r(166) * 3.2) * S;
+      b.turn = ANG + (r(167) < 0.25 ? Math.PI / 2 : 0); b.base = groundY(b.x, b.y) - 0.3;
+      const pal = era === 0 ? WOOD : era === 1 ? (r(168) < 0.25 ? BRICK : r(168) < 0.6 ? PAINT : WOOD) : (r(168) < (core ? 0.75 : 0.4) ? BRICK : PAINT);
+      m.setColorAt(k, tc.set(pal[Math.floor(r(169) * pal.length)]).offsetHSL(0, 0, (r(170) - 0.5) * 0.06));
+    });
+    m.castShadow = true; m.receiveShadow = true; m.frustumCulled = false; scene.add(m);
+    const FIRE = xy(-230, 180); // the market block, burned 7 April 1849 and built again
+    updaters.push(year => {
+      let dirty = false;
+      built.forEach((b, k) => {
+        let s = clamp((year - b.yr) / 1.2, 0, 1);
+        if (year >= 1849.27 && year < 1850.6 && b.yr < 1849 && Math.hypot(b.x - FIRE[0], b.y - FIRE[1]) < 120) s = clamp((year - 1849.9) / 0.7, 0, 1) * 0.6;
+        if (s === state[k]) return; state[k] = s; dirty = true;
+        o.position.set(b.x, b.base, -b.y); o.rotation.set(0, b.turn, 0); o.scale.set(b.w * (s > 0 ? 1 : 0), b.h * s, b.d * (s > 0 ? 1 : 0)); o.updateMatrix(); m.setMatrixAt(k, o.matrix);
+      });
+      if (dirty) m.instanceMatrix.needsUpdate = true;
+    });
+    town.houses = year => built.filter(b => b.yr <= year).length; town.PER = PER; town.fire = FIRE;
+  }
+
+  // the places with a date: each stands from its year, and some come down again
+  const mat = c => new THREE.MeshStandardMaterial({ color: c, roughness: 1 });
+  const M = { log: mat(0x7d6549), earth: mat(0x9c8a63), brick: mat(0x97493a), stone: mat(0xcfc8b6), roof: mat(0x4f443a), white: mat(0xe6dfcf), plank: mat(0x8a7252), sail: new THREE.MeshStandardMaterial({ color: 0xf1ead8, roughness: 1, side: THREE.DoubleSide }), hull: mat(0x4a3a2c) };
+  const block = (g, w, h, d, m, x, y, z) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x || 0, (y || 0) + h / 2, z || 0); b.castShadow = b.receiveShadow = true; g.add(b); return b; };
+  const gable = (g, w, h, d, m, x, z, roof) => { block(g, w, h, d, m, x, 0, z); const rg = new THREE.CylinderGeometry(0.001, d * 0.72, h * 0.45, 4, 1); rg.rotateY(Math.PI / 4); const r = new THREE.Mesh(rg, roof || M.roof); r.scale.set(w / (d * 1.02), 1, 1); r.position.set(x || 0, h + h * 0.225, z || 0); r.castShadow = true; g.add(r); };
+  const places = [];
+  const place = (at, from, to, build) => { const [x, y] = ontoLand(at[0], at[1]), g = new THREE.Group(); g.position.copy(P(x, y, 0)); g.rotation.y = ANG; g.scale.setScalar(S); build(g); g.visible = false; scene.add(g); const p = { g, from, to: to || 9999, x, y }; places.push(p); return p; };
+  const fence = (g, w, d, h, m) => { for (const [a, b, c, e] of [[w, 0.5, 0, -d / 2], [w, 0.5, 0, d / 2], [0.5, d, -w / 2, 0], [0.5, d, w / 2, 0]]) block(g, a, h, b, m, c, 0, e); };
+  place(ROUILLE, 1751, 1759.5, g => { fence(g, 46, 46, 3.6, M.log); gable(g, 12, 3.2, 7, M.log, -8, -8); gable(g, 10, 3, 6, M.log, 9, -9); gable(g, 14, 3.2, 6, M.log, 0, 10); }); // a small palisaded post; its plan here is not from a survey
+  place(FORT, 1793, 1813.32, g => { fence(g, 120, 80, 3.4, M.log); for (let i = 0; i < 7; i++) gable(g, 13, 3, 6.5, M.log, -44 + (i % 4) * 28, i < 4 ? -22 : 20); block(g, 0.4, 14, 0.4, M.plank, 0, 0, 0); });
+  place(FORT, 1813.6, 0, g => { fence(g, 150, 100, 2.6, M.earth); for (const b of g.children) b.scale.x *= b.geometry.parameters.width < 1 ? 9 : 1, b.scale.z *= b.geometry.parameters.depth < 1 ? 9 : 1; // earth walls, thick and low
+    for (const [x, z] of [[-48, -24], [46, 22]]) { block(g, 9, 4, 9, M.log, x, 0, z); block(g, 10.6, 3.6, 10.6, M.log, x, 4, z); const r = new THREE.Mesh(new THREE.ConeGeometry(8, 3.4, 4), M.roof); r.rotation.y = Math.PI / 4; r.position.set(x, 9.3, z); g.add(r); } // two blockhouses, the upper floor overhanging
+    for (let i = 0; i < 6; i++) gable(g, 22, 3.4, 7, i % 2 ? M.brick : M.log, -40 + (i % 3) * 40, i < 3 ? -4 : 30); block(g, 0.4, 16, 0.4, M.plank, 10, 0, -30); });
+  const PARL = xy(640, 60), MARKET = xy(-40, 20), CHURCH = xy(-250, 200);
+  place(PARL, 1797, 1813.33, g => { gable(g, 18, 6, 9, M.brick, -13, 0); gable(g, 18, 6, 9, M.brick, 13, 0); block(g, 8, 3.5, 5, M.white, 0, 0, 0); });
+  place(MARKET, 1803, 0, g => { gable(g, 34, 3.2, 9, M.plank, 0, 0); });
+  const church = g => { gable(g, 11, 7, 22, M.white, 0, 0); block(g, 5, 14, 5, M.white, 0, 0, -13); const sp = new THREE.Mesh(new THREE.ConeGeometry(3.4, 9, 4), M.roof); sp.rotation.y = Math.PI / 4; sp.position.set(0, 18.5, -13); sp.castShadow = true; g.add(sp); };
+  place(CHURCH, 1807, 1849.27, church); place(CHURCH, 1850.7, 0, g => { church(g); g.scale.multiplyScalar(0.55); }); // 1850: the new cathedral is only begun
+  const LIGHT = [-587, -2359];
+  const tower = h => g => { const t = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 3.6, h, 6), M.stone); t.position.y = h / 2; t.castShadow = true; g.add(t); const l = new THREE.Mesh(new THREE.CylinderGeometry(1.7, 1.7, 2.4, 6), M.roof); l.position.y = h + 1.2; g.add(l); const c = new THREE.Mesh(new THREE.ConeGeometry(2.2, 1.8, 6), M.brick); c.position.y = h + 3.3; g.add(c); };
+  place(LIGHT, 1809, 1832, tower(16)); place(LIGHT, 1832, 0, tower(25)); // 52 feet, raised to 82 in 1832
+
+  // wharves reach into the bay, a few at first and then many (how many, and where, is drawn)
+  [[-60, 1797, 70], [-420, 1803, 60], [330, 1813, 80], [-900, 1820, 90], [-230, 1826, 120], [120, 1830, 110], [-1250, 1833, 100], [-650, 1836, 150], [520, 1839, 120], [-1500, 1842, 130], [-1050, 1844, 160], [-320, 1846, 170], [-1750, 1848, 120], [760, 1850, 110]].forEach(([u, yr, len]) => {
+    let v = 120; while (v > -900 && land(...xy(u, v))) v -= 6; if (v <= -900) return;
+    const [x, y] = xy(u, v - len / 2 + 8), g = new THREE.Group(); g.position.set(x, 0, -y); g.rotation.y = ANG; block(g, 9, 1.6, len, M.plank, 0, -0.5, 0); if (yr > 1825) block(g, 8, 4, 16, M.plank, 0, 1, -len / 2 + 14);
+    g.visible = false; scene.add(g); places.push({ g, from: yr, to: 9999, x, y });
+  });
+  // sailing vessels at anchor: more as the harbour grows busier
+  const ships = [];
+  [[-300, -420, 1794], [200, -520, 1800], [-900, -480, 1815], [500, -380, 1826], [-1400, -560, 1832], [-100, -700, 1838], [-650, -330, 1843], [850, -600, 1847], [-1100, -820, 1849]].forEach(([u, v, yr], k) => {
+    const [x, y] = xy(u, v); if (kindAt(x, y) === 0) return;
+    const g = new THREE.Group(); block(g, 5.5, 2.4, 22, M.hull, 0, -0.6, 0);
+    for (const z of [-5, 5]) { block(g, 0.35, 20, 0.35, M.plank, 0, 1, z); const s = new THREE.Mesh(new THREE.PlaneGeometry(9, 13), M.sail); s.position.set(0.4, 11, z + 0.3); s.rotation.y = Math.PI / 2 + 0.25; s.castShadow = true; g.add(s); }
+    g.position.set(x, 0, -y); g.rotation.y = ANG + 1.2 + k; g.scale.setScalar(S); g.visible = false; scene.add(g); places.push({ g, from: yr, to: 9999, x, y }); ships.push(g);
+  });
+
+  // smoke on the three days the record gives a fire
+  const fires = [];
+  { const puffMat = new THREE.MeshBasicMaterial({ color: 0x4a443e, transparent: true, opacity: 0.34, depthWrite: false }), geoP = new THREE.SphereGeometry(1, 8, 6);
+    const burn = (at, from, size) => { const [x, y] = ontoLand(at[0], at[1]), base = P(x, y, 4), puffs = []; for (let i = 0; i < 16; i++) { const m = new THREE.Mesh(geoP, puffMat); m.visible = false; scene.add(m); puffs.push(m); } fires.push({ base, from, to: from + 0.6, size, puffs }); };
+    burn(ROUILLE, 1759.4, 22); burn(FORT, 1813.32, 46); burn(PARL, 1813.33, 34); burn(town.fire, 1849.27, 52); }
+
+  // labels that come and go with their years
+  town.labels = [
+    { name: 'Fort Rouillé', note: 'a French trading fort, 1751 to 1759', x: ROUILLE[0], y: ROUILLE[1], lift: 70, from: 1751, to: 1760 },
+    { name: 'The garrison', note: 'Fort York, from 1793', x: FORT[0], y: FORT[1], lift: 80, from: 1793 },
+    { name: 'York', note: 'ten blocks, laid out in 1793', x: xy(300, 250)[0], y: xy(300, 250)[1], lift: 110, from: 1793, to: 1834 },
+    { name: 'Toronto', note: 'a city from 6 March 1834', x: xy(-500, 500)[0], y: xy(-500, 500)[1], lift: 150, from: 1834 },
+    { name: 'Parliament', note: 'met from 1797; destroyed 1813', x: PARL[0], y: PARL[1], lift: 60, from: 1797, to: 1814 },
+    { name: 'Yonge Street', note: 'cut north in the 1790s', x: xy(-480, 2300)[0], y: xy(-480, 2300)[1], lift: 60, from: 1795 },
+    { name: 'Lighthouse', note: 'Gibraltar Point, lit 1809', x: LIGHT[0], y: LIGHT[1], lift: 70, from: 1809 }
+  ];
+
+  // the story, by year: what the page says beside the picture
+  const REAL = 'Real: the dates, the counts of people, and roughly where the forts, parliament, market, church and lighthouse stood. Drawn: every ordinary house and street, the pace of clearing, the wharves and the ships.';
+  town.ERAS = [
+    { at: 1700, title: 'Before the town', what: 'No town. Forest runs down to a bay behind a long bar of sand. The Seneca villages of the 1670s are gone, and the Anishinaabe, whom the French called Mississaugas, hold this shore.', real: 'Real: the shore, the bar and the creeks, from the earliest maps. Drawn: the forest. Nobody’s camp is shown; nothing read for this project says where one stood.' },
+    { at: 1720, title: 'The French come to trade', what: 'In 1720 the French built a storehouse on the Humber, west of this view, and gave it up within a few years. In 1750 they traded there again, and the next year they built on this shore.', real: REAL },
+    { at: 1751, title: 'Fort Rouillé', what: 'A small French trading fort stands on the shore from 1751, where the Exhibition grounds are now. In 1759, with Fort Niagara lost to the British, its garrison burned it and withdrew to Montreal.', real: 'Real: the fort, its years and its place. Drawn: its plan, which is not from a survey.' },
+    { at: 1760, title: 'Thirty quiet years', what: 'The fort is ash and nothing is built on the bay for a generation. In 1787 the British made the Toronto Purchase with the Mississaugas; its terms were revised in 1805 and the claim was only settled in 2010.', real: REAL },
+    { at: 1793, title: 'York is founded', what: 'On 27 August 1793 John Graves Simcoe founded York: a garrison at the mouth of the harbour, and a town plot of ten blocks between today’s Front and Adelaide streets. In the mid-1790s soldiers cut Yonge Street north through the forest.', real: REAL },
+    { at: 1797, title: 'A capital of a few hundred', what: 'Parliament first met here in June 1797, and the town was extended west to Peter Street. A public market began in 1803. The first church and the first brick house came in 1807, and the lighthouse on the peninsula was lit in 1809. About 500 people lived here in 1808.', real: REAL },
+    { at: 1813, title: 'The Battle of York', what: 'On 27 April 1813 an American fleet landed its troops. The retreating British blew up the fort’s powder magazine, and the parliament buildings were destroyed. About 720 people were counted that year. The fort was built again.', real: REAL },
+    { at: 1815, title: 'The town fills in', what: 'About 1,600 people in 1825, 2,860 in 1830, 5,500 in 1832. The forest is cut back, wharves reach into the bay, and the streets run west and north.', real: REAL },
+    { at: 1834, title: 'York becomes Toronto', what: 'On 6 March 1834 the town, now about 9,250 people, was incorporated as the City of Toronto. Gas street lamps were lit in 1841.', real: REAL },
+    { at: 1849, title: 'The Cathedral Fire', what: 'On 7 April 1849 fire destroyed the market block, St James’ and part of the city hall. They were built again.', real: REAL },
+    { at: 1850, title: 'A city of thirty thousand', what: 'About 30,000 people by 1851. In a hundred and fifty years, forest to the water’s edge has become a city on a working harbour. The railways come in the 1850s.', real: REAL }
+  ];
+  const eraAt = y => { let e = town.ERAS[0]; for (const k of town.ERAS) if (y >= k.at) e = k; return e; };
+
+  const yearEl = document.getElementById('town-year'), popEl = document.getElementById('town-pop'), range = document.getElementById('town-range');
+  let shownEra = null;
+  town.set = (year, quiet) => {
+    year = clamp(year, 1700, 1850); town.year = year;
+    for (const u of updaters) u(year);
+    for (const p of places) p.g.visible = year >= p.from && year < p.to;
+    if (yearEl) yearEl.textContent = String(Math.floor(year));
+    if (popEl) { const p = popAt(year); popEl.textContent = year < 1793 ? 'No town' : p < 10 ? 'A garrison and a survey' : 'About ' + (p < 1000 ? Math.round(p / 10) * 10 : Math.round(p / 100) * 100).toLocaleString('en-CA') + ' people'; }
+    if (range && !quiet) range.value = String(Math.round(year));
+    const e = eraAt(year);
+    if (e !== shownEra) {
+      shownEra = e;
+      if (about) { about.innerHTML = '<h3></h3><p></p><p class="real"></p>'; about.children[0].textContent = e.title + ' · ' + (e.at === 1700 ? 'c.1700' : e.at); about.children[1].textContent = e.what; about.children[2].textContent = e.real; }
+      const cur = Math.max(...town.CARDS.filter(c => c <= e.at)); document.querySelectorAll('#town-eras button').forEach(b => b.classList.toggle('on', +b.dataset.year === cur));
+    }
+  };
+  // the timelapse: ninety years of forest pass quickly, then sixty years of town take their time
+  const LAPSE = [[0, 1700], [2.5, 1745], [6, 1765], [8, 1790], [34, 1850], [38, 1850]];
+  const lapse = { on: false, t: 0 };
+  const yearAtT = t => { for (let i = 1; i < LAPSE.length; i++) if (t <= LAPSE[i][0]) { const a = LAPSE[i - 1], b = LAPSE[i]; return a[1] + (b[1] - a[1]) * (t - a[0]) / (b[0] - a[0]); } return 1850; };
+  const tAtYear = y => { for (let i = 1; i < LAPSE.length - 1; i++) if (y <= LAPSE[i][1]) { const a = LAPSE[i - 1], b = LAPSE[i]; return a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); } return LAPSE[LAPSE.length - 2][0]; };
+  town.lapse = lapse; town.jump = y => { lapse.t = tAtYear(y); town.set(y); };
+  town.tick = (dt, clock) => {
+    if (lapse.on) { lapse.t += dt; if (lapse.t >= LAPSE[LAPSE.length - 1][0]) lapse.t = 0; town.set(yearAtT(lapse.t)); }
+    ships.forEach((g, k) => { g.position.y = Math.sin(clock * 0.9 + k * 1.7) * 0.25; g.rotation.z = Math.sin(clock * 0.7 + k) * 0.03; });
+    for (const f of fires) { const live = town.year >= f.from && town.year < f.to; f.puffs.forEach((m, i) => { m.visible = live; if (!live) return; const u = (clock * 0.16 + i / f.puffs.length) % 1; m.position.copy(f.base); m.position.y += u * f.size * 5; m.position.x += u * u * f.size * 2.4 + Math.sin(i * 2.1) * f.size * 0.4; m.position.z += Math.cos(i * 1.7) * f.size * 0.4; m.scale.setScalar(f.size * (0.35 + u * 1.3)); }); }
+    if (track) track.firstChild.style.transform = 'scaleX(' + ((town.year - 1700) / 150).toFixed(4) + ')';
+  };
+  town.CARDS = [1700, 1751, 1793, 1813, 1834, 1850];
+  const eras = document.getElementById('town-eras');
+  if (eras) town.CARDS.forEach(y => { const e = town.ERAS.find(k => k.at === y), b = document.createElement('button'), n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span'); b.type = 'button'; b.dataset.year = y; n.textContent = y === 1700 ? 'c.1700' : y; t.textContent = e.title; d.textContent = e.what.split('. ')[0] + '.'; b.append(n, t, d); b.addEventListener('click', () => { setPlaying(false); town.jump(y + (y === 1813 ? 0.5 : y === 1849 ? 0.5 : 0)); }); eras.append(b); });
+  if (range) range.addEventListener('input', () => { setPlaying(false); lapse.t = tAtYear(+range.value); town.set(+range.value, true); });
 }
 
 // ---------- labels ----------
@@ -764,7 +1109,8 @@ const LABELS = [
   { name: 'Humber River', x: mouth[0] - 260, y: mouth[1] + 500, water: true },
   { name: 'Don River', x: 2500, y: 3600, water: true },
   { name: 'Teiaiagon', note: 'a Seneca village on the trail', then: 'a Seneca village on the trail', after: 'where the Seneca village stood, left by 1701', x: SITE.x, y: SITE.y, lift: 70 },
-  { name: 'The Carrying Place', note: 'the trail north to Lake Simcoe', x: trailAt(1100)[0] + 60, y: 1100, lift: 90 }
+  { name: 'The Carrying Place', note: 'the trail north to Lake Simcoe', x: trailAt(1100)[0] + 60, y: 1100, lift: 90 },
+  ...(TOWN ? town.labels : [])
 ];
 for (const l of LABELS) {
   l.pos = P(l.x, l.y, l.lift || 20);
@@ -777,7 +1123,7 @@ function placeLabels() {
   const w = canvas.clientWidth, h = canvas.clientHeight;
   for (const l of LABELS) {
     v3.copy(l.pos).project(camera);
-    const show = v3.z < 1 && Math.abs(v3.x) < 0.96 && Math.abs(v3.y) < 0.94 && camera.position.distanceTo(l.pos) > 220;
+    const show = v3.z < 1 && Math.abs(v3.x) < 0.96 && Math.abs(v3.y) < 0.94 && camera.position.distanceTo(l.pos) > 220 && (!l.from || (town.year >= l.from && town.year < (l.to || 9999)));
     l.el.style.display = show ? '' : 'none';
     if (show) l.el.style.transform = `translate(-50%, -50%) translate(${((v3.x + 1) / 2 * w).toFixed(1)}px, ${((1 - v3.y) / 2 * h).toFixed(1)}px)`;
   }
@@ -796,6 +1142,10 @@ const VIEWS = [
   { name: 'The mouth of the Humber', sub: 'River, sand and the trail’s start', pos: [mouth[0] + 1500, 620, -(mouth[1] - 1500)], look: [mouth[0] - 300, 0, -(mouth[1] + 500)] },
   { name: 'As a map', sub: 'Two rivers, a bay, a marsh', pos: [-1250, 21500, -745], look: [-1250, 0, -750] }
 ];
+if (TOWN) VIEWS.splice(0, VIEWS.length,
+  { name: 'Over the harbour', sub: 'The whole town, from above the bay', pos: [-450, 1250, 2350], look: [-450, 0, -1350] },
+  { name: 'Over the old town', sub: 'The first ten blocks, close', pos: [1500, 330, -620], look: [560, 0, -1760] }
+);
 
 // What each view is for. The words live in gallery.js, so the recording and the snapshots cannot disagree.
 for (const g of (YP.GALLERY || [])) if (VIEWS[g.view]) Object.assign(VIEWS[g.view], { what: g.what, real: g.real, what1700: g.what1700, real1700: g.real1700 });
@@ -822,15 +1172,18 @@ const turned = (v, deg, closer) => { // the same view from a little further roun
 };
 {
   const tA2 = trailAt(SITE.y - 172), tB2 = trailAt(SITE.y - 80); // about 80 m further on, the clearing opening ahead
+  if (TOWN) for (const v of VIEWS) v.end = { pos: v.pos };
+  else {
   VIEWS[0].end = { pos: turned(VIEWS[0], -14, 0.86) };
   VIEWS[1].end = { pos: eye(...onBeach(-2, 19), 2.5), look: eye(...onBeach(-40, 4), 1.4) };
   VIEWS[2].end = { pos: eye(tA2[0], tA2[1], 2.7), look: eye(tB2[0], tB2[1], 4) };
   VIEWS[3].end = { pos: turned(VIEWS[3], 34, 0.72) };
   VIEWS[4].end = { pos: turned(VIEWS[4], -14, 0.88) };
   VIEWS[5].end = { pos: [VIEWS[5].pos[0], 17500, VIEWS[5].pos[2]] };
+  }
   for (const v of VIEWS) { v.p0 = new THREE.Vector3(...v.pos); v.l0 = new THREE.Vector3(...v.look); v.p1 = new THREE.Vector3(...v.end.pos); v.l1 = new THREE.Vector3(...(v.end.look || v.look)); }
 }
-const tour = { on: !still(), t: 0, at: -1 };
+const tour = { on: !still() && !TOWN, t: 0, at: -1 };
 const lookAtNow = new THREE.Vector3();
 function pose(t) { // where the camera is, and what it looks at, t seconds into the recording
   const i = Math.floor(t / LEG) % VIEWS.length, u = t - Math.floor(t / LEG) * LEG, v = VIEWS[i];
@@ -852,15 +1205,15 @@ function mark(i) { // show which view the recording is on
   const view = VIEWS[i];
   [...viewBox.children].forEach((btn, k) => btn.classList.toggle('on', shown[k] === view));
   if (tag) { tag.innerHTML = '<small></small><b></b>'; tag.firstChild.textContent = String(i + 1).padStart(2, '0') + ' / ' + String(VIEWS.length).padStart(2, '0'); tag.lastChild.textContent = view.name; }
-  if (about) { // what this view shows, and what in it is real
+  if (about && !TOWN) { // what this view shows, and what in it is real
     about.innerHTML = '<h3></h3><p></p><p class="real"></p>';
     about.children[0].textContent = view.name + ' · c.' + when;
     about.children[1].textContent = (when === 1700 && view.what1700) || view.what || ''; about.children[2].textContent = (when === 1700 && view.real1700) || view.real || '';
   }
 }
 function setPlaying(on) {
-  tour.on = on;
-  if (playBtn) { playBtn.textContent = on ? 'Pause' : 'Play the recording'; playBtn.setAttribute('aria-pressed', String(on)); }
+  if (TOWN) town.lapse.on = on; else tour.on = on;
+  if (playBtn) { playBtn.textContent = on ? 'Pause' : TOWN ? 'Play the timelapse' : 'Play the recording'; playBtn.setAttribute('aria-pressed', String(on)); }
   stage.classList.toggle('playing', on);
 }
 function goTo(view, instant) { // jump the recording to a view; it plays on from there unless motion is switched off
@@ -873,14 +1226,15 @@ shown.forEach(view => {
     const n = document.createElement('small'), t = document.createElement('b'), d = document.createElement('span');
     n.textContent = String(VIEWS.indexOf(view) + 1).padStart(2, '0'); t.textContent = view.name; d.textContent = view.sub; btn.append(n, t, d);
   } else btn.textContent = view.name;
-  btn.addEventListener('click', () => { goTo(view, true); setPlaying(!still()); });
+  btn.addEventListener('click', () => { goTo(view, true); if (!TOWN) setPlaying(!still()); });
   viewBox.append(btn);
 });
-if (playBtn) playBtn.addEventListener('click', () => setPlaying(!tour.on));
-controls.addEventListener('start', () => setPlaying(false)); // taking hold of the model stops the recording; Play picks it up again
+if (playBtn) playBtn.addEventListener('click', () => setPlaying(TOWN ? !town.lapse.on : !tour.on));
+controls.addEventListener('start', () => { if (!TOWN) setPlaying(false); }); // taking hold of the model stops the recording; Play picks it up again
 window.addEventListener('yp-motion', () => setPlaying(!still()));
+const playingNow = () => TOWN ? town.lapse.on : tour.on;
 document.querySelectorAll('#w17-when button').forEach(b => b.addEventListener('click', () => setWhen(+b.dataset.year)));
-pose(0); setPlaying(tour.on); setWhen(1680);
+pose(0); if (TOWN) { setWhen(1700); town.set(still() ? 1850 : 1700); if (still()) town.jump(1850); setPlaying(!still()); } else { setPlaying(tour.on); setWhen(1680); }
 
 // ---------- loop ----------
 function resize() {
@@ -916,10 +1270,12 @@ renderer.setAnimationLoop(now => {
   if (tour.on) { tour.t = (tour.t + dt) % TOUR; i = pose(tour.t); }
   else { controls.update(); i = Math.floor(tour.t / LEG) % VIEWS.length; }
   if (i !== tour.at) { tour.at = i; mark(i); }
-  if (track) track.firstChild.style.transform = 'scaleX(' + (tour.t / TOUR).toFixed(4) + ')';
+  if (track && !TOWN) track.firstChild.style.transform = 'scaleX(' + (tour.t / TOUR).toFixed(4) + ')';
   if (!still()) clock += dt; // the water keeps still when Motion is off
   waterMat.uniforms.uTime.value = clock;
   if (YP.w17smoke) YP.w17smoke(clock + 40);
+  if (YP.w17walk) YP.w17walk(clock + 20);
+  if (TOWN) town.tick(still() ? 0 : dt, clock);
   canoes.forEach((c, k) => { c.position.y = -0.12 + Math.sin(clock * 1.1 + k) * 0.07; c.rotation.z = Math.sin(clock * 0.9 + k * 2) * 0.03; }); // the ones afloat rock a little
   dress();
   renderer.render(scene, camera);
@@ -928,7 +1284,7 @@ renderer.setAnimationLoop(now => {
 
 // A still picture of one view at a given size, for the gallery (tools/shoot-world.js collects them).
 async function shot(i, w, h, year) {
-  const was = when; if (year) setWhen(year);
+  const was = TOWN ? town.year : when; if (year) (TOWN ? town.set(year) : setWhen(year));
   const v = VIEWS[i], keep = { p: camera.position.clone(), t: controls.target.clone() };
   renderer.setPixelRatio(1); renderer.setSize(w, h, false);
   camera.aspect = w / h;
@@ -937,7 +1293,7 @@ async function shot(i, w, h, year) {
   const blob = await new Promise(r => canvas.toBlob(r, 'image/jpeg', 0.88));
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PHONE ? 1.5 : 2));
   camera.position.copy(keep.p); controls.target.copy(keep.t); camera.lookAt(keep.t); resize();
-  if (year) setWhen(was);
+  if (year) (TOWN ? town.set(was) : setWhen(was));
   return blob;
 }
-YP.w17 = { scene, camera, controls, VIEWS, goTo, shot, setWhen, groundY, trailAt, SITE, tour, pose, setPlaying, TOUR, LEG };
+YP.w17 = { scene, camera, controls, VIEWS, goTo, shot, setWhen, groundY, trailAt, SITE, tour, pose, setPlaying, TOUR, LEG, town };

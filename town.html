@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2e9d7">
+<title>Toronto, 1700 to 1850: a town taking shape · The York Project</title>
+<meta name="description" content="A 3D timelapse of the ground Toronto stands on, from forest in 1700 to a city of thirty thousand in 1850: Fort Rouillé, the founding of York, the Battle of York, the City of Toronto. Dates and counts from sources; houses and streets drawn to match them.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261111n">
+<script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body class="shore world17 town" data-world="town">
+<div class="wrap">
+  <header class="bar">
+    <div class="brand">
+      <a class="name" href="./">The York Project<svg class="leaf" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,2 57,17 65,13 61,37 75,25 78,34 92,31 87,45 96,52 73,68 76,78 53,74 54,98 46,98 47,74 24,78 27,68 4,52 13,45 8,31 22,34 25,25 39,37 35,13 43,17"/></svg></a>
+      <div class="name-alt" lang="moh" title="Tkaronto: the Kanien’kéha (Mohawk) word the name Toronto comes from">Tkaronto</div>
+    </div>
+    <nav class="menu" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="game.html"><span>01</span> Play</a>
+      <a href="./#redrawn"><span>02</span> Watch</a>
+      <a href="world.html"><span>03</span> Explore</a>
+      <a href="./#record"><span>04</span> Read</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="./">Home</a><span aria-hidden="true">/</span><a href="world.html">Toronto, c.1700</a><span aria-hidden="true">/</span><span aria-current="page">1700 to 1850</span>
+  </nav>
+
+  <div class="shore-head">
+    <div class="mono">03 / Reconstructing Toronto · 1700 to 1850 · in progress</div>
+    <h1>A town <em>taking shape.</em></h1>
+    <p>One camera, a hundred and fifty years. In 1700 the forest ran down to the bay. In 1751 the French built a small fort and in 1759 burned it. In 1793 a garrison and ten blocks of town were laid out; by 1850 about thirty thousand people lived in a city with wharves reaching into the bay. Play the timelapse, or drag the years yourself. The dates and the counts of people are from sources; the houses and streets are drawn to match them, and the page says which is which.</p>
+  </div>
+</div>
+
+<div class="world3d" id="w17">
+  <canvas id="w17-gl" aria-label="3D timelapse of the Toronto shore from 1700 to 1850"></canvas>
+  <div class="labels" id="w17-labels" aria-hidden="true"></div>
+  <div class="view-tag" id="w17-tag"></div>
+  <div class="town-clock" aria-live="off"><b id="town-year">1700</b><span id="town-pop">No town</span></div>
+  <div class="world-track" id="w17-track" role="progressbar" aria-label="Progress from 1700 to 1850"><span></span></div>
+  <button class="world-play" id="w17-play" type="button" aria-pressed="true">Pause</button>
+  <div class="views" id="w17-views" role="group" aria-label="Camera views"></div>
+  <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The five pictures below show the same timelapse.</div>
+</div>
+
+<div class="wrap">
+  <div class="town-years">
+    <label for="town-range" class="mono">Year</label>
+    <input type="range" id="town-range" min="1700" max="1850" step="1" value="1700" aria-label="Year, from 1700 to 1850">
+    <span class="mono">1700</span><span class="mono" style="margin-left:auto">1850</span>
+  </div>
+  <div class="views cards" id="town-eras" role="group" aria-label="Jump to a moment"></div>
+  <div class="about" id="w17-about" aria-live="polite"></div>
+  <p class="help" style="padding:0">The timelapse runs from 1700 to 1850 and starts again. Drag the year, or pick a moment, to stop it · drag the picture to orbit · scroll or pinch to zoom · Play picks it up again</p>
+
+  <section class="notes">
+    <div class="sec-head"><h2>One camera, five moments</h2></div>
+    <p class="src" style="margin:0 0 14px">Choose a year. The camera stays where it is. Each picture is taken from the live model.</p>
+    <div class="when town-pick" id="town-pick" role="group" aria-label="Choose a year">
+      <button type="button" data-y="1700" aria-pressed="false"><b>c.1700</b><span>forest</span></button><button type="button" data-y="1793" aria-pressed="false"><b>1793</b><span>founded</span></button><button type="button" data-y="1813" aria-pressed="false"><b>1813</b><span>the battle</span></button><button type="button" data-y="1834" aria-pressed="false"><b>1834</b><span>a city</span></button><button type="button" data-y="1850" aria-pressed="true"><b>1850</b><span>30,000 people</span></button>
+    </div>
+    <figure class="town-still"><img id="town-still" src="images/town/town-1850.jpg" width="1600" height="900" alt="The model in 1850: a city along the bay, wharves, the forest cut far back" loading="lazy"><figcaption id="town-still-cap"></figcaption></figure>
+  </section>
+
+  <section class="notes">
+    <div class="sec-head"><h2>What's real here, and what is drawn</h2></div>
+    <ul class="log">
+      <li><span class="mono">Real</span><span>The ground, the shore, the sandbar, the marsh and the creeks. They are the same as in <a href="world.html">the c.1700 world</a>, from today’s elevation and the earliest maps. The shore is held as it was then for the whole timelapse; the filling of the waterfront came later and is not shown.</span></li>
+      <li><span class="mono">Real</span><span>The dates. The French storehouse on the Humber (1720), the trading post of 1750 and Fort Rouillé (1751, burned by its own garrison in 1759); the Toronto Purchase (1787, revised 1805); the founding of York on 27 August 1793; parliament meeting in June 1797 and the extension west to Peter Street; the market (1803); the first church and first brick house (1807); the Battle of York (27 April 1813); incorporation as Toronto (6 March 1834); gas lamps (1841); the Cathedral Fire (7 April 1849). From <a href="https://en.wikipedia.org/wiki/York,_Upper_Canada" target="_blank" rel="noopener">Wikipedia, York, Upper Canada</a>, <a href="https://en.wikipedia.org/wiki/History_of_Toronto" target="_blank" rel="noopener">Wikipedia, History of Toronto</a> and <a href="https://friendsoffortyork.ca/history/" target="_blank" rel="noopener">The Friends of Fort York</a>.</span></li>
+      <li><span class="mono">Real</span><span>The lighthouse on Gibraltar Point: begun in 1808, lit in 1809, 52 feet tall and raised to 82 in 1832, a six-sided stone tower (<a href="https://en.wikipedia.org/wiki/Gibraltar_Point_Lighthouse" target="_blank" rel="noopener">Wikipedia</a>). It is placed at its recorded position.</span></li>
+      <li><span class="mono">Mixed</span><span>The number of people. The counts used are 3 in 1793, about 240 in 1799, about 500 in 1808, 720 in 1813, 1,600 in 1825, 2,860 in 1830, 5,500 in 1832, 9,250 in 1834 and about 30,000 in 1851, from the two Wikipedia pages above. Those pages also give 600 for 1796 and 1,460 for 1812, which do not fit the others and are left out. Between counts the model fills in smoothly.</span></li>
+      <li><span class="mono">Mixed</span><span>Where the named places stand. Fort York and Fort Rouillé are at their sites; the parliament is on the east side of the first town plot, the market and the church near King and Church streets. Their shapes are simple stand-ins: no plan or picture of any of them was used.</span></li>
+      <li><span class="mono">Drawn</span><span>Every ordinary house. There are <span id="town-count"></span> of them, one for about every <span id="town-per"></span> people, and each goes up in the year the population reaches it. Early ones are low and of wood; later ones are more often brick, and taller along the main streets. Where each stands is not from any map.</span></li>
+      <li><span class="mono">Drawn</span><span>The streets, as a regular grid turned the way Front Street runs. The first town was ten blocks and did follow a grid, but the real streets were not this even. Yonge Street is drawn running north from the 1790s.</span></li>
+      <li><span class="mono">Drawn</span><span>How fast the forest was cut. The first two steps follow the record (ten blocks in 1793, west to Peter Street in 1797); after that the clearing is drawn to keep ahead of the houses. <span id="town-trees"></span> trees stand in 1700 on ground that is bare by 1850.</span></li>
+      <li><span class="mono">Drawn</span><span>The wharves and the ships: how many there were in each year, and where. Buildings, like everything in this world, are drawn 1.5 times life size so they can be seen from the air.</span></li>
+      <li><span class="mono">Not yet</span><span>The Mississaugas of the Credit, on whose land the town was built, are named but not shown: no source read for this project places their camps. Nothing here has been reviewed by them. Also not yet: the 1837 rebellion, the railways of the 1850s, street names, and people at street level.</span></li>
+    </ul>
+    <p class="src" style="margin-top:18px">The shoreline, marsh and creek data are adapted from the University of Toronto’s Historical Hydrography of Toronto, CC BY-SA 4.0.</p>
+  </section>
+
+  <nav class="pager" aria-label="Where to go next">
+    <a href="./"><span class="kicker">Back</span><b>Home</b><span>The York Project</span></a>
+    <a href="world.html"><span class="kicker">Before this · c.1680 and c.1700</span><b>The ground before the town</b><span>The bay, the trail and Teiaiagon</span></a>
+    <a href="shore.html"><span class="kicker">Same shore · today</span><b>The shoreline, today</b><span>Downtown and the lake edge in 3D</span></a>
+    <a href="./#redrawn"><span class="kicker">02 Watch</span><b>Toronto, redrawn</b><span>The city, drawn by one maple leaf</span></a>
+  </nav>
+
+  <footer>
+    An independent project about Toronto's history. Not affiliated with the City of Toronto or the TTC.
+    <span class="inspired">Tkaronto is the Kanien’kéha (Mohawk) word the city’s name comes from. It means “where there are trees standing in the water” (<a href="https://thecanadianencyclopedia.ca/en/article/toronto" target="_blank" rel="noopener">The Canadian Encyclopedia</a>).</span>
+    <span class="inspired">Inspired by <a href="https://madras.v40.in/" target="_blank" rel="noopener">The Madras Project</a>.</span>
+    <span class="inspired rights">You are welcome to draw inspiration from this site, but please do not copy it directly. Its design, words, drawings and code are © 2026 Raghu Devaguptapu. The map and history data keep the licences of their sources, which are named where they are used.</span>
+  </footer>
+</div>
+
+<script src="data/history.js?v=20261111n"></script>
+<script src="data/terrain.js?v=20261111n"></script>
+<script type="module" src="world1700.js?v=20261111n"></script>
+<script>
+// The five pictures: one camera, a different year. And the counts in the notes, read from the model itself.
+(function () {
+  var CAP = {
+    1700: 'About 1700. Forest to the water’s edge, the bay behind its sandbar, and no town.',
+    1793: '1793. A garrison at the harbour mouth on the left; ten blocks of town surveyed near the Don on the right.',
+    1813: '1813, after the battle. A town of about 720 people; the fort and the parliament buildings burned.',
+    1834: '1834. York becomes the City of Toronto, about 9,250 people. The clearing has reached well back from the bay.',
+    1850: '1850. About 30,000 people, wharves along the shore, and the forest cut back out of sight of the water.'
+  };
+  var img = document.getElementById('town-still'), cap = document.getElementById('town-still-cap');
+  function pick(y) {
+    img.src = 'images/town/town-' + y + '.jpg'; img.alt = 'The model: ' + CAP[y]; cap.textContent = CAP[y];
+    document.querySelectorAll('#town-pick button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.y === String(y))); });
+  }
+  document.querySelectorAll('#town-pick button').forEach(function (b) { b.addEventListener('click', function () { pick(+b.dataset.y); }); });
+  pick(1850);
+  var t = setInterval(function () {
+    var w = window.YP && window.YP.w17; if (!w || !w.town || !w.town.houses) return; clearInterval(t);
+    document.getElementById('town-count').textContent = w.town.houses(1850).toLocaleString('en-CA');
+    document.getElementById('town-per').textContent = w.town.PER.toFixed(1);
+    document.getElementById('town-trees').textContent = (window.YP.w17townTrees || 0).toLocaleString('en-CA');
+  }, 300);
+  setTimeout(function () { if (!window.YP || !window.YP.w17) document.getElementById('w17-fail').hidden = false; }, 9000);
+})();
+</script>
+</body>
+</html>
