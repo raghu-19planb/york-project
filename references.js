@@ -43,6 +43,14 @@ YP.REFERENCES = [
     caveat: 'Nothing was mapped in 1700, so the shore is a century late. The ground is today\u2019s, stretched 2.5 times in height. The trail\u2019s exact line, every tree outside High Park, and the canoes and people are not from any source. No picture of this place around 1700 has been looked at, and no dwellings are modelled.'
   },
   {
+    item: 'Ride the lines (the rapid transit map)',
+    refs: [
+      { title: 'OpenStreetMap: TTC subway and light rail route relations (ODbL)', url: 'https://www.openstreetmap.org/relation/102388' }
+    ],
+    took: 'Five lines (1, 2, 4, 5 and 6), each with its colour, its stations in order and the path of its track, as mapped on the day data/subway.js was built.',
+    caveat: 'Where you can change lines is worked out (a station of another line within 300 m), not taken from the TTC. The train, the icons, the chime and the timing are drawn; it is not a timetable. Whether a line is in service is whatever OpenStreetMap showed that day.'
+  },
+  {
     item: 'How a tower went up (the CN Tower scrapbook)',
     refs: [
       { title: 'Wikipedia, CN Tower', url: 'https://en.wikipedia.org/wiki/CN_Tower' },

@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2e9d7">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261111z">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261111z">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261111z">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261111z">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261112a">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261112a">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261112a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261112a">
 <title>Toronto, c.1680 and c.1700 · The York Project</title>
 <meta name="description" content="A 3D reconstruction in progress of the ground Toronto was built on, around 1700: the bay, the sand peninsula, the marsh, the Humber and the Carrying Place trail, on real terrain and the earliest mapped shoreline.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111z">
+<link rel="stylesheet" href="style.css?v=20261112a">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -21,7 +21,7 @@
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
 } }
 </script>
-<script src="short.js?v=20261111z"></script>
+<script src="short.js?v=20261112a"></script>
 </head>
 <body class="shore world17">
 <div class="wrap">
@@ -89,6 +89,33 @@
     <p class="src" style="margin-top:18px">The shoreline, marsh and creek data are adapted from the University of Toronto’s Historical Hydrography of Toronto, CC BY-SA 4.0.</p>
   </section>
 
+  <section class="notes subway" id="subway" aria-labelledby="subway-title">
+    <div class="sec-head"><h2 id="subway-title">Under the same ground today: ride the lines</h2><span class="fine sub-count"></span></div>
+    <p class="sub-lead">Three centuries after the trail, this is how the city moves. Pick a line and a train runs it end to end. Each station lights up as the train arrives: doors for a stop, two arrows where you can change lines, a flag at the end of the line.</p>
+    <div class="sub-lines" role="group" aria-label="Choose a line"></div>
+    <div class="sub-stage">
+      <div class="sub-now" aria-live="polite">
+        <i class="num"></i>
+        <div><small></small><b></b><span></span></div>
+        <i class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"></svg></i>
+      </div>
+      <div class="sub-map"><svg role="img" aria-label="Map of the TTC's rapid transit lines, drawn to their true shape, with a train moving along the chosen line"></svg><div class="sub-over" aria-hidden="true"></div></div>
+      <div class="sub-strip" role="group" aria-label="Stations on this line, in order. Choose one to send the train there."></div>
+    </div>
+    <div class="sub-ctl">
+      <div><b class="sub-title"></b><span class="fine sub-ends"></span></div>
+      <button class="btn dark sub-play" type="button" aria-pressed="false">Ride the line</button>
+      <button class="btn sub-next" type="button">Next stop</button>
+      <button class="btn sub-turn" type="button">Ride the other way</button>
+      <button class="btn sub-sound" type="button" aria-pressed="false">Chime off</button>
+    </div>
+    <ul class="log">
+      <li><span class="mono">Real</span><span>The lines, their colours, the stations and their order, and the path of each track: from <a class="sub-source" target="_blank" rel="noopener"></a>. A line that has opened, closed or changed since then will be wrong here until the data is fetched again.</span></li>
+      <li><span class="mono">Worked out</span><span>Where you can change lines. A station is marked as a change when a station of another line is within 300 m of it on the map. That finds the real interchanges, but it is a rule, not the TTC’s own list.</span></li>
+      <li><span class="mono">Drawn</span><span>The train, the icons, the chime and how long the ride takes. This is not a timetable, and the train does not show where any real train is. For service, times and accessibility, use <a href="https://www.ttc.ca/" target="_blank" rel="noopener">ttc.ca</a>. This site is not affiliated with the TTC.</span></li>
+    </ul>
+  </section>
+
   <nav class="pager" aria-label="Where to go next">
     <a href="./"><span class="kicker">Back</span><b>Home</b><span>The York Project</span></a>
     <a href="town.html"><span class="kicker">After this · 1700 to 1850</span><b>A town taking shape</b><span>A timelapse from forest to city</span></a>
@@ -116,10 +143,12 @@
 
 <dialog class="gallery" id="gallery-dialog" aria-labelledby="gallery-title"></dialog>
 
-<script src="data/history.js?v=20261111z"></script>
-<script src="data/terrain.js?v=20261111z"></script>
-<script src="gallery.js?v=20261111z"></script>
-<script type="module" src="world1700.js?v=20261111z"></script>
+<script src="data/history.js?v=20261112a"></script>
+<script src="data/terrain.js?v=20261112a"></script>
+<script src="gallery.js?v=20261112a"></script>
+<script type="module" src="world1700.js?v=20261112a"></script>
+<script src="data/subway.js?v=20261112a"></script>
+<script src="subway.js?v=20261112a"></script>
 <script>
 // Fill in the notes from the data file, so the page cannot drift from what was built.
 (function () {

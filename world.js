@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'Ride the lines: a new section on the c.1700 page. The TTC\u2019s five rapid transit lines are drawn to their true shape from OpenStreetMap; pick one and a train runs it end to end, lighting each station as it arrives with an icon for a stop, a change of lines or the end of the line, and a strip of lights like the map above a subway car\u2019s doors. It is a drawing, not a timetable.'
+  },
+  {
+    date: '2026-11-11',
     text: 'Every page now closes with a band above its footer: Toronto has more stories on the left and Many places. One Toronto. on the right, with links to the stories made so far and to this log.'
   },
   {

@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2e9d7">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261111z">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261111z">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261111z">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261111z">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261112a">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261112a">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261112a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261112a">
 <title>Toronto through play, code and a world in progress · The York Project</title>
 <meta name="description" content="Toronto through play and record. A one-button history game, a film of the city's limits drawn in maple leaves, and a 3D world that keeps being added to.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111z">
+<link rel="stylesheet" href="style.css?v=20261112a">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -212,30 +212,30 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261111z"></script>
-<script src="world.js?v=20261111z"></script>
-<script src="scenery.js?v=20261111z"></script>
-<script src="references.js?v=20261111z"></script>
-<script src="draw.js?v=20261111z"></script>
-<script src="site.js?v=20261111z"></script>
-<script src="data/boundaries.js?v=20261111z"></script>
-<script src="data/history.js?v=20261111z"></script>
-<script src="data/today.js?v=20261111z"></script>
-<script src="data/shoreline.js?v=20261111z"></script>
-<script src="data/buildings.js?v=20261111z"></script>
-<script src="data/terrain.js?v=20261111z"></script>
-<script src="gallery.js?v=20261111z"></script>
-<script src="sketch.js?v=20261111z"></script>
-<script src="stories.js?v=20261111z"></script>
+<script src="records.js?v=20261112a"></script>
+<script src="world.js?v=20261112a"></script>
+<script src="scenery.js?v=20261112a"></script>
+<script src="references.js?v=20261112a"></script>
+<script src="draw.js?v=20261112a"></script>
+<script src="site.js?v=20261112a"></script>
+<script src="data/boundaries.js?v=20261112a"></script>
+<script src="data/history.js?v=20261112a"></script>
+<script src="data/today.js?v=20261112a"></script>
+<script src="data/shoreline.js?v=20261112a"></script>
+<script src="data/buildings.js?v=20261112a"></script>
+<script src="data/terrain.js?v=20261112a"></script>
+<script src="gallery.js?v=20261112a"></script>
+<script src="sketch.js?v=20261112a"></script>
+<script src="stories.js?v=20261112a"></script>
 <script>
 // The first story card shows its photograph as a sketch, like the story it opens.
 document.querySelectorAll("img.sketch-me").forEach(function (img) { function go() { try { var c = YP.sketch(img, 700); c.className = "sketch"; img.parentNode.insertBefore(c, img); img.parentNode.classList.add("drawn"); } catch (e) {} } if (img.complete && img.naturalWidth) go(); else img.addEventListener("load", go, { once: true }); });
 </script>
-<script src="leafline.js?v=20261111z"></script>
+<script src="leafline.js?v=20261112a"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
-import('./world1700.js?v=20261111z').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261111z').catch(() => {});
+import('./world1700.js?v=20261112a').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261112a').catch(() => {});
 </script>
 </body>
 </html>
