@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111j">
+<link rel="stylesheet" href="style.css?v=20261111k">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -40,7 +40,7 @@
   <div class="shore-head">
     <div class="mono">03 / Reconstructing Toronto · c.1700 · in progress</div>
     <h1>The ground <em>before the town.</em></h1>
-    <p>A bay behind a long sandbar, a marsh at the mouth of the Don, forest to the water’s edge, and a trail up the Humber that people had walked for centuries. This is the first pass at that place, built on real ground and the oldest shoreline the maps can give.</p>
+    <p>Around 1700 there was no town here. There was a bay behind a long sandbar, a marsh at the mouth of the Don, forest to the water’s edge, and a trail up the Humber, the Carrying Place, that people had walked for centuries to reach the upper lakes. On it stood the clearing of Teiaiagon, a Seneca village left a few years before. This is a first pass at that place, built on real ground and the oldest shoreline the maps can give. Every view below says what it shows and what in it is real.</p>
   </div>
 </div>
 
@@ -55,6 +55,7 @@
 </div>
 
 <div class="wrap">
+  <div class="about" id="w17-about" aria-live="polite"></div>
   <p class="help" style="padding:0">The recording moves through all six views and starts again. Drag to stop it and orbit · scroll or pinch to zoom · right-drag or two fingers to pan · Play picks it up again</p>
 
   <section class="notes">
@@ -67,7 +68,8 @@
     <ul class="log">
       <li><span class="mono">Real</span><span>The shape of the ground: the Humber and Don valleys, the ravines and the old lake bluff. It comes from today’s elevation model (<a id="w17-src-h" target="_blank" rel="noopener"></a>), because the land’s broad shape has not changed. Heights are stretched <b>2.5 times</b> so the relief can be seen.</span></li>
       <li><span class="mono">Real</span><span>The water’s edge, the marsh and the creeks, with one large caveat: nothing was mapped in 1700. They are traced from the earliest maps that cover each place, <span id="w17-maps"></span> (<a id="w17-src-w" target="_blank" rel="noopener"></a>). Land made since then has been taken back out, and the sand peninsula put back where those maps draw it.</span></li>
-      <li><span class="mono">Real</span><span>Where Teiaiagon stood: on the east bank of the Humber at what is now Baby Point. Accounts differ on when it was left, in 1687 or by 1701 (<a href="https://en.wikipedia.org/wiki/Teiaiagon" target="_blank" rel="noopener">Wikipedia, Teiaiagon</a>). Only its place is marked, as a clearing.</span></li>
+      <li><span class="mono">Real</span><span>Where Teiaiagon stood. It was a village of the Seneca, one of the Haudenosaunee (Iroquois) nations, on the east bank of the Humber at what is now Baby Point, on the trail. Estimates of its size run from 500 to 800 people to about 2,000, and accounts differ on when it was left, in 1687 or by 1701 (<a href="https://en.wikipedia.org/wiki/Teiaiagon" target="_blank" rel="noopener">Wikipedia, Teiaiagon</a>; <a href="https://en.wikipedia.org/wiki/History_of_Toronto" target="_blank" rel="noopener">Wikipedia, History of Toronto</a>). Only its place is marked, as a clearing: no buildings are drawn.</span></li>
+      <li><span class="mono">Mixed</span><span>Three places where a rule, not a measurement, shapes the land. The sandbar comes out of the data in pieces, because it is narrower than the 50 m spacing; it is recorded as joined to the shore until 1858, so the pieces are joined across their gaps. Ground the old maps draw as water but which stands above the lake today, close to the lake, is land made since and is put back under water. And a few specks of land alone in open water, where two map sheets disagree, are taken out.</span></li>
       <li><span class="mono">Mixed</span><span>The Carrying Place. The trail began at the lake and followed the Humber’s east bank north (<a href="https://en.wikipedia.org/wiki/Toronto_Carrying-Place_Trail" target="_blank" rel="noopener">Wikipedia, Toronto Carrying-Place Trail</a>). Its exact line is not known to this project, so the line here simply keeps to that bank, and it is drawn about four metres wide so that it can be seen.</span></li>
       <li><span class="mono">Not real</span><span>The trees. Where each stands, what kind it is and how thick the forest grows are an impression, <span id="w17-trees"></span> of them. The one exception is the scattered oaks at High Park, where black oak savannah still survives (<a href="https://en.wikipedia.org/wiki/High_Park" target="_blank" rel="noopener">Wikipedia, High Park</a>).</span></li>
       <li><span class="mono">Not real</span><span>The canoes and the people. They are there for scale, and like the trees they are drawn 1.5 times life size.</span></li>
@@ -94,10 +96,10 @@
 
 <dialog class="gallery" id="gallery-dialog" aria-labelledby="gallery-title"></dialog>
 
-<script src="data/history.js?v=20261111j"></script>
-<script src="data/terrain.js?v=20261111j"></script>
-<script src="gallery.js?v=20261111j"></script>
-<script type="module" src="world1700.js?v=20261111j"></script>
+<script src="data/history.js?v=20261111k"></script>
+<script src="data/terrain.js?v=20261111k"></script>
+<script src="gallery.js?v=20261111k"></script>
+<script type="module" src="world1700.js?v=20261111k"></script>
 <script>
 // Fill in the notes from the data file, so the page cannot drift from what was built.
 (function () {

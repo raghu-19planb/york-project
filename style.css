@@ -222,6 +222,8 @@ body.home .world3d canvas { touch-action: pan-y; }
 .labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .labels span { position: absolute; left: 0; top: 0; white-space: nowrap; font: 600 0.62rem var(--body); letter-spacing: 0.12em; text-transform: uppercase; background: var(--chalk); color: var(--ink); padding: 2px 7px; }
 .labels span.water { background: transparent; color: #1d4a52; font: italic 500 0.86rem var(--display); letter-spacing: 0; text-transform: none; }
+.labels span small { display: block; font: 400 0.66rem var(--body); letter-spacing: 0; text-transform: none; color: var(--muted); margin-top: 1px; }
+.labels span.water small { font-style: normal; color: #2f5a62; }
 .views { position: absolute; left: 16px; bottom: 16px; display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(100% - 32px); }
 .views button { font: 600 0.66rem var(--body); letter-spacing: 0.12em; text-transform: uppercase; background: var(--chalk); color: var(--ink); border: 1px solid var(--ink); padding: 8px 12px; cursor: pointer; }
 .views button.on { background: var(--lake); color: var(--chalk); border-color: var(--lake); }
@@ -289,6 +291,19 @@ section.notes { padding: 56px 0 0; }
 .view-tag small { display: block; font: 600 0.6rem var(--body); letter-spacing: 0.16em; opacity: 0.8; margin-bottom: 2px; }
 .view-tag b { font: 600 1.02rem var(--body); }
 .view-tag:empty { display: none; }
+/* what the current view shows: every view and every snapshot carries its explanation */
+.about { max-width: 68ch; }
+.about h3 { font: 550 clamp(1.3rem, 2.4vw, 1.8rem) var(--display); letter-spacing: -0.03em; margin: 0 0 6px; color: #34241d; }
+.about p { margin: 0 0 8px; }
+.about .real, .gallery-stage .real { font-size: 0.86rem; color: var(--muted); }
+body.shore .about { margin: 22px 0 6px; }
+.viewer-foot { align-items: flex-start; }
+.about-side { display: grid; gap: 14px; justify-items: start; max-width: 34ch; }
+.contact .why { display: block; font-size: 0.78rem; line-height: 1.35; color: var(--muted); margin-top: -4px; }
+.contact .name { display: block; font-weight: 500; }
+.gallery-stage figcaption b { display: block; font: 550 1.15rem var(--display); letter-spacing: -0.02em; margin-bottom: 4px; }
+.gallery-stage figcaption p { margin: 0 0 4px; max-width: 80ch; font-size: 0.95rem; }
+.gallery-stage .real { color: rgba(255, 246, 229, 0.72); }
 /* the recording's progress line and its play button */
 .world-track { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(22, 48, 47, 0.25); pointer-events: none; }
 .world-track span { display: block; height: 100%; background: var(--lake); transform-origin: left center; transform: scaleX(0); }
@@ -301,8 +316,8 @@ body.home .views.cards button { padding: 10px 14px 11px; gap: 1px; }
 body.home .views.cards button b { font-size: 1rem; margin-top: 4px; }
 body.home .views.cards button span { font-size: 0.8rem; }
 body.home .view-tag { top: auto; bottom: 16px; }
-.contact { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
-.contact button { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: inherit; font: 400 0.86rem var(--body); display: grid; gap: 8px; }
+.contact { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.contact button { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: inherit; font: 400 0.86rem var(--body); display: grid; gap: 8px; align-content: start; }
 .contact .thumb { display: block; aspect-ratio: 4 / 3; overflow: hidden; background: #d9d0b4; }
 .contact img, .gallery-thumbs img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s ease; }
 .contact button:hover img { transform: scale(1.04); }
