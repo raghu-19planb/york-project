@@ -9,8 +9,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111s">
+<link rel="stylesheet" href="style.css?v=20261111u">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
+<script src="short.js?v=20261111u"></script>
 </head>
 <body class="shore story-page">
 <div class="wrap">
@@ -24,7 +25,7 @@
       <a href="game.html"><span>01</span> Play</a>
       <a href="./#redrawn"><span>02</span> Watch</a>
       <a href="world.html"><span>03</span> Explore</a>
-      <a href="./#record"><span>04</span> Read</a>
+      <a href="./#stories"><span>04</span> Stories</a>
     </nav>
   </header>
   <nav class="crumbs" aria-label="Breadcrumb">
@@ -37,12 +38,16 @@
   </div>
 </div>
 
+<div class="short-frame" id="story-frame">
 <div class="story" id="story" tabindex="0" aria-label="Scrapbook: the CN Tower going up, in eleven pages. Use the arrow keys or the buttons to turn pages.">
   <div class="story-bars" id="story-bars" aria-hidden="true"></div>
   <div class="binding" aria-hidden="true"></div>
   <div class="pages" id="story-pages"></div>
   <button class="turn prev" id="story-prev" type="button" aria-label="Previous page"><span aria-hidden="true">‹</span></button>
   <button class="turn next" id="story-next" type="button" aria-label="Next page"><span aria-hidden="true">›</span></button>
+</div>
+  <button class="frame-btn frame-max" id="story-max" type="button" aria-pressed="false">Maximize</button>
+  <button class="frame-btn frame-play" id="story-play2" type="button" aria-label="Play or pause">▶</button>
 </div>
 
 <div class="wrap">
@@ -79,13 +84,14 @@
   <footer>
     An independent project about Toronto's history. Not affiliated with the City of Toronto or the TTC.
     <span class="inspired">Tkaronto is the Kanien’kéha (Mohawk) word the city’s name comes from. It means “where there are trees standing in the water” (<a href="https://thecanadianencyclopedia.ca/en/article/toronto" target="_blank" rel="noopener">The Canadian Encyclopedia</a>).</span>
+    <span class="inspired">Behind the project: <a href="notes.html">the world so far, the record behind the game, what it was drawn from, and the log</a>.</span>
     <span class="inspired">Inspired by <a href="https://madras.v40.in/" target="_blank" rel="noopener">The Madras Project</a>.</span>
     <span class="inspired rights">You are welcome to draw inspiration from this site, but please do not copy it directly. Its design, words, drawings and code are © 2026 Raghu Devaguptapu. The map and history data keep the licences of their sources, which are named where they are used.</span>
   </footer>
 </div>
 
-<script src="data/tower.js?v=20261111s"></script>
-<script src="sketch.js?v=20261111s"></script>
-<script src="tower.js?v=20261111s"></script>
+<script src="data/tower.js?v=20261111u"></script>
+<script src="sketch.js?v=20261111u"></script>
+<script src="tower.js?v=20261111u"></script>
 </body>
 </html>

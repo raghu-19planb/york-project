@@ -12,6 +12,8 @@ Toronto, a world in progress. A static site (plain HTML, CSS and JS, no build st
 - `landscape.js` – draws the landscape for any given year. Ordinary buildings, people, carts, cars and ships are illustrative; anything with a caption comes from `scenery.js`.
 - `scene3d.js` – the 3D renderer for the game (three.js from a CDN). `game.js` owns the rules; if WebGL is unavailable the 2D drawings in `landscape.js` and `game.js` are used instead, so a new landmark needs a drawing in both.
 - `references.js` – the period pictures each model was built from, and the list of things not yet checked. **Rule: look at a period source before drawing anything historical, and record it here.**
+- `short.js`, `stories.js`, `film.html` – **story mode and the story player**. A page opened with `?short` shows only its animation, filling the window (`short.js`, loaded in the head of `tower.html`, `town.html`, `world.html` and `film.html`). `stories.js` opens a home-page story card in a 9:16 frame holding that page, with Maximize and a link to the full page. `film.html` is the leaf-drawn film on a page of its own.
+- `notes.html` – **Behind the project**: the working notes that used to sit at the foot of the home page (the world so far, the record, what the years bring, drawn from the archive, the log). Filled by `site.js` from `records.js`, `world.js`, `scenery.js` and `references.js`; linked from every footer.
 - `tower.html`, `tower.js`, `data/tower.js`, `sketch.js` – **How a tower went up**, the first of the site's stories: a scrapbook of the CN Tower in eleven pages that turn themselves. The words are in `tools/build-tower.js` (run it to rewrite `data/tower.js`); the pictures and their credits are in `images/tower/src/`. `sketch.js` turns a photograph into a pencil-and-wash sketch in the browser and is also used by the story card on the home page.
 - `assets/polyhaven/` – photographed surfaces (sand, forest floor, bark) and a scanned fern from Poly Haven, CC0, used by `world1700.js`; sources are in `references.js`. About 6.8 MB, loaded only by the 3D world pages. Adding `?full` to a world page's address shows the full version (all trees, scanned ferns) on a small or touch screen.
 - `paint.js` – the painted look shared by the game (`scene3d.js`) and the 3D worlds (`world1700.js`): the 3D picture is drawn off-screen and repainted in flat dabs (a Kuwahara filter), with the film curve applied there for the worlds. Each engine loads it with its own `?v=` stamp, so bumping the stamp in the pages is still enough.
@@ -46,7 +48,7 @@ You are welcome to draw inspiration from this site, but please do not copy it di
 
 ## Cache stamp
 
-Every page loads its stylesheet and scripts with the same `?v=` stamp (for example `style.css?v=20261111e`). When any of those files changes, change the stamp in all six pages together (`index.html`, `game.html`, `shore.html`, `world.html`, `town.html`, `tower.html`). Without it a phone can pair a cached page with a newer stylesheet and lay the page out wrongly.
+Every page loads its stylesheet and scripts with the same `?v=` stamp (for example `style.css?v=20261111e`). When any of those files changes, change the stamp in all eight pages together (`index.html`, `game.html`, `shore.html`, `world.html`, `town.html`, `tower.html`, `notes.html`, `film.html`). Without it a phone can pair a cached page with a newer stylesheet and lay the page out wrongly.
 
 ## Running it
 

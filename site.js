@@ -1,4 +1,5 @@
-// Landing page: everything below is rendered from records.js and world.js.
+// The home page and notes.html: each block below fills its part of the page from records.js, world.js,
+// scenery.js and references.js, and is skipped on a page that does not have that part.
 (function () {
   const el = (tag, cls, text) => {
     const n = document.createElement(tag);
@@ -7,6 +8,7 @@
     return n;
   };
 
+  if (document.getElementById('motion')) {
   // Motion: one switch for everything that moves on its own (3D drift, the silent film glimpse).
   const root = document.documentElement, motion = document.getElementById('motion');
   const showMotion = () => motion.setAttribute('aria-pressed', String(!root.classList.contains('still')));
@@ -17,6 +19,10 @@
   });
   showMotion();
 
+  
+  }
+
+  if (document.getElementById('rides')) {
   // Rides: the four vehicles and the year each takes over
   const rides = document.getElementById('rides');
   YP.VEHICLES.forEach(v => {
@@ -25,6 +31,10 @@
     rides.append(li);
   });
 
+  
+  }
+
+  if (document.getElementById('pieces')) {
   // Pieces
   const statusText = { live: 'Live', building: 'In progress', planned: 'Planned' };
   const pieces = document.getElementById('pieces');
@@ -35,7 +45,8 @@
     card.append(top, el('h3', null, p.title), el('p', 'line', p.line), el('p', null, p.body));
     if (p.href) {
       const a = el('a', 'go', p.cta);
-      a.href = p.href;
+      // a link to a part of the home page still works from notes.html, where that part is not on the page
+      a.href = p.href.charAt(0) === '#' && !document.getElementById(p.href.slice(1)) ? './' + p.href : p.href;
       card.append(a);
     }
     pieces.append(card);
@@ -45,17 +56,29 @@
   document.getElementById('world-count').textContent =
     [live + ' live', building + ' in progress', (YP.PIECES.length - live - building) + ' planned'].join(' · ');
 
+  
+  }
+
+  if (document.getElementById('records')) {
   // Records
   const list = document.getElementById('records');
   YP.RECORDS.forEach(r => list.append(YP.recordItem(r)));
   document.getElementById('record-count').textContent = YP.RECORDS.length + ' entries';
 
+  
+  }
+
+  if (document.getElementById('scenery')) {
   // Scenery
   const scenery = document.getElementById('scenery');
   YP.SCENERY.forEach(s => scenery.append(YP.recordItem(s)));
   const ps = document.getElementById('pop-src');
   ps.href = YP.POPULATION.url; ps.textContent = YP.POPULATION.source;
 
+  
+  }
+
+  if (document.getElementById('refs')) {
   // Visual references
   const refs = document.getElementById('refs');
   YP.REFERENCES.forEach(r => {
@@ -69,6 +92,10 @@
   YP.UNCHECKED.forEach(u => document.getElementById('unchecked').append(el('li', null, u)));
   document.getElementById('ref-count').textContent = YP.REFERENCES.length + ' checked · ' + YP.UNCHECKED.length + ' groups to do';
 
+  
+  }
+
+  if (document.getElementById('loglist')) {
   // Log
   const log = document.getElementById('loglist');
   YP.LOG.forEach(e => {
@@ -78,4 +105,5 @@
     li.append(t, el('span', null, e.text));
     log.append(li);
   });
+  }
 })();

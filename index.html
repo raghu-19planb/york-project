@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111s">
+<link rel="stylesheet" href="style.css?v=20261111u">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -37,7 +37,7 @@
       <a href="#play"><span>01</span> Play</a>
       <a href="#redrawn"><span>02</span> Watch</a>
       <a href="#world"><span>03</span> Explore</a>
-      <a href="#record"><span>04</span> Read</a>
+      <a href="#stories"><span>04</span> Stories</a>
     </nav>
   </section>
 
@@ -54,7 +54,7 @@
       <p class="sublead">From canoe to subway. Ride through the years, catch the record, or take a slower trip and read every stop.</p>
       <div class="btn-row">
         <a class="btn" href="game.html">Play Next Stop, Toronto <i aria-hidden="true">▶</i></a>
-        <a class="btn ghost" href="#record">Read the record</a>
+        <a class="btn ghost" href="notes.html#record">Read the record</a>
       </div>
       <p class="fine">Free in your browser · Desktop &amp; phone</p>
     </div>
@@ -146,13 +146,6 @@
       <p class="world-links"><a href="world.html">Open the full world, and read what is real in it.</a><a href="shore.html">See the same shore today, in 3D.</a></p>
     </div>
 
-    <div class="band-in">
-      <div class="sec-head">
-        <h3>The world so far</h3>
-        <span class="fine" id="world-count"></span>
-      </div>
-      <div class="pieces" id="pieces"></div>
-    </div>
   </section>
 
   <!-- 03, continued · the town, 1700 to 1850 -->
@@ -182,62 +175,24 @@
   <section class="stories" id="stories">
     <div class="stories-head">
       <h2>Stories from The York Project</h2>
-      <p class="fine">Short pieces to watch. Each one opens and plays.</p>
+      <p class="fine">Short pieces to watch. Each one opens in a tall frame and plays.</p>
     </div>
     <div class="story-row">
-      <a class="story-card is-sketch" href="tower.html#play"><img class="sketch-me" src="images/tower/src/11-open-1976.jpg" width="1100" height="1755" loading="lazy" alt="The CN Tower in the summer it opened, 1976, redrawn as a sketch"><span class="play" aria-hidden="true">▶</span><span class="words"><small>Toronto · 1970 to today</small><b>How a tower went up</b><span>Eleven pages. A scrapbook.</span></span></a>
-      <a class="story-card " href="town.html"><img src="images/town/town-1850.jpg" width="1600" height="900" loading="lazy" alt="The 3D model of Toronto in 1850, seen from above the bay"><span class="play" aria-hidden="true">▶</span><span class="words"><small>1700 → 1850</small><b>A town taking shape</b><span>Forest to a city, in under a minute.</span></span></a>
-      <a class="story-card is-leaf" href="#redrawn"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,2 57,17 65,13 61,37 75,25 78,34 92,31 87,45 96,52 73,68 76,78 53,74 54,98 46,98 47,74 24,78 27,68 4,52 13,45 8,31 22,34 25,25 39,37 35,13 43,17" fill="#d8342c"/></svg><span class="play" aria-hidden="true">▶</span><span class="words"><small>1802 → today</small><b>Toronto, drawn by a leaf</b><span>One unbroken line.</span></span></a>
-      <a class="story-card " href="world.html"><img src="images/world1700/03-carrying-place.jpg" width="1600" height="900" loading="lazy" alt="The 3D model of the Seneca village of Teiaiagon about 1680"><span class="play" aria-hidden="true">▶</span><span class="words"><small>c.1680</small><b>The village on the trail</b><span>Teiaiagon, before there was a town.</span></span></a>
+      <a class="story-card is-sketch" href="tower.html#play" data-short="tower.html?short" data-page="tower.html"><img class="sketch-me" src="images/tower/src/11-open-1976.jpg" width="1100" height="1755" loading="lazy" alt="The CN Tower in the summer it opened, 1976, redrawn as a sketch"><span class="play" aria-hidden="true">▶</span><span class="words"><small>Toronto · 1970 to today</small><b>How a tower went up</b><span>Eleven pages. A scrapbook.</span></span></a>
+      <a class="story-card " href="town.html" data-short="town.html?short"><img src="images/town/town-1850.jpg" width="1600" height="900" loading="lazy" alt="The 3D model of Toronto in 1850, seen from above the bay"><span class="play" aria-hidden="true">▶</span><span class="words"><small>1700 → 1850</small><b>A town taking shape</b><span>Forest to a city, in under a minute.</span></span></a>
+      <a class="story-card is-leaf" href="film.html" data-short="film.html?short"><svg viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,2 57,17 65,13 61,37 75,25 78,34 92,31 87,45 96,52 73,68 76,78 53,74 54,98 46,98 47,74 24,78 27,68 4,52 13,45 8,31 22,34 25,25 39,37 35,13 43,17" fill="#d8342c"/></svg><span class="play" aria-hidden="true">▶</span><span class="words"><small>1802 → today</small><b>Toronto, drawn by a leaf</b><span>One unbroken line.</span></span></a>
+      <a class="story-card " href="world.html" data-short="world.html?short"><img src="images/world1700/03-carrying-place.jpg" width="1600" height="900" loading="lazy" alt="The 3D model of the Seneca village of Teiaiagon about 1680"><span class="play" aria-hidden="true">▶</span><span class="words"><small>c.1680</small><b>The village on the trail</b><span>Teiaiagon, before there was a town.</span></span></a>
     </div>
   </section>
 
-  <!-- 04 · the record -->
-  <section class="notes-band" id="record">
-    <div class="notes-side">
-      <div class="kicker">04 / Behind the game</div>
-      <h2>The record.</h2>
-      <p class="fine" id="record-count"></p>
-      <p>Every card in Next Stop, Toronto, with the source it was checked against.</p>
-    </div>
-    <ol class="records" id="records"></ol>
-  </section>
-
-  <section class="notes-band" id="landscape">
-    <div class="notes-side">
-      <div class="kicker">Also in the landscape</div>
-      <h2>What the years bring.</h2>
-      <p>The game’s scenery changes with the year. These are the dated things in it; the city’s growth is paced by census counts (<a id="pop-src" target="_blank" rel="noopener"></a>). Ordinary houses, people, carts, cars and ships are an illustration of the period, not records.</p>
-    </div>
-    <ol class="records" id="scenery"></ol>
-  </section>
-
-  <section class="notes-band" id="references">
-    <div class="notes-side">
-      <div class="kicker">Behind the drawing</div>
-      <h2>Drawn from the archive.</h2>
-      <p class="fine" id="ref-count"></p>
-      <p>What things look like should come from period paintings, plans and photographs, not from guesswork. These are the pictures and maps each model was built from, what was taken from them, and what is still a guess.</p>
-    </div>
-    <div>
-      <ol class="records" id="refs"></ol>
-      <h3 class="sub">Not yet checked against a reference</h3>
-      <p class="subnote">These are illustrative for now and should not be read as accurate depictions.</p>
-      <ul class="unchecked" id="unchecked"></ul>
-    </div>
-  </section>
-
-  <section class="notes-band" id="log">
-    <div class="notes-side">
-      <div class="kicker">A world in progress</div>
-      <h2>World log.</h2>
-      <p>What was added, and when.</p>
-    </div>
-    <ul class="log" id="loglist"></ul>
-  </section>
 </main>
 
 <dialog class="gallery" id="gallery-dialog" aria-labelledby="gallery-title"></dialog>
+
+<dialog class="short-dialog" id="short-dialog" aria-label="Story player">
+  <div class="short-bar"><b class="short-title"></b><span><button type="button" class="short-max" aria-pressed="false">Maximize</button><a class="short-full" href="./">Full page ↗</a><button type="button" class="short-close" aria-label="Close the story">Close ×</button></span></div>
+  <div class="short-frame"><iframe title="Story" loading="lazy" allow="autoplay; fullscreen"></iframe></div>
+</dialog>
 
 <footer class="foot">
   <div class="foot-in">
@@ -245,35 +200,37 @@
     <div>
       <p>An independent project about Toronto’s history. Not affiliated with the City of Toronto or the TTC. Each record links to the source it was checked against.</p>
       <p>Tkaronto is the Kanien’kéha (Mohawk) word the city’s name comes from. It means “where there are trees standing in the water” (<a href="https://thecanadianencyclopedia.ca/en/article/toronto" target="_blank" rel="noopener">The Canadian Encyclopedia</a>).</p>
+      <p>Behind the project: <a href="notes.html">the world so far, the record behind the game, what it was drawn from, and the log</a>.</p>
       <p>Inspired by <a href="https://madras.v40.in/" target="_blank" rel="noopener">The Madras Project</a>.</p>
       <p class="rights">You are welcome to draw inspiration from this site, but please do not copy it directly. Its design, words, drawings and code are © 2026 Raghu Devaguptapu. The map and history data keep the licences of their sources, which are named where they are used.</p>
     </div>
   </div>
 </footer>
 
-<script src="records.js?v=20261111s"></script>
-<script src="world.js?v=20261111s"></script>
-<script src="scenery.js?v=20261111s"></script>
-<script src="references.js?v=20261111s"></script>
-<script src="draw.js?v=20261111s"></script>
-<script src="site.js?v=20261111s"></script>
-<script src="data/boundaries.js?v=20261111s"></script>
-<script src="data/history.js?v=20261111s"></script>
-<script src="data/today.js?v=20261111s"></script>
-<script src="data/shoreline.js?v=20261111s"></script>
-<script src="data/buildings.js?v=20261111s"></script>
-<script src="data/terrain.js?v=20261111s"></script>
-<script src="gallery.js?v=20261111s"></script>
-<script src="sketch.js?v=20261111s"></script>
+<script src="records.js?v=20261111u"></script>
+<script src="world.js?v=20261111u"></script>
+<script src="scenery.js?v=20261111u"></script>
+<script src="references.js?v=20261111u"></script>
+<script src="draw.js?v=20261111u"></script>
+<script src="site.js?v=20261111u"></script>
+<script src="data/boundaries.js?v=20261111u"></script>
+<script src="data/history.js?v=20261111u"></script>
+<script src="data/today.js?v=20261111u"></script>
+<script src="data/shoreline.js?v=20261111u"></script>
+<script src="data/buildings.js?v=20261111u"></script>
+<script src="data/terrain.js?v=20261111u"></script>
+<script src="gallery.js?v=20261111u"></script>
+<script src="sketch.js?v=20261111u"></script>
+<script src="stories.js?v=20261111u"></script>
 <script>
 // The first story card shows its photograph as a sketch, like the story it opens.
 document.querySelectorAll("img.sketch-me").forEach(function (img) { function go() { try { var c = YP.sketch(img, 700); c.className = "sketch"; img.parentNode.insertBefore(c, img); img.parentNode.classList.add("drawn"); } catch (e) {} } if (img.complete && img.naturalWidth) go(); else img.addEventListener("load", go, { once: true }); });
 </script>
-<script src="leafline.js?v=20261111s"></script>
+<script src="leafline.js?v=20261111u"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
-import('./world1700.js?v=20261111s').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261111s').catch(() => {});
+import('./world1700.js?v=20261111u').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261111u').catch(() => {});
 </script>
 </body>
 </html>

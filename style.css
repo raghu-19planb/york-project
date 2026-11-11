@@ -624,3 +624,46 @@ html.still .page { transition: none; }
 .sticky::before { content: ''; position: absolute; left: 50%; top: -9px; width: 70px; height: 20px; margin-left: -35px; background: rgba(184, 35, 47, 0.45); }
 .sticky small { display: block; font: 600 0.6rem var(--body); letter-spacing: 0.16em; text-transform: uppercase; color: #6d5a1a; margin-bottom: 4px; }
 .sticky p { margin: 0; font: 500 1.28rem/1.18 'Caveat', var(--body); color: #2c2622; }
+/* notes.html: the working notes that used to sit at the foot of the home page */
+.notes-first { padding: clamp(20px, 3vw, 40px) var(--gutter) 0; scroll-margin-top: 70px; }
+.shore-head .jump { font-size: 0.92rem; margin-top: 10px; }
+.notes-page .notes-band:last-of-type { padding-bottom: clamp(30px, 5vw, 60px); }
+
+/* The tall frame every story is shown in: nine wide to sixteen high, the shape of a short video */
+.short-frame { position: relative; aspect-ratio: 9 / 16; height: min(86vh, 900px); max-width: 100%; margin: 6px auto 0; overflow: hidden; background: #2a1512; }
+@supports (height: 1svh) { .short-frame { height: min(86svh, 900px); } }
+.short-frame .story { position: absolute; left: 50%; top: 50%; width: 560px; margin: 0; transform-origin: 50% 50%; }
+.short-frame.max { position: fixed; z-index: 200; inset: 0; margin: auto; height: 100vh; box-shadow: 0 0 0 100vmax rgba(20, 8, 6, 0.94); }
+@supports (height: 1svh) { .short-frame.max { height: 100svh; } }
+html.story-max { overflow: hidden; }
+.frame-btn { position: absolute; z-index: 60; background: rgba(48, 22, 18, 0.9); color: var(--chalk); border: 0; cursor: pointer; font: 600 0.66rem var(--body); letter-spacing: 0.12em; text-transform: uppercase; padding: 8px 12px; min-height: 36px; }
+.frame-max { right: 8px; top: 8px; } .frame-play { right: 8px; bottom: 8px; min-width: 40px; font-size: 0.8rem; letter-spacing: 0; }
+/* the story player on the home page */
+dialog.short-dialog { border: 0; padding: 0; background: transparent; color: var(--chalk); max-width: 100vw; max-height: 100vh; overflow: visible; }
+dialog.short-dialog::backdrop { background: rgba(20, 8, 6, 0.9); }
+.short-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 0 2px 8px; font-size: 0.86rem; }
+.short-bar b { font: 550 1.05rem var(--display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.short-bar span { display: flex; gap: 6px; align-items: center; flex: 0 0 auto; }
+.short-bar button, .short-bar a { background: rgba(255, 246, 229, 0.14); color: var(--chalk); border: 0; cursor: pointer; font: 600 0.62rem var(--body); letter-spacing: 0.1em; text-transform: uppercase; padding: 8px 10px; text-decoration: none; min-height: 34px; display: inline-flex; align-items: center; }
+dialog.short-dialog .short-frame { margin: 0 auto; height: min(82vh, 860px); }
+dialog.short-dialog.max .short-frame { height: calc(100vh - 46px); }
+@supports (height: 1svh) { dialog.short-dialog .short-frame { height: min(82svh, 860px); } dialog.short-dialog.max .short-frame { height: calc(100svh - 46px); } }
+.short-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #2a1512; }
+/* story mode (short.js): only the animation, filling the window */
+html.short, html.short body { height: 100%; overflow: hidden; background: #2a1512; }
+html.short .wrap > *, html.short .pager, html.short .crumbs { display: none; }
+html.short .wrap { padding: 0; margin: 0; max-width: none; }
+html.short .short-frame { position: fixed; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; margin: 0; background: #e9dcc0; }
+html.short .frame-max { display: none; }
+html.short .world3d { position: fixed; inset: 0; height: 100% !important; min-height: 0; border: 0; }
+html.short .wrap > #w17-about { display: block; position: fixed; z-index: 5; left: 0; right: 0; bottom: 0; margin: 0; padding: 40px 16px 18px; background: linear-gradient(180deg, rgba(30, 12, 10, 0), rgba(30, 12, 10, 0.9) 34%); color: var(--chalk); pointer-events: none; }
+html.short #w17-about h3 { font: 550 1.5rem var(--display); letter-spacing: -0.03em; margin: 0 0 6px; color: var(--chalk); }
+html.short #w17-about p { margin: 0; font-size: 0.92rem; line-height: 1.4; color: var(--chalk); display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+html.short #w17-about .real { display: none; }
+html.short .world3d .views, html.short .world3d .world-track { display: none; }
+html.short .world3d .world-play { bottom: auto; top: 96px; right: 16px; }
+html.short .film-solo { position: fixed; inset: 0; }
+html.short .film-solo .film { margin: 0; height: 100%; }
+html.short .film-solo .film canvas { height: 100%; max-height: none; aspect-ratio: auto; }
+html.short .film-solo .film-key { display: none; }
+.film-solo .film { margin-top: 0; }

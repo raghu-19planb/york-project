@@ -63,9 +63,10 @@
     playing = on && !still(); book.classList.toggle('playing', playing);
     playBtn.textContent = playing ? 'Pause' : at >= pages.length - 1 ? 'Play again' : 'Turn the pages for me';
     playBtn.setAttribute('aria-pressed', String(playing));
+    const p2 = document.getElementById('story-play2'); if (p2) { p2.textContent = playing ? '❚❚' : '▶'; p2.setAttribute('aria-label', playing ? 'Pause' : 'Turn the pages for me'); }
   }
   function focus() { // bring the book into view, as the timelapse does
-    const r = book.getBoundingClientRect();
+    const r = document.getElementById('story-frame').getBoundingClientRect();
     if (r.top < 64 || r.bottom > window.innerHeight) window.scrollTo({ top: Math.max(0, window.scrollY + r.top - 72), behavior: still() ? 'auto' : 'smooth' });
   }
   function tick(ts) {
@@ -75,6 +76,15 @@
     since += dt; pages[at].bar.style.transform = 'scaleX(' + Math.min(1, since / HOLD).toFixed(3) + ')';
     if (since >= HOLD) { if (at < pages.length - 1) show(at + 1); else setPlaying(false); }
   }
+  // The book is 560 wide and as tall as its tallest page. The frame is nine by sixteen; the book is scaled to sit
+  // inside it whole, so a page is always seen from its rings to its page number.
+  const frame = document.getElementById('story-frame'), maxBtn = document.getElementById('story-max'), play2 = document.getElementById('story-play2');
+  function fit() { const k = Math.min(frame.clientWidth / 560, frame.clientHeight / (book.offsetHeight || 1)); book.style.transform = 'translate(-50%, -50%) scale(' + k.toFixed(4) + ')'; }
+  new ResizeObserver(fit).observe(frame); new ResizeObserver(fit).observe(book); fit();
+  function setMax(on) { frame.classList.toggle('max', on); document.documentElement.classList.toggle('story-max', on); maxBtn.textContent = on ? 'Smaller' : 'Maximize'; maxBtn.setAttribute('aria-pressed', String(on)); fit(); }
+  maxBtn.addEventListener('click', () => setMax(!frame.classList.contains('max')));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && frame.classList.contains('max')) setMax(false); });
+  play2.addEventListener('click', () => playBtn.click());
   playBtn.addEventListener('click', () => { if (!playing && at >= pages.length - 1) show(0); setPlaying(!playing); if (playing) focus(); });
   document.getElementById('story-next').addEventListener('click', () => show(at + 1, 'user'));
   document.getElementById('story-prev').addEventListener('click', () => show(at - 1, 'user'));
@@ -90,7 +100,7 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden) setPlaying(false); });
 
   show(0); setPlaying(false);
-  if (location.hash === '#play' && !still()) { setPlaying(true); setTimeout(focus, 300); } // arriving from a story card: start at once
+  if ((location.hash === '#play' || document.documentElement.classList.contains('short')) && !still()) { setPlaying(true); setTimeout(focus, 300); } // arriving from a story card: start at once
   requestAnimationFrame(tick);
   YP.story = { show, setPlaying, get at() { return at; }, pages };
 })();

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f2e9d7">
+<title>Toronto, redrawn: a city drawn by one maple leaf · The York Project</title>
+<meta name="description" content="A film in code: a maple leaf draws one unbroken line through the shore of 1802, the city of 1834, every annexation and the shape Toronto has now.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261111u">
+<script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
+<script src="short.js?v=20261111u"></script>
+</head>
+<body class="shore film-page">
+<div class="wrap">
+  <header class="bar">
+    <div class="brand">
+      <a class="name" href="./">The York Project<svg class="leaf" viewBox="0 0 100 100" aria-hidden="true"><polygon points="50,2 57,17 65,13 61,37 75,25 78,34 92,31 87,45 96,52 73,68 76,78 53,74 54,98 46,98 47,74 24,78 27,68 4,52 13,45 8,31 22,34 25,25 39,37 35,13 43,17"/></svg></a>
+      <div class="name-alt" lang="moh" title="Tkaronto: the Kanien’kéha (Mohawk) word the name Toronto comes from">Tkaronto</div>
+    </div>
+    <nav class="menu" aria-label="Site">
+      <a href="./">Home</a>
+      <a href="game.html"><span>01</span> Play</a>
+      <a href="./#redrawn"><span>02</span> Watch</a>
+      <a href="world.html"><span>03</span> Explore</a>
+      <a href="./#stories"><span>04</span> Stories</a>
+    </nav>
+  </header>
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="./">Home</a><span aria-hidden="true">/</span><a href="./#stories">Stories</a><span aria-hidden="true">/</span><span aria-current="page">Toronto, redrawn</span>
+  </nav>
+  <div class="shore-head">
+    <div class="mono">Stories from The York Project · 1802 to today</div>
+    <h1>Toronto, <em>drawn by a leaf.</em></h1>
+    <p>One unbroken line: the shore of 1802, the city of 1834, every annexation, and the shape Toronto has now. <span id="film-length"></span>, with sound.</p>
+  </div>
+</div>
+<div class="band-film film-solo">
+    <div class="film" id="film">
+      <canvas id="film-canvas" aria-label="Animated map: a maple leaf draws one continuous line through the 1802 shore, the 1834 city limits, each annexation to 1967, the six municipalities and today's shore, ending as the outline of Toronto"></canvas>
+      <div class="film-labels" id="film-labels" aria-hidden="true"></div>
+      <div class="film-cap" aria-live="off">
+        <div class="film-year" id="film-year"></div>
+        <div class="film-text" id="film-text"></div>
+        <div class="film-sub" id="film-sub"></div>
+        <div class="film-stat" id="film-stat"></div>
+      </div>
+      <div class="film-key" id="film-key" aria-label="What the line colours mean"><div class="kicker">The line</div></div>
+      <button class="plate" id="film-play" type="button"><i aria-hidden="true">▶</i><span><b>Watch the film</b><small>About a minute, with sound</small></span></button>
+    </div>
+    <div class="film-ctl">
+      <span class="fine" id="film-note">A silent glimpse. Play the film to hear the notes.</span>
+      <input type="range" id="film-seek" min="0" max="1000" value="0" aria-label="Position in the film">
+      <span class="fine" id="film-time"></span>
+      <button class="link" id="film-pause" type="button" hidden>Pause</button>
+      <button class="link" id="film-mute" type="button" aria-pressed="false">Sound on</button>
+    </div>
+    <div class="chapters" id="film-chapters" role="group" aria-label="Jump to a moment in the film"></div>
+  </div>
+<div class="wrap">
+  <p class="help" style="padding:0">How it was made, what is real in it and what it leaves out are with <a href="./#redrawn">the film on the home page</a>.</p>
+  <nav class="pager" aria-label="Where to go next">
+    <a href="./#stories"><span class="kicker">Back</span><b>Stories</b><span>From The York Project</span></a>
+    <a href="tower.html"><span class="kicker">Another story</span><b>How a tower went up</b><span>A scrapbook in eleven pages</span></a>
+    <a href="town.html"><span class="kicker">Another story · 1700 to 1850</span><b>A town taking shape</b><span>A timelapse from forest to city</span></a>
+    <a href="world.html"><span class="kicker">03 Explore</span><b>Toronto, c.1700</b><span>The ground before the town</span></a>
+  </nav>
+  <footer>
+    An independent project about Toronto's history. Not affiliated with the City of Toronto or the TTC.
+    <span class="inspired">Tkaronto is the Kanien’kéha (Mohawk) word the city’s name comes from. It means “where there are trees standing in the water” (<a href="https://thecanadianencyclopedia.ca/en/article/toronto" target="_blank" rel="noopener">The Canadian Encyclopedia</a>).</span>
+    <span class="inspired">Behind the project: <a href="notes.html">the world so far, the record behind the game, what it was drawn from, and the log</a>.</span>
+    <span class="inspired">Inspired by <a href="https://madras.v40.in/" target="_blank" rel="noopener">The Madras Project</a>.</span>
+    <span class="inspired rights">You are welcome to draw inspiration from this site, but please do not copy it directly. Its design, words, drawings and code are © 2026 Raghu Devaguptapu. The map and history data keep the licences of their sources, which are named where they are used.</span>
+  </footer>
+</div>
+<script src="data/boundaries.js?v=20261111u"></script>
+<script src="data/history.js?v=20261111u"></script>
+<script src="data/shoreline.js?v=20261111u"></script>
+<script src="leafline.js?v=20261111u"></script>
+</body>
+</html>

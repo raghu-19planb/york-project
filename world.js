@@ -73,7 +73,7 @@ YP.PIECES = [
     title: 'Toronto, redrawn',
     line: 'One unbroken line, drawn by a maple leaf: the shore of 1802, the city of 1834, every annexation, the shape Toronto has now. With sound.',
     body: 'The leaf is the pen. It draws the shore and creeks of 1802, the first city limits, each annexation in the order it happened, then the six municipalities that became one city, and last the shore as it is today. Every solid line is a mapped line; nothing is erased.',
-    href: '#redrawn',
+    href: 'film.html',
     cta: 'Watch the map change'
   },
   {
@@ -87,6 +87,14 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'Stories now play in a tall frame, nine wide to sixteen high, the shape of a short video on a phone. A card on the home page opens its story in that frame; Maximize makes it as tall as the screen. The scrapbook sits in the same frame on its own page. The leaf-drawn film has a page of its own so it can be a story too.'
+  },
+  {
+    date: '2026-11-11',
+    text: 'The home page is now only the things to play, watch and explore. The working notes that sat below them (the world so far, the record behind the game, what the years bring, what it was drawn from, and this log) have moved to their own page, Behind the project, linked from the foot of every page.'
+  },
   {
     date: '2026-11-11',
     text: 'A new kind of piece: stories. The first is a scrapbook of the CN Tower going up, in eleven pages that turn themselves. The pictures are archive photographs from Wikimedia Commons, most by Robert Taylor, redrawn in the browser as pencil-and-wash sketches; a button shows each as it was taken. Every page carries its date, what was being built, how high the tower stood and one thing few visitors know. The home page now has a row of stories, with the timelapse, the leaf-drawn film and the village on the trail beside it.'
