@@ -9,6 +9,18 @@ const COMMONS = 'https://commons.wikimedia.org/wiki/File:';
 
 YP.REFERENCES = [
   {
+    item: 'Toronto, c.1700 (the 3D world)',
+    refs: [
+      { title: 'Terrain Tiles (Mapzen / Tilezen), from Canadian and US government elevation models', url: 'https://registry.opendata.aws/terrain-tiles/' },
+      { title: 'Historical Hydrography of Toronto, 1802-1886 (Marcel Fortin, University of Toronto Map & Data Library, CC BY-SA 4.0)', url: 'https://doi.org/10.5683/SP2/IYS0K9' },
+      { title: 'Wikipedia, Teiaiagon', url: 'https://en.wikipedia.org/wiki/Teiaiagon' },
+      { title: 'Wikipedia, Toronto Carrying-Place Trail', url: 'https://en.wikipedia.org/wiki/Toronto_Carrying-Place_Trail' },
+      { title: 'Wikipedia, High Park (the surviving black oak savannah)', url: 'https://en.wikipedia.org/wiki/High_Park' }
+    ],
+    took: 'The shape of the ground; the water\u2019s edge, marsh and creeks from the tracings of Chewett 1802, Chewett 1834 and Browne 1851; where Teiaiagon stood; that the trail kept to the Humber\u2019s east bank; that scattered oaks grew at High Park.',
+    caveat: 'Nothing was mapped in 1700, so the shore is a century late. The ground is today\u2019s, stretched 2.5 times in height. The trail\u2019s exact line, every tree outside High Park, and the canoes and people are not from any source. No picture of this place around 1700 has been looked at, and no dwellings are modelled.'
+  },
+  {
     item: 'Toronto, redrawn (the boundaries)',
     refs: [
       { title: 'City of Toronto Historical Annexation Boundaries, 1834-1967 (Marcel Fortin, University of Toronto Map & Data Library, CC BY 4.0)', url: 'https://doi.org/10.5683/SP3/XN2NRW' },
@@ -87,5 +99,6 @@ YP.UNCHECKED = [
   'Gas lamps and modern street lights',
   'Obstacles on the track',
   'The 2D fallback drawings',
+  'In the c.1700 world: the forest (kinds of tree, density, where each stands), the canoes drawn up and afloat, and the figures on the beach and trail',
   'The home page picture: the footprints and recorded heights are real, but the oil-painting look is a filter and no period painting was consulted for its sky, light or colour; the blowing leaves are decoration'
 ];

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261111h">
+<link rel="stylesheet" href="style.css?v=20261111i">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -117,31 +117,33 @@
   <section class="band band-world" id="world">
     <div class="band-in split">
       <div>
-        <div class="kicker">03 / Rebuilding the shoreline · today</div>
+        <div class="kicker">03 / Reconstructing Toronto · c.1700</div>
         <h2 class="mega">A world <span>taking shape.</span></h2>
       </div>
       <div class="aside">
-        <p class="lead">I’m building Toronto’s lake edge in 3D, one mapped layer at a time. Everything older gets measured against this line.</p>
-        <p class="fine">A 3D model in progress · layer 01</p>
+        <p class="lead">I’m following old maps and the lie of the land back to the bay, the sandbar and the trail, before there was a town.</p>
+        <p class="fine">A 3D reconstruction in progress</p>
       </div>
     </div>
 
     <div class="viewer">
-      <div class="world3d" id="world3d">
-        <canvas id="gl" aria-label="3D model of the Toronto shoreline and downtown buildings"></canvas>
-        <div class="labels" id="labels" aria-hidden="true"></div>
-        <div class="glfail" id="glfail" hidden>This view needs WebGL, which isn't available in this browser.</div>
+      <div class="world3d" id="w17">
+        <canvas id="w17-gl" aria-label="3D model of the Toronto shore around 1700"></canvas>
+        <div class="labels" id="w17-labels" aria-hidden="true"></div>
+        <div class="view-tag" id="w17-tag"></div>
+        <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The snapshots below show the same world.</div>
       </div>
-      <div class="views cards" id="views" role="group" aria-label="Camera views" data-pick="0,3,5"></div>
+      <div class="views cards" id="w17-views" role="group" aria-label="Choose a view of the world" data-pick="0,1,2"></div>
     </div>
     <div class="band-in viewer-foot">
-      <p class="fine">Live in your browser. Choose a view, or drag to orbit. The full page zooms and pans too.</p>
-      <div class="key inline" aria-label="Building height sources">
-        <span><i style="background:#fbf7ee"></i>Recorded height <b id="k-h"></b></span>
-        <span><i style="background:#d8bd92"></i>Estimated from storeys <b id="k-l"></b></span>
-        <span><i style="background:#b7b0a1"></i>Height unknown <b id="k-n"></b></span>
-      </div>
-      <a class="btn dark" href="shore.html">Open the full 3D shoreline <i aria-hidden="true">↗</i></a>
+      <p class="fine">Live in the world I’m building, on real ground and the oldest mapped shore. Choose a view, or drag to turn it.</p>
+      <a class="btn dark" href="world.html">Open the world <i aria-hidden="true">↗</i></a>
+    </div>
+
+    <div class="band-in gallery-band">
+      <button class="gallery-open" id="gallery-open" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16"></rect><path d="m4 16 5-5 4 4 3-3 4 4M8 8h.01"></path></svg><span><b>Open the image gallery</b><small>Six snapshots from the world</small></span></button>
+      <div class="contact" id="gallery-contact" aria-label="World snapshots"></div>
+      <p class="world-links"><a href="world.html">Open the full world, and read what is real in it.</a><a href="shore.html">See the same shore today, in 3D.</a></p>
     </div>
 
     <div class="band-in">
@@ -198,6 +200,8 @@
   </section>
 </main>
 
+<dialog class="gallery" id="gallery-dialog" aria-labelledby="gallery-title"></dialog>
+
 <footer class="foot">
   <div class="foot-in">
     <p class="foot-lead">Toronto was a carrying place before it was York, and York before it was Toronto.</p>
@@ -210,26 +214,28 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261111h"></script>
-<script src="world.js?v=20261111h"></script>
-<script src="scenery.js?v=20261111h"></script>
-<script src="references.js?v=20261111h"></script>
-<script src="draw.js?v=20261111h"></script>
-<script src="site.js?v=20261111h"></script>
-<script src="data/boundaries.js?v=20261111h"></script>
-<script src="data/history.js?v=20261111h"></script>
-<script src="data/today.js?v=20261111h"></script>
-<script src="data/shoreline.js?v=20261111h"></script>
-<script src="data/buildings.js?v=20261111h"></script>
+<script src="records.js?v=20261111i"></script>
+<script src="world.js?v=20261111i"></script>
+<script src="scenery.js?v=20261111i"></script>
+<script src="references.js?v=20261111i"></script>
+<script src="draw.js?v=20261111i"></script>
+<script src="site.js?v=20261111i"></script>
+<script src="data/boundaries.js?v=20261111i"></script>
+<script src="data/history.js?v=20261111i"></script>
+<script src="data/today.js?v=20261111i"></script>
+<script src="data/shoreline.js?v=20261111i"></script>
+<script src="data/buildings.js?v=20261111i"></script>
+<script src="data/terrain.js?v=20261111i"></script>
+<script src="gallery.js?v=20261111i"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
 // The film is 3D; if the 3D library or WebGL is unavailable, the flat film in redrawn.js takes over.
-import('./redrawn3d.js?v=20261111h').catch(() => {
+import('./redrawn3d.js?v=20261111i').catch(() => {
   document.getElementById('film').classList.add('flat');
-  const s = document.createElement('script'); s.src = 'redrawn.js?v=20261111h'; document.body.append(s);
+  const s = document.createElement('script'); s.src = 'redrawn.js?v=20261111i'; document.body.append(s);
 });
-import('./shore.js?v=20261111h').catch(() => { document.getElementById('glfail').hidden = false; });
-import('./hero3d.js?v=20261111h').catch(() => {});
+import('./world1700.js?v=20261111i').catch(() => { document.getElementById('w17-fail').hidden = false; });
+import('./hero3d.js?v=20261111i').catch(() => {});
 </script>
 </body>
 </html>

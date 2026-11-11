@@ -27,6 +27,16 @@ YP.PIECES = [
     cta: 'Read the record'
   },
   {
+    id: 'world-1700',
+    kind: 'Walk',
+    status: 'building',
+    title: 'Toronto, c.1700',
+    line: 'The ground before the town, as a 3D world: the bay, the sandbar, the marsh and the trail.',
+    body: 'Built on real ground and the oldest shoreline the maps give, with a forest that is an impression and no dwellings yet. Six snapshots, and a list of what is real in it.',
+    href: 'world.html',
+    cta: 'Open the c.1700 world'
+  },
+  {
     id: 'shoreline',
     kind: 'Walk',
     status: 'building',
@@ -57,6 +67,10 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-11',
+    text: 'A second layer of the 3D world: Toronto around 1700, before the town. The ground is today\u2019s elevation model, the shore, marsh and creeks are from the earliest maps (1802, 1834, 1851), and land made since has been taken back out so the bay sits behind its sandbar again. The trail up the Humber and the place where Teiaiagon stood are marked. The trees are an impression, the canoes and people are for scale, and nobody\u2019s home is modelled, because nothing read so far says what stood here. Six snapshots from it are on the home page.'
+  },
   {
     date: '2026-11-11',
     text: 'Next Stop, Toronto has more to see and more to catch. Six new records, from the 1837 rebellion on Yonge Street to the stopping of the Spadina Expressway in 1971, bring the count to twenty-one. Thirteen more dated things are in the landscape: eleven landmarks modelled in 3D, from Montgomery\u2019s Tavern (which burns in December 1837) to the Crystal at the ROM, and two storms, the one that made the peninsula an island in 1858 and Hurricane Hazel in 1954. The new models were built from written descriptions and are listed as not yet checked against a picture.'
