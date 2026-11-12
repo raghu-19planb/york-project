@@ -63,13 +63,13 @@
   const m1802 = HIST.maps.find(m => m.year === 1802);
   const A = B.annexations, F = B.former;
   const CH = [ // the story: what the leaf draws, and for how long
-    { id: 'shore', year: '1802', name: 'The shore', dur: 8, text: 'The shore, as William Chewett mapped it', sub: 'A bay behind a long bar of sand. No city yet.' },
-    { id: 'creeks', year: '1802', name: 'The creeks', dur: 5, text: 'The creeks on the same map', sub: 'Most of them are buried under the city now.' },
-    { id: 'city', year: '1834', name: 'City and Liberties', dur: 5, text: 'York becomes the City of Toronto', sub: 'The first limits: the city and its liberties.' },
-    { id: 'annex', year: '1883', name: 'The annexations', dur: 22, text: 'The city takes in its neighbours' },
-    { id: 'metro', year: '1954', name: 'Six municipalities', dur: 12, text: 'Metropolitan Toronto', sub: 'By 1967: Toronto, York, East York, North York, Etobicoke, Scarborough.' },
+    { id: 'shore', year: '1802', name: 'The shore', dur: 10, text: 'The shore, as William Chewett mapped it', sub: 'A bay behind a long bar of sand. No city yet.' },
+    { id: 'creeks', year: '1802', name: 'The creeks', dur: 6, text: 'The creeks on the same map', sub: 'Most of them are buried under the city now.' },
+    { id: 'city', year: '1834', name: 'City and Liberties', dur: 6, text: 'York becomes the City of Toronto', sub: 'The first limits: the city and its liberties.' },
+    { id: 'annex', year: '1883', name: 'The annexations', dur: 24, text: 'The city takes in its neighbours' },
+    { id: 'metro', year: '1954', name: 'Six municipalities', dur: 13, text: 'Metropolitan Toronto', sub: 'By 1967: Toronto, York, East York, North York, Etobicoke, Scarborough.' },
     { id: 'one', year: '1998', name: 'One city', dur: 4.5, text: 'One city', sub: 'The six are joined. Every line the leaf drew is still here.' },
-    { id: 'today', year: 'Today', name: 'The shore has moved', dur: 7, text: 'Today’s shore, over the shore of 1802', sub: 'The gold line is the water’s edge now. The land between was made.' },
+    { id: 'today', year: 'Today', name: 'The shore has moved', dur: 8, text: 'Today’s shore, over the shore of 1802', sub: 'The gold line is the water’s edge now. The land between was made.' },
     { id: 'end', year: 'Today', name: 'Toronto', dur: 4.5, text: 'Toronto, redrawn', sub: 'One line, one leaf.' }
   ];
   const chap = id => CH.find(c => c.id === id);
@@ -112,9 +112,6 @@
   const HALF = [[0, 1], [0.1, 0.74], [0.27, 0.82], [0.24, 0.52], [0.5, 0.62], [0.44, 0.42], [0.72, 0.46], [0.6, 0.25], [0.88, 0.13], [0.58, -0.02], [0.63, -0.2], [0.3, -0.15], [0.07, -0.2]];
   function leaf(x, y, size, turn, alpha) {
     ctx.save(); ctx.translate(x, y);
-    const glow = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 2.4);
-    glow.addColorStop(0, 'rgba(255, 190, 120, ' + 0.5 * alpha + ')'); glow.addColorStop(1, 'rgba(255, 190, 120, 0)');
-    ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(0, 0, size * 2.4, 0, 7); ctx.fill();
     ctx.rotate(turn); ctx.scale(size, -size); ctx.translate(0, -0.25); ctx.globalAlpha = alpha;
     ctx.beginPath(); ctx.moveTo(HALF[0][0], HALF[0][1]);
     for (let i = 1; i < HALF.length; i++) ctx.lineTo(HALF[i][0], HALF[i][1]);
