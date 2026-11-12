@@ -31,6 +31,11 @@ scene.fog = new THREE.Fog(PAPER, 16000, 45000);
 
 const camera = new THREE.PerspectiveCamera(42, 16 / 9, 10, 60000);
 const controls = new OrbitControls(camera, canvas);
+// OrbitControls switches off the browser's own touch scrolling on the canvas (it sets touch-action: none on it,
+// which beats the stylesheet). On a phone the model can fill the screen, and then a finger on it could only turn
+// the model and the page could not be moved at all. So an up-or-down swipe is given back to the page: a sideways
+// swipe turns the model, and two fingers tilt and zoom it. The story frame has no page to scroll and keeps every gesture.
+if (!document.documentElement.classList.contains('short')) { canvas.style.touchAction = 'pan-y'; controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE; }
 controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 2 - 0.04;
 controls.minDistance = 150;

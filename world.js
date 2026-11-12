@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'Fixed on phones: a finger on a 3D model could only turn the model, so once it filled the screen the page could not be scrolled past it. An up-or-down swipe now moves the page; a sideways swipe turns the model and two fingers tilt and zoom it. Reported by a visitor.'
+  },
+  {
+    date: '2026-11-11',
     text: 'Next Stop, Toronto: the rides come alive. The canoe now carries three paddlers who lean into each stroke on alternate sides. The horsecar\u2019s horse gallops, legs, neck and tail, with a faint beat of hooves under the fiddle. The streetcar and the subway sway a little and knock over the rail joints. The figures and the sounds are drawings made in code, not records of a crew, a horse or a TTC vehicle.'
   },
   {
