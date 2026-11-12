@@ -43,6 +43,16 @@ YP.REFERENCES = [
     caveat: 'Nothing was mapped in 1700, so the shore is a century late. The ground is today\u2019s, stretched 2.5 times in height. The trail\u2019s exact line, every tree outside High Park, and the canoes and people are not from any source. No picture of this place around 1700 has been looked at, and no dwellings are modelled.'
   },
   {
+    item: 'Same place, three moments (the harbour slider)',
+    refs: [
+      { title: 'Historical Hydrography of Toronto (1802 - 1886), University of Toronto Map & Data Library (CC BY-SA 4.0)', url: 'https://doi.org/10.5683/SP2/IYS0K9' },
+      { title: 'City of Toronto Historical Annexation Boundaries (1834-1967), University of Toronto Map & Data Library (CC BY 4.0)', url: 'https://doi.org/10.5683/SP3/XN2NRW' },
+      { title: 'OpenStreetMap: today\u2019s shore, rivers, roads and building footprints (ODbL)', url: 'https://www.openstreetmap.org/copyright' }
+    ],
+    took: 'The first shore (the earliest map that covers each spot), the water and city limits of 1834, and today\u2019s shore and buildings, all drawn in one fixed view.',
+    caveat: 'Nothing was mapped in 1700; the first moment is the shore as first drawn a century later. The hatched made land and its size come from laying today\u2019s shore over hand-drawn maps, so they are rough. The trees are a drawing. The town of 1834 is not drawn, and today\u2019s buildings are drawn only where footprints were fetched.'
+  },
+  {
     item: 'Ride the lines (the rapid transit map)',
     refs: [
       { title: 'OpenStreetMap: TTC subway and light rail route relations (ODbL)', url: 'https://www.openstreetmap.org/relation/102388' }

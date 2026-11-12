@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-11',
+    text: 'Same place, three moments: a new section on the c.1700 page. One view of the harbour is held still while a slider swaps the shore under it: as first mapped (Chewett, 1802 and 1834, standing in for c.1700), the city of 1834 with its limits, and today with its buildings. Land that was water or marsh on the first maps is hatched and sized. Also: every page that takes a fact from Wikipedia now says in its footer that those facts are not independently fact-checked.'
+  },
+  {
+    date: '2026-11-11',
     text: 'Fixed on phones: a finger on a 3D model could only turn the model, so once it filled the screen the page could not be scrolled past it. An up-or-down swipe now moves the page; a sideways swipe turns the model and two fingers tilt and zoom it. Reported by a visitor.'
   },
   {
