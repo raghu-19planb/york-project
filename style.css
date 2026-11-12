@@ -845,12 +845,13 @@ html.still .sub-card { transition: none; }
 .mo-tag b { font: 550 clamp(1.5rem, 3.6vw, 2.4rem)/1 var(--display); letter-spacing: -0.03em; }
 .mo-tag span { font-size: 0.82rem; color: #f1e6d0; }
 .mo-fail { position: absolute; inset: auto 12px 12px; margin: 0; background: var(--chalk); padding: 8px 12px; }
-.mo-ctl { display: grid; grid-template-columns: 1fr auto; gap: 6px 24px; align-items: center; margin: 14px 0 6px; }
-.mo-slide { grid-column: 1; width: 100%; height: 34px; accent-color: var(--red); cursor: pointer; margin: 0; }
-.mo-stops { grid-column: 1; display: flex; justify-content: space-between; }
+.mo-ctl { display: grid; grid-template-columns: auto 1fr auto; gap: 6px 24px; align-items: center; margin: 14px 0 6px; }
+.mo-play { grid-column: 1; grid-row: 1 / span 2; min-width: 8.5em; min-height: 48px; justify-content: center; }
+.mo-slide { grid-column: 2; width: 100%; height: 34px; accent-color: var(--red); cursor: pointer; margin: 0; }
+.mo-stops { grid-column: 2; display: flex; justify-content: space-between; }
 .mo-stops button { background: none; border: 0; border-bottom: 3px solid transparent; padding: 6px 2px; min-height: 40px; cursor: pointer; font: 600 1rem var(--body); color: var(--muted); }
 .mo-stops button[aria-pressed="true"] { color: var(--ink); border-bottom-color: var(--red); }
-.mo-check { grid-column: 2; grid-row: 1 / span 2; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; cursor: pointer; }
+.mo-check { grid-column: 3; grid-row: 1 / span 2; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; cursor: pointer; }
 .mo-check input { width: 20px; height: 20px; accent-color: var(--red); }
 .mo-about { margin: 14px 0 26px; max-width: 78ch; min-height: 11.5em; }
 .mo-about h3 { font: 550 1.6rem var(--display); letter-spacing: -0.03em; margin: 0 0 6px; }
@@ -864,4 +865,4 @@ html.still .sub-card { transition: none; }
 .mo-key .k-f { border: 0; height: 0; border-top: 3px solid #1f5d6b; }
 .mo-key .k-h { background: repeating-linear-gradient(135deg, #f3cfa6 0 4px, #cf5a24 4px 6px); }
 .mo-key .k-b { background: #fbf7ee; box-shadow: 3px 3px 0 #b79f76; }
-@media (max-width: 700px) { .mo-ctl { grid-template-columns: 1fr; } .mo-check { grid-column: 1; grid-row: auto; } .mo-label { font-size: 0.6rem; padding: 1px 5px; } .mo-label.water { font-size: 0.85rem; } .mo-about { min-height: 0; } .mo-tag { left: 6px; top: 6px; padding: 5px 9px 6px; } .mo-tag b { font-size: 1.15rem; } .mo-tag span { font-size: 0.7rem; } }
+@media (max-width: 700px) { .mo-ctl { grid-template-columns: 1fr; } .mo-play, .mo-slide, .mo-stops { grid-column: 1; grid-row: auto; } .mo-check { grid-column: 1; grid-row: auto; } .mo-label { font-size: 0.6rem; padding: 1px 5px; } .mo-label.water { font-size: 0.85rem; } .mo-about { min-height: 0; } .mo-tag { left: 6px; top: 6px; padding: 5px 9px 6px; } .mo-tag b { font-size: 1.15rem; } .mo-tag span { font-size: 0.7rem; } }

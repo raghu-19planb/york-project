@@ -257,8 +257,29 @@
     const tick = now => { const k = dur ? Math.min(1, (now - t0) / dur) : 1, e = k * k * (3 - 2 * k); pos = from + (to - from) * e; slider.value = Math.round(pos * 100); paint(); if (k < 1) tween = requestAnimationFrame(tick); };
     tick(t0);
   }
-  slider.addEventListener('input', () => { cancelAnimationFrame(tween); pos = slider.value / 100; paint(); });
-  root.querySelectorAll('.mo-stops button').forEach((b, n) => b.addEventListener('click', () => go(n)));
+  // ---------- the animation: the three moments played through, with a pause on each ----------
+  // Pressing Play is the only thing that starts it. It rests on the first shore, moves to 1834, rests, moves to
+  // today and stops there. Touching the slider or a moment takes over and stops it.
+  const HOLD = [1.6, 2.8], playBtn = $('.mo-play'), ease = k => k * k * (3 - 2 * k);
+  let playing = false, clock = 0, lastTick = 0, raf = 0;
+  const MOVE = () => still() ? 0.01 : 3.4, LENGTH = () => HOLD[0] + HOLD[1] + 2 * MOVE();
+  function posAt(t) { const m = MOVE(); if (t < HOLD[0]) return 0; t -= HOLD[0]; if (t < m) return ease(t / m); t -= m; if (t < HOLD[1]) return 1; t -= HOLD[1]; return t < m ? 1 + ease(t / m) : 2; }
+  function timeAt(p) { if (p >= 1.999) return 0; for (let t = 0; t < LENGTH(); t += 0.02) if (posAt(t) >= p - 0.001) return t; return 0; } // where in the animation a slider position is; at the end it starts again
+  function setPlaying(on) {
+    playing = on && !!layers; cancelAnimationFrame(raf); root.classList.toggle('playing', playing);
+    playBtn.textContent = playing ? 'Pause' : pos >= 1.999 ? 'Play again' : 'Play'; playBtn.setAttribute('aria-pressed', String(playing));
+    if (playing) { cancelAnimationFrame(tween); clock = timeAt(pos); lastTick = performance.now(); raf = requestAnimationFrame(run); }
+  }
+  function run(now) {
+    if (!playing) return;
+    clock += Math.min(0.1, (now - lastTick) / 1000); lastTick = now;
+    pos = posAt(clock); slider.value = Math.round(pos * 100); paint();
+    if (clock >= LENGTH()) setPlaying(false); else raf = requestAnimationFrame(run);
+  }
+  playBtn.addEventListener('click', () => setPlaying(!playing));
+  document.addEventListener('visibilitychange', () => { if (document.hidden && playing) setPlaying(false); });
+  slider.addEventListener('input', () => { cancelAnimationFrame(tween); if (playing) setPlaying(false); pos = slider.value / 100; paint(); playBtn.textContent = pos >= 1.999 ? 'Play again' : 'Play'; });
+  root.querySelectorAll('.mo-stops button').forEach((b, n) => b.addEventListener('click', () => { if (playing) setPlaying(false); go(n); playBtn.textContent = n === 2 ? 'Play again' : 'Play'; }));
   $('.mo-keep').addEventListener('change', e => { keep = e.target.checked; paint(); });
 
   let started = false;
@@ -274,5 +295,5 @@
     }).catch(() => { $('.mo-fail').hidden = false; });
   }
   new IntersectionObserver(es => { if (es[0].isIntersecting) start(); }, { rootMargin: '700px' }).observe(root);
-  YP.moments = { go, start, get state() { return { pos, ready: !!layers, W, Hh, made, firstFrom, trees: trees && trees.length, buildings: !!YP.BUILDINGS }; } };
+  YP.moments = { go, start, setPlaying, get playing() { return playing; }, get state() { return { pos, ready: !!layers, W, Hh, made, firstFrom, trees: trees && trees.length, buildings: !!YP.BUILDINGS }; } };
 })();
