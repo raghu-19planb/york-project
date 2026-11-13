@@ -89,6 +89,22 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-12',
+    text: 'Next Stop, Toronto is now painted from end to end. The last stretch, 1954 to today, opens in the rain of Hurricane Hazel. The subway runs in an open cut in front of the street, as the Yonge line does north of Bloor, first in the red cars of 1954 and from 1990 in silver ones. Behind it the street changes from buff brick to concrete grids, sheer glass and balconied flats, with taller towers rising behind, street trees from the 1970s, and a sky that clears from the smoke of the coal years to blue. Seven more landmarks stand along it as small models: New City Hall, the TD tower, Ontario Place, the CN Tower, the Eaton Centre, SkyDome and the Crystal at the ROM. Every picture in the game is now made in Blender; the older 3D view remains only as a fallback.'
+  },
+  {
+    date: '2026-11-12',
+    text: 'Next Stop, Toronto: the streetcar\u2019s years, 1892 to 1954, are painted. The street grows up: brick shops give way to taller office blocks and then to stepped fronts with lit signs; the road goes from earth to asphalt; motor cars appear at the kerb, few and black at first; the tangle of wires thins. Eight landmarks stand along it as small models of themselves: the Legislative Building, Old City Hall, Casa Loma, the Prince Edward Viaduct, Union Station, the Royal York, the Bank of Commerce tower and Maple Leaf Gardens. They are far smaller than life and never stood on one street; only their dates are sourced. The streetcar runs under its wire with a spark at the pole. The game is now drawn from pictures up to 1954.'
+  },
+  {
+    date: '2026-11-12',
+    text: 'Next Stop, Toronto: the horsecar\u2019s years, 1861 to 1892, are painted too. The ride comes ashore onto a dirt street with the street railway\u2019s rails, a plank sidewalk and a row of brick shops that grow taller and gain mansard roofs as the years pass, with people on the sidewalk, telegraph and then telephone wires, factory chimneys and a smoky sky. Gas lamps give way to electric arc lamps in 1883, the one sourced thing in the scene. The horsecar is drawn by a trotting horse through eight moments of a stride. The game is now drawn from pictures up to 1892; after that it still uses its older 3D view.'
+  },
+  {
+    date: '2026-11-12',
+    text: 'Next Stop, Toronto, repainted: the canoe\u2019s years, 1690 to 1861, are now drawn from pictures made in Blender and no longer from blocks. One long picture of the north shore slides by: unbroken forest, then the garrison of 1793, cabins and a first church, frame houses, Worts\u2019s windmill, Montgomery\u2019s Tavern, gas lamps, St. Lawrence Hall, the first train and University College, with schooners and a steamer at the wharves. The canoe carries three paddlers through eight moments of a stroke. Only the six dated things are sourced, and only that they existed by their year; how everything looks is drawing. After 1861 the game still uses its older 3D view, until those years are painted too.'
+  },
+  {
+    date: '2026-11-12',
     text: 'Same place, three moments is now three rendered pictures. The harbour was built as a 3D scene in Blender, free and open-source software, from the site\u2019s own data, and rendered from one camera at c.1700, 1834 and today, with a painted finish: forest and reeds, shallows, today\u2019s buildings to their heights, and the made land in orange. The slider and Play button fade between them. It is the first use of Blender on this site.'
   },
   {

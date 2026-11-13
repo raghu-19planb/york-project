@@ -199,6 +199,11 @@
 
   function draw() {
     const d = S.d || 0, yr = Y0 + d / PXPY;
+    // For the years that have been painted (pictures.js) the game is drawn from pictures on this canvas; after them the
+    // older 3D view takes over on its own canvas, so only one of the two is shown at a time.
+    const painted = YP.pictures && YP.pictures.ready && yr < YP.pictures.until, gl = $('c3d');
+    if (YP.view || painted) { cv.style.visibility = painted ? 'visible' : 'hidden'; if (gl) gl.style.visibility = painted ? 'hidden' : 'visible'; }
+    if (painted) { YP.pictures.draw(ctx, S, d, yr, drawToken); return; }
     if (YP.view) { YP.view.draw(S, d, yr); return; } // 3D renderer (scene3d.js); below is the 2D fallback
     YP.drawLandscape(ctx, d, yr, S.state === 'menu' ? performance.now() / 1000 : S.t);
     drawGround(d, yr);
