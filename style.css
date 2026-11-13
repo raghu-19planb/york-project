@@ -835,11 +835,11 @@ html.still .sub-card { transition: none; }
 /* Same place, three moments (world.html): one fixed view, three shores */
 .wiki-note { font-style: italic; }
 .mo-lead { max-width: 70ch; margin: 0 0 16px; }
-.mo-stage { position: relative; overflow: hidden; border: 1px solid var(--ink); background: #9cc3cc; aspect-ratio: 16 / 9; }
+.mo-stage { position: relative; overflow: hidden; border: 1px solid var(--ink); background: #3f7f95; aspect-ratio: 2 / 1; }
 .mo-stage canvas { display: block; width: 100%; height: 100%; }
 .mo-labels { position: absolute; inset: 0; pointer-events: none; }
-.mo-label { position: absolute; left: 0; top: 0; white-space: nowrap; font: 600 0.7rem var(--body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); background: rgba(242, 233, 215, 0.86); padding: 2px 7px; opacity: 0; }
-.mo-label.water { font: italic 500 1rem var(--display); letter-spacing: 0.01em; text-transform: none; color: #1f5d6b; background: none; }
+.mo-label { position: absolute; transform: translate(-50%, -50%); white-space: nowrap; font: 600 0.7rem var(--body); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); background: rgba(242, 233, 215, 0.86); padding: 2px 7px; opacity: 0; }
+.mo-label.water { font: italic 500 1.05rem var(--display); letter-spacing: 0.01em; text-transform: none; color: #fff6e5; background: none; text-shadow: 0 1px 3px rgba(10, 40, 50, 0.7); }
 .mo-label.note { font: 500 0.72rem var(--body); letter-spacing: 0; text-transform: none; }
 .mo-tag { position: absolute; left: 12px; top: 12px; display: grid; gap: 1px; background: #16130f; color: #fff6e5; padding: 8px 14px 9px; max-width: calc(100% - 24px); }
 .mo-tag b { font: 550 clamp(1.5rem, 3.6vw, 2.4rem)/1 var(--display); letter-spacing: -0.03em; }
@@ -859,10 +859,10 @@ html.still .sub-card { transition: none; }
 .mo-key { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 0 0 10px; padding: 0; font-size: 0.92rem; }
 .mo-key li { display: flex; align-items: center; gap: 8px; }
 .mo-key i { flex: 0 0 auto; width: 22px; height: 14px; border: 1px solid rgba(40, 35, 31, 0.5); }
-.mo-key .k-w { background: #9cc3cc; } .mo-key .k-m { background: #b4c49a; }
+.mo-key .k-w { background: linear-gradient(90deg, #86c1c4, #2f6e86); } .mo-key .k-m { background: #b4c49a; }
 .mo-key .k-t { border: 0; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-bottom: 16px solid #5d7a52; }
 .mo-key .k-c { border: 0; height: 0; border-top: 3px dashed #b8232f; }
 .mo-key .k-f { border: 0; height: 0; border-top: 3px solid #1f5d6b; }
-.mo-key .k-h { background: repeating-linear-gradient(135deg, #f3cfa6 0 4px, #cf5a24 4px 6px); }
+.mo-key .k-h { background: #e6a077; }
 .mo-key .k-b { background: #fbf7ee; box-shadow: 3px 3px 0 #b79f76; }
 @media (max-width: 700px) { .mo-ctl { grid-template-columns: 1fr; } .mo-play, .mo-slide, .mo-stops { grid-column: 1; grid-row: auto; } .mo-check { grid-column: 1; grid-row: auto; } .mo-label { font-size: 0.6rem; padding: 1px 5px; } .mo-label.water { font-size: 0.85rem; } .mo-about { min-height: 0; } .mo-tag { left: 6px; top: 6px; padding: 5px 9px 6px; } .mo-tag b { font-size: 1.15rem; } .mo-tag span { font-size: 0.7rem; } }

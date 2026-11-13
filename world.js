@@ -88,6 +88,10 @@ YP.PIECES = [
 
 YP.LOG = [
   {
+    date: '2026-11-12',
+    text: 'Same place, three moments is now three rendered pictures. The harbour was built as a 3D scene in Blender, free and open-source software, from the site\u2019s own data, and rendered from one camera at c.1700, 1834 and today, with a painted finish: forest and reeds, shallows, today\u2019s buildings to their heights, and the made land in orange. The slider and Play button fade between them. It is the first use of Blender on this site.'
+  },
+  {
     date: '2026-11-11',
     text: 'Same place, three moments: a new section on the c.1700 page. One view of the harbour is held still while a slider swaps the shore under it: as first mapped (Chewett, 1802 and 1834, standing in for c.1700), the city of 1834 with its limits, and today with its buildings. Land that was water or marsh on the first maps is hatched and sized. Also: every page that takes a fact from Wikipedia now says in its footer that those facts are not independently fact-checked.'
   },
