@@ -866,3 +866,11 @@ html.still .sub-card { transition: none; }
 .mo-key .k-h { background: #e6a077; }
 .mo-key .k-b { background: #fbf7ee; box-shadow: 3px 3px 0 #b79f76; }
 @media (max-width: 700px) { .mo-ctl { grid-template-columns: 1fr; } .mo-play, .mo-slide, .mo-stops { grid-column: 1; grid-row: auto; } .mo-check { grid-column: 1; grid-row: auto; } .mo-label { font-size: 0.6rem; padding: 1px 5px; } .mo-label.water { font-size: 0.85rem; } .mo-about { min-height: 0; } .mo-tag { left: 6px; top: 6px; padding: 5px 9px 6px; } .mo-tag b { font-size: 1.15rem; } .mo-tag span { font-size: 0.7rem; } }
+
+/* Section 3 of the home page: recordings from the Blender model in place of the live 3D world */
+.world3d.rec { background: #cfd8dc; }
+.world3d.rec video { display: block; width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+.world3d.rec .world-play { min-width: 7.5em; }
+#rec-about h3 { font: 550 1.6rem var(--display); letter-spacing: -0.03em; margin: 0 0 8px; }
+#rec-about p { margin: 0 0 8px; max-width: 62ch; font-size: 1.05rem; line-height: 1.5; }
+#rec-about .real { font-size: 0.92rem; color: var(--muted); }

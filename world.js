@@ -88,6 +88,10 @@ YP.PIECES = [
 
 YP.LOG = [
   {
+    date: '2026-11-13',
+    text: 'Section 3 of the home page, Reconstructing Toronto, is now three short recordings and six pictures from a new, more lifelike model built in Blender: above the bay and its sand bar, down onto the beach where bark canoes are drawn up, and along the lane between the longhouses of Teiaiagon. The ground, sand and bark are photographs; the trees have real branches and leaves. What rests on the record and what is our drawing is said under each picture, in plain words. The live 3D world you can walk around is still on the Explore page.'
+  },
+  {
     date: '2026-11-12',
     text: 'Next Stop, Toronto is now painted from end to end. The last stretch, 1954 to today, opens in the rain of Hurricane Hazel. The subway runs in an open cut in front of the street, as the Yonge line does north of Bloor, first in the red cars of 1954 and from 1990 in silver ones. Behind it the street changes from buff brick to concrete grids, sheer glass and balconied flats, with taller towers rising behind, street trees from the 1970s, and a sky that clears from the smoke of the coal years to blue. Seven more landmarks stand along it as small models: New City Hall, the TD tower, Ontario Place, the CN Tower, the Eaton Centre, SkyDome and the Crystal at the ROM. Every picture in the game is now made in Blender; the older 3D view remains only as a fallback.'
   },

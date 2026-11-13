@@ -12,6 +12,9 @@ const types = {
   '.js': 'application/javascript; charset=utf-8',
   '.svg': 'image/svg+xml',
   '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.json': 'application/json',
+  '.mp4': 'video/mp4',
 };
 
 http.createServer((req, res) => {

@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2e9d7">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261112p">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261112p">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261112p">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261112p">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261113a">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261113a">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261113a">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261113a">
 <title>Toronto through play, code and a world in progress · The York Project</title>
 <meta name="description" content="Toronto through play and record. A one-button history game, a film of the city's limits drawn in maple leaves, and a 3D world that keeps being added to.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261112p">
+<link rel="stylesheet" href="style.css?v=20261113a">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
 <script type="importmap">
 { "imports": {
@@ -115,32 +115,28 @@
   <section class="band band-world" id="world">
     <div class="band-in split">
       <div>
-        <div class="kicker">03 / Reconstructing Toronto · c.1680 and c.1700</div>
+        <div class="kicker">03 / Reconstructing Toronto · c.1680</div>
         <h2 class="mega">A world <span>taking shape.</span></h2>
       </div>
       <div class="aside">
-        <p class="lead">I’m following old maps, records and the lie of the land back to the bay, the trail and the Seneca village on it, before there was a town.</p>
+        <p class="lead">I’m following old maps and records back to the bay, the beach and the Seneca village beside the river, before there was a town.</p>
         <p class="fine">A 3D reconstruction in progress</p>
       </div>
     </div>
 
     <div class="viewer">
-      <div class="world3d" id="w17">
-        <canvas id="w17-gl" aria-label="3D model of the Toronto shore around 1700"></canvas>
-        <div class="labels" id="w17-labels" aria-hidden="true"></div>
-        <div class="view-tag" id="w17-tag"></div>
-        <div class="when" id="w17-when" role="group" aria-label="Choose a moment"><button type="button" data-year="1680" aria-pressed="true"><b>c.1680</b><span>the village stands</span></button><button type="button" data-year="1700" aria-pressed="false"><b>c.1700</b><span>twenty years on</span></button></div>
-        <div class="world-track" id="w17-track" role="progressbar" aria-label="Progress through the recording"><span></span></div>
-        <button class="world-play" id="w17-play" type="button" aria-pressed="true">Pause</button>
-        <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The snapshots below show the same world.</div>
+      <div class="world3d rec" id="rec">
+        <video muted playsinline preload="none" aria-label="A recording from the 3D model of Toronto around 1680"></video>
+        <div class="view-tag" id="rec-tag"></div>
+        <button class="world-play" id="rec-play" type="button" aria-pressed="false">Play</button>
       </div>
-      <div class="views cards" id="w17-views" role="group" aria-label="Jump to a view in the recording"></div>
+      <div class="views cards" id="rec-views" role="group" aria-label="Choose a view to watch"></div>
     </div>
     <div class="band-in viewer-foot">
-      <div class="about" id="w17-about" aria-live="polite"></div>
+      <div class="about" id="rec-about" aria-live="polite"></div>
       <div class="about-side">
-        <p class="fine">A recording through all six views, drawn live. Choose a view to jump to it, or drag the picture to look around yourself.</p>
-        <a class="btn dark" href="world.html">Open the world <i aria-hidden="true">↗</i></a>
+        <p class="fine">Recorded in the world I’m building. Choose a view, then press Play. There is no sound.</p>
+        <a class="btn dark" href="world.html">Walk around it yourself <i aria-hidden="true">↗</i></a>
       </div>
     </div>
 
@@ -253,32 +249,32 @@
   </div>
 </footer>
 
-<script src="records.js?v=20261112p"></script>
-<script src="world.js?v=20261112p"></script>
-<script src="scenery.js?v=20261112p"></script>
-<script src="references.js?v=20261112p"></script>
-<script src="draw.js?v=20261112p"></script>
-<script src="site.js?v=20261112p"></script>
-<script src="data/boundaries.js?v=20261112p"></script>
-<script src="data/history.js?v=20261112p"></script>
-<script src="data/today.js?v=20261112p"></script>
-<script src="data/shoreline.js?v=20261112p"></script>
-<script src="data/buildings.js?v=20261112p"></script>
-<script src="data/terrain.js?v=20261112p"></script>
-<script src="gallery.js?v=20261112p"></script>
-<script src="sketch.js?v=20261112p"></script>
-<script src="stories.js?v=20261112p"></script>
+<script src="records.js?v=20261113a"></script>
+<script src="world.js?v=20261113a"></script>
+<script src="scenery.js?v=20261113a"></script>
+<script src="references.js?v=20261113a"></script>
+<script src="draw.js?v=20261113a"></script>
+<script src="site.js?v=20261113a"></script>
+<script src="data/boundaries.js?v=20261113a"></script>
+<script src="data/history.js?v=20261113a"></script>
+<script src="data/today.js?v=20261113a"></script>
+<script src="data/shoreline.js?v=20261113a"></script>
+<script src="data/buildings.js?v=20261113a"></script>
+<script src="data/terrain.js?v=20261113a"></script>
+<script src="recording.js?v=20261113a"></script>
+<script src="gallery.js?v=20261113a"></script>
+<script src="sketch.js?v=20261113a"></script>
+<script src="stories.js?v=20261113a"></script>
 <script>
 // The first story card shows its photograph as a sketch, like the story it opens.
 document.querySelectorAll("img.sketch-me").forEach(function (img) { function go() { try { var c = YP.sketch(img, 700); c.className = "sketch"; img.parentNode.insertBefore(c, img); img.parentNode.classList.add("drawn"); } catch (e) {} } if (img.complete && img.naturalWidth) go(); else img.addEventListener("load", go, { once: true }); });
 </script>
-<script src="leafline.js?v=20261112p"></script>
-<script src="data/subway.js?v=20261112p"></script>
-<script src="subway.js?v=20261112p"></script>
+<script src="leafline.js?v=20261113a"></script>
+<script src="data/subway.js?v=20261113a"></script>
+<script src="subway.js?v=20261113a"></script>
 <script type="module">
 // The ?v= stamp is the same on every file this page loads; change it everywhere when any of them changes.
-import('./world1700.js?v=20261112p').catch(() => { document.getElementById('w17-fail').hidden = false; });
-import('./hero3d.js?v=20261112p').catch(() => {});
+import('./hero3d.js?v=20261113a').catch(() => {});
 </script>
 </body>
 </html>

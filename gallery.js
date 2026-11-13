@@ -47,7 +47,8 @@ YP.GALLERY = [
   }
 ];
 (function () {
-  const G = YP.GALLERY, DIR = 'images/world1700/';
+  // The home page shows the six pictures from the Blender model (recording.js); the world page shows the six views of the live 3D world.
+  const home = !!(YP.STILLS && document.getElementById('rec')), G = home ? YP.STILLS : YP.GALLERY, DIR = home ? 'images/world/' : 'images/world1700/';
   const contact = document.getElementById('gallery-contact'), dialog = document.getElementById('gallery-dialog');
   if (!contact || !dialog) return;
   const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; };
@@ -55,7 +56,7 @@ YP.GALLERY = [
 
   // the dialog
   const head = el('div', 'gallery-head'), titles = el('div');
-  titles.append(Object.assign(el('h2', null, 'A world taking shape.'), { id: 'gallery-title' }), el('p', null, 'Views from the model in progress, around 1700. Taken from the live 3D world.'));
+  titles.append(Object.assign(el('h2', null, 'A world taking shape.'), { id: 'gallery-title' }), el('p', null, home ? 'Six pictures from the model of the bay and the village, around 1680.' : 'Views from the model in progress, around 1700. Taken from the live 3D world.'));
   const close = el('button', 'gallery-close', 'Close ×'); close.type = 'button';
   head.append(titles, close);
   const figure = el('figure', 'gallery-stage'), big = el('img'), cap = el('figcaption'), capTitle = el('b'), capWhat = el('p'), capReal = el('p', 'real');
