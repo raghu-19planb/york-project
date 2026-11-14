@@ -2,8 +2,9 @@
 //
 // The home page used to draw its 3D world live. It now plays three short recordings of a more lifelike model, and
 // shows six pictures from it, the way a film shows a place you cannot walk into. Each recording is ten seconds at
-// 24 pictures a second; the camera only drifts, and it is the people walking and the smoke rising that move. (A
-// first version flew the camera a long way in five seconds, and that juddered.) The model is built by
+// 24 pictures a second. The camera travels: at a walk along the beach and up the lane, and a quarter of the way
+// round the bay from the air. (A first version flew kilometres in five seconds and juddered; a second barely
+// drifted and looked as if nothing was happening.) The model is built by
 // tools/blender/world_set.py, whose opening comment says what in it rests on the record and what is drawing; the
 // live, explorable 3D world is still on world.html.
 //

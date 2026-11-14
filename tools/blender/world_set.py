@@ -280,12 +280,13 @@ def sky_and_sun(azimuth):
     a = math.radians(azimuth); sun.rotation_euler = Vector((math.cos(a), math.sin(a), -0.85)).to_track_quat('-Z', 'Y').to_euler()
 
 def camera(at, look, lens=32, to=None, look_to=None):
-    # A still is taken from (at, look). For a recording the camera drifts slowly and evenly on to (to, look_to): a
-    # short way over ten seconds, like one slow step. A long, fast move shown at 24 pictures a second judders; a
-    # slow drift, with the people and the smoke doing the moving, does not.
+    # A still is taken from (at, look). For a recording the camera travels evenly on to (to, look_to) over ten
+    # seconds. How far is a balance found the hard way: kilometres in five seconds juddered at 24 pictures a second;
+    # a drift of a few metres (what Madras does) read as nothing happening. So the ground shots move at a walk,
+    # about 1.2 m a second, and the air shot swings part-way round the bay: the picture shifts two or three pixels a frame.
     cam = bpy.data.objects.new('camera', bpy.data.cameras.new('camera')); scene.collection.objects.link(cam); scene.camera = cam; cam.data.lens = lens; cam.data.clip_start = 0.2; cam.data.clip_end = 9000
     frames = FLAGS['--clip']; keys('LINEAR')
-    for f, (a, l) in ((max(2, frames), (to or at, look_to or look)), (1, (at, look))):
+    for f, (a, l) in ((max(2, frames), (to or at, look_to or look)), (1, (at, look))) if '--end' not in argv else ((1, (to or at, look_to or look)),):   # --end: a still from where the move finishes, to check it
         cam.location = a; cam.rotation_euler = (Vector(l) - Vector(a)).to_track_quat('-Z', 'Y').to_euler()
         if frames: cam.keyframe_insert('location', frame=f); cam.keyframe_insert('rotation_euler', frame=f)
 
@@ -344,7 +345,7 @@ if SHOT == 'aerial':
     scatter(kinds, np.stack([PX[keep], PY[keep], z[j, i][keep]], axis=-1).tolist()); print('trees', int(keep.sum())); sky_and_sun(55)
     # both cameras look steeply down, so the picture is filled by the bay and the edge of the mapped ground stays out of it
     if FLAGS['--view']: camera((2300, -2500, 1500), (900, -500, 0), 34)                                     # lower, over the sand bar, looking in to the shore
-    else: camera((3100, -3300, 3400), (950, -400, 0), 40, to=(3360, -3090, 3340), look_to=(950, -400, 0))   # high over the lake, drifting slowly round the bay
+    else: camera((3100, -3300, 3400), (950, -400, 0), 40, to=(3300, -1520, 2450), look_to=(1100, 100, 0))   # high over the lake, swinging a quarter of the way round the bay and coming down toward it
     scene.camera.data.clip_start = 20; scene.camera.data.clip_end = 150000
 elif SHOT == 'village':
     # Inside the clearing, looking along the houses toward the fields and the forest edge.
@@ -379,7 +380,7 @@ elif SHOT == 'village':
         for off in (-0.3, 0.25): smoke((x + math.cos(turn) * L * off, y + math.sin(turn) * L * off, hz(x, y) + 5.5), random.uniform(7, 10), random.uniform(0.55, 0.8))
     tufts(hz, lambda x, y: not clear(x, y) and all(abs((x - hx) * math.cos(t) + (y - hy) * math.sin(t)) > L / 2 + 1 or abs(-(x - hx) * math.sin(t) + (y - hy) * math.cos(t)) > 4.2 for (hx, hy), t, L in houses) and (abs(x) > 4.5 or random.random() < 0.08), 1500, (-70, 70, -6, 116))
     if FLAGS['--view']: camera((-34, 9, hz(-34, 9) + 3.4), (-8, 46, 2.2), 32)                      # from the corn hills, across to the houses
-    else: camera((-1.6, 1.5, hz(-1.6, 1.5) + 1.7), (0.5, 40, 3.2), 28, to=(-1.0, 5.5, hz(-1.0, 5.5) + 1.7), look_to=(0.6, 44, 3.2))   # a slow step or two up the lane
+    else: camera((-1.6, 1.5, hz(-1.6, 1.5) + 1.7), (0.5, 40, 3.2), 28, to=(-0.6, 15.5, hz(-0.6, 15.5) + 1.7), look_to=(0.6, 54, 3.2))   # walking up the lane at a person's pace, 14 m in the ten seconds
 else:
     # On the sand of the bay, looking along the shore: canoes drawn up, the forest coming down to the beach.
     g, hz = ground(7); HZ = hz; sky_and_sun(48)        # an afternoon sun over the lake, behind the viewer
@@ -412,7 +413,7 @@ else:
     vs = [far.bm.verts.new(q) for q in ((-2500, -1500, -0.2), (2500, -1150, -0.2), (2500, -1050, 1.6), (-2500, -1400, 1.6))]; far.bm.faces.new(vs); vs2 = [far.bm.verts.new(q) for q in ((-2500, -1400, 1.6), (2500, -1050, 1.6), (2500, -900, 1.6), (-2500, -1250, 1.6))]; far.bm.faces.new(vs2); far.paint(vs + vs2, fs); far.done()
     scatter([tree('fartree', 20, 'leaf', LEAVES[0]), tree('farpine', 28, 'pine', LEAVES[3])], [(x, -1330 + 0.07 * x + random.uniform(-40, 40), 1.5) for x in range(-2400, 2400, 26) if random.random() < 0.45])
     if FLAGS['--view']: camera((34.2, 0.0, hz(34.2, 0.0) + 1.1), (31.8, 5.2, 0.6), 30)                   # close on one canoe, from the water's edge (people are kept at a distance: they are simple figures)
-    else: camera((-8.0, 4.6, hz(-8.0, 4.6) + 1.65), (40, -1.0, 2.4), 28, to=(-4.5, 4.0, hz(-4.5, 4.0) + 1.65), look_to=(42, -1.0, 2.4))   # standing on the sand, a slow step or two along the shore
+    else: camera((-8.0, 4.6, hz(-8.0, 4.6) + 1.65), (40, -1.0, 2.4), 28, to=(2.6, 2.0, hz(2.6, 2.0) + 1.65), look_to=(52, -1.0, 2.4))   # walking along the sand toward the canoes, about 11 m in the ten seconds
 
 scene.view_settings.exposure = 0.55; os.makedirs(OUT, exist_ok=True)
 if FLAGS['--clip']:   # a recording: the quick renderer, 24 pictures a second, written as an mp4

@@ -88,6 +88,10 @@ YP.PIECES = [
 
 YP.LOG = [
   {
+    date: '2026-11-14',
+    text: 'The three recordings in Reconstructing Toronto now move. Before, the camera only drifted a few metres and it looked as if nothing was happening. Now it walks along the beach toward the canoes, walks up the lane between the longhouses, and from the air swings a quarter of the way round the bay while coming down toward it.'
+  },
+  {
     date: '2026-11-13',
     text: 'The time lapse is a new film. It ran from 1700 to 1850 as a live 3D model; it is now a drawing in blue ink on old paper that runs from 1800 to 2025: one fixed view over the lake, across the islands to downtown, 72 seconds for the 225 years and then a rise to a plan of the city today. Forest is cut back, small houses spread, the shore is filled, the railway and the subway arrive, and fifteen landmarks go up in their true years. Under it is a timeline in seven periods, every entry from a named source. The year each ordinary building appears is a model, not a record, and the page says how it is worked out.'
   },
