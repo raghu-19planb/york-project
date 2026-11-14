@@ -12,6 +12,14 @@
 # WHAT IS DRAWING: everything you can actually see. No picture of Teiaiagon exists. Where each house, tree and
 # person stands, what anyone is doing, the canoes, the light and the weather are all made up for the picture.
 # The sand, forest floor and bark are photographs from Poly Haven (public domain), not taken here.
+# The things in the village added on 2026-11-14 and where each comes from (the same sources are named, entry by entry,
+# in recording.js): bark doors hung from the top, a clan animal painted on the end of a house in black and red,
+# firewood and bark barrels of food kept at each end, corn braided by the husks and hung to dry (Warren County
+# Historical Society, Seneca Trunk: Seneca Homes); houses about 20 feet wide and 40 to 200 long, one fire to two
+# families (Ganondagan State Historic Site); storage pits lined with bark (New York State Museum's model of a Mohawk
+# village of about 1600). Moved for the picture, and said so on the page: the barrels and the corn are indoors in the
+# sources and stand outside here. The turtle is our drawing: which clans lived at Teiaiagon is not recorded. The
+# shot 'people' is a close line-up for checking faces and dress and is not used on the site.
 import bpy, bmesh, math, os, sys, random
 import numpy as np
 from mathutils import Vector, Matrix
@@ -157,37 +165,164 @@ HZ = None   # the height of the ground under a point, once a shot has laid its g
 def keys(kind):   # how the next keyframes are joined: LINEAR for an even drift, BEZIER for a swing
     try: bpy.context.preferences.edit.keyframe_new_interpolation_type = kind
     except Exception as err: print('interpolation', err)
-def figure(at, turn, cloth, woman=False, carry=False, sit=False, walk=0.0):
-    # walk is metres a second, the way the figure faces. In a recording a walker's legs and arms swing and it moves along; in a still it is caught in mid-step.
-    p = Make('person'); hip = Vector((0, 0, 0.92 if not sit else 0.32)); up = Vector((0.03, 0, 1)).normalized(); chest = hip + up * 0.36; neck = hip + up * 0.54; head = neck + Vector((0.02, 0, 0.13)); shirt = flat(cloth, 0.95); limbs = []
-    if sit:
-        for sy in (-0.1, 0.1): p.rod(hip + Vector((0, sy, 0)), hip + Vector((0.42, sy * 1.3, 0.02)), 0.085, HIDE, rb=0.07); p.rod(hip + Vector((0.42, sy * 1.3, 0.02)), hip + Vector((0.5, sy * 1.5, -0.3)), 0.065, HIDE, rb=0.05)
+# ---------- people ----------
+# Each person is a jointed figure: a skeleton of sticks that Blender's Skin modifier wraps in a smooth body, so
+# shoulders, elbows, knees and feet are where a person's are. A walker has eight poses of one stride, and the body
+# is blended from one to the next, so knees bend and arms swing. Clothes are more sticks, a little fatter, over the
+# same joints, so they move with the limbs. The head is modelled with a face: brow, eyes, nose, mouth, ears, hair.
+#
+# WHAT THE DRESS RESTS ON (Warren County Historical Society, "Seneca Trunk": Clothing, describing Iroquoian peoples;
+# and the Verelst portraits of 1710): men wore a breechcloth held by a belt that also held up the leggings, and
+# moccasins made from one piece of deerskin; in summer the breechcloth alone; a "tunic-like shirt" at other times.
+# Men's hair was "roached", cut short and standing in a crest along the middle with the sides shaved, or worn with a
+# braided lock; young men painted their faces. Women wore a longer dress or a skirt, shorter leggings tied above
+# the knee, and their hair loose or tied in a bunch down the back. Small children wore nothing in summer.
+# WHAT IS OUR CHOICE: the season is set at harvest, so that everyone is dressed, which suits a site for children;
+# the children's clothes are small versions of the adults'. Every face, colour, pattern and pose is drawing: there
+# is no portrait of anyone from Teiaiagon. Red and blue cloth stands for the wool traded from Europeans by 1680.
+DEER, DEER2, FRINGE, RED, BLUE, LINEN, QUILL = flat('#b99363', 0.95), flat('#8f6c44', 0.95), flat('#d6bf93', 0.95), flat('#8f2f28', 0.95), flat('#2c4667', 0.95), flat('#d9cfb8', 0.95), flat('#efe7d2', 0.9)
+SKINS = [flat('#8f5c3a', 0.6, 0.15), flat('#7f5234', 0.6, 0.15), flat('#9a6843', 0.6, 0.15)]
+EYE, LIP, PAINT, WHITE = flat('#110b09', 0.3), flat('#6d3229', 0.7), flat('#a8281e', 0.8), flat('#f1ede2', 0.6)
+SIZE = {'man': 1.0, 'woman': 0.94, 'boy': 0.72, 'girl': 0.68, 'child': 0.56}
+BONES = [('hip', 'waist'), ('waist', 'chest'), ('chest', 'neck'), ('neck', 'head')]
+for S_ in 'LR': BONES += [('hip', 'hip' + S_), ('hip' + S_, 'th' + S_), ('th' + S_, 'knee' + S_), ('knee' + S_, 'ank' + S_), ('ank' + S_, 'toe' + S_), ('chest', 'sh' + S_), ('sh' + S_, 'el' + S_), ('el' + S_, 'wr' + S_), ('wr' + S_, 'ha' + S_)]
+
+def skeleton(s, phase=None, act='stand', swing=0.42):
+    # where every joint is, for a figure s times a grown man's height, facing +x with its feet on the ground.
+    # phase: how far through a stride (0 to tau) a walker is. act: stand, sit (on a log), carry (arms held out in front).
+    TH, SH, UA, FA = 0.43 * s, 0.42 * s, 0.27 * s, 0.25 * s; J = {}; hipz = 0.90 * s
+    if act == 'sit': hipz = 0.46 * s
+    def leg(side, th, kb):
+        y = side * 0.085 * s; h = Vector((0, y, hipz)); k = h + Vector((math.sin(th), 0, -math.cos(th))) * TH; a = th - kb; an = k + Vector((math.sin(a), 0, -math.cos(a))) * SH
+        n = 'L' if side > 0 else 'R'; J['hip' + n] = h; J['th' + n] = h.lerp(k, 0.3); J['knee' + n] = k; J['ank' + n] = an; J['toe' + n] = an + Vector((0.15 * s, 0, -0.035 * s))
+    def arm(side, ua, eb, out=0.05):
+        sh = Vector((0.015 * s, side * 0.175 * s, hipz + 0.50 * s)); e = sh + Vector((math.sin(ua), side * out, -math.cos(ua))).normalized() * UA; f = ua + eb; w = e + Vector((math.sin(f), -side * out * 0.6, -math.cos(f))).normalized() * FA
+        n = 'L' if side > 0 else 'R'; J['sh' + n] = sh; J['el' + n] = e; J['wr' + n] = w; J['ha' + n] = w + Vector((math.sin(f), 0, -math.cos(f))) * 0.085 * s
+    if phase is None:
+        if act == 'sit': leg(1, 1.42, 1.5); leg(-1, 1.5, 1.42)
+        else: leg(1, 0.05, 0.06); leg(-1, -0.04, 0.05)
     else:
-        for sy, ph in ((-0.1, 1), (0.1, -1)):
-            l = Make('leg'); l.rod((0, 0, 0), (0, 0, -0.45), 0.085, HIDE, rb=0.065); l.rod((0, 0, -0.45), (0, 0, -0.87), 0.062, HIDE, rb=0.045); l.ball((0.06, 0, -0.87), 0.06, HIDE, scale=(1.7, 0.9, 0.7)); limbs.append((l, hip + Vector((0, sy, 0)), ph, 0.4 if walk else 0.17))
-    if woman: p.rod(hip + Vector((0, 0, 0.06)), hip + Vector((0, 0, -0.55)), 0.2, flat('#2f4a6a' if cloth != '#3f5f86' else '#8a2f2a', 0.95), rb=0.27, seg=14)   # a wrapped skirt of trade cloth
-    else: p.box((hip.x, hip.y, hip.z - 0.34), (0.05, 0.3, 0.42), flat('#8a2f2a', 0.95))                                                                               # a breechcloth
-    p.ball(hip + up * 0.17, 0.165, shirt, scale=(0.85, 1.05, 1.5)); p.ball(chest, 0.17, shirt, scale=(0.85, 1.2, 1.0))
-    for sy in (-0.18, 0.18): p.ball(chest + Vector((0, sy, 0.08)), 0.07, shirt)
-    p.rod(neck - Vector((0, 0, 0.02)), head - Vector((0, 0, 0.06)), 0.046, SKIN); p.ball(head, 0.1, SKIN, scale=(1.0, 0.86, 1.14)); p.ball(head + Vector((0.095, 0, -0.015)), 0.026, SKIN)
-    p.ball(head + Vector((-0.02, 0, 0.03)), 0.105, HAIR, scale=(1.0, 0.93, 1.05)); p.rod(head + Vector((-0.09, 0, 0)), neck + Vector((-0.11, 0, -0.22)), 0.04, HAIR, rb=0.015)
-    for sy in (-1, 1):
-        sh = chest + Vector((0, sy * 0.2, 0.09))
-        if carry or sit:
-            hand = sh + (Vector((0.18, sy * 0.05, 0.42)) if carry else Vector((0.1 * sy, sy * 0.07, -0.52))); elbow = (sh + hand) / 2 + Vector((0.05 if carry else -0.03, sy * 0.06, 0)); p.rod(sh, elbow, 0.048, shirt, rb=0.042); p.rod(elbow, hand, 0.04, SKIN, rb=0.034); p.ball(hand, 0.042, SKIN)
-        else:
-            a = Make('arm'); a.rod((0, 0, 0), (-0.015, sy * 0.03, -0.27), 0.048, shirt, rb=0.042); a.rod((-0.015, sy * 0.03, -0.27), (0.03, sy * 0.05, -0.52), 0.04, SKIN, rb=0.034); a.ball((0.03, sy * 0.05, -0.52), 0.042, SKIN); limbs.append((a, sh, sy, 0.33 if walk else 0.07))
-    if carry: p.ball(head + Vector((-0.02, 0, 0.36)), 0.26, flat('#b89a62', 0.95), scale=(1.1, 1.1, 0.75))    # a basket on the head, steadied with both hands
-    body = p.done(at, turn); frames = FLAGS['--clip']; keys('BEZIER')
-    for mk, where, ph, amp in limbs:
-        o = mk.done(where, 0, parent=body); o.rotation_euler = (0, ph * amp, 0)
-        if walk and frames:   # one full swing a second: two steps
-            for k, f in enumerate(range(1, frames + 13, 12)): o.rotation_euler = (0, ph * amp * (1 if k % 2 == 0 else -1), 0); o.keyframe_insert('rotation_euler', frame=f)
-    if walk and frames:
-        keys('LINEAR'); end = Vector(at) + Vector((math.cos(turn), math.sin(turn), 0)) * walk * frames / 24
-        if HZ: end.z = HZ(end.x, end.y)
-        body.keyframe_insert('location', frame=1); body.location = end; body.keyframe_insert('location', frame=frames)
-    return body
+        for side, p in ((1, phase), (-1, phase + math.pi)): leg(side, swing * math.sin(p), 0.1 + 0.68 * max(0.0, math.cos(p)) ** 1.5)
+    if act == 'carry': arm(1, 0.45, 1.25, 0.02); arm(-1, 0.45, 1.25, 0.02)
+    elif act == 'sit': arm(1, 0.55, 0.7); arm(-1, 0.5, 0.75)
+    elif phase is None: arm(1, 0.05, 0.18); arm(-1, 0.02, 0.2)
+    else:
+        for side, p in ((1, phase + math.pi), (-1, phase)): arm(side, swing * 0.9 * math.sin(p), 0.22 + 0.2 * max(0.0, math.sin(p)))
+    lean = 0.04 * s if phase is not None else 0.0
+    J['hip'] = Vector((0, 0, hipz)); J['waist'] = Vector((lean * 0.3, 0, hipz + 0.17 * s)); J['chest'] = Vector((lean + 0.012 * s, 0, hipz + 0.37 * s)); J['neck'] = Vector((lean + 0.02 * s, 0, hipz + 0.555 * s)); J['head'] = Vector((lean + 0.03 * s, 0, hipz + 0.62 * s))
+    drop = min(J['toeL'].z, J['toeR'].z, J['ankL'].z - 0.03 * s, J['ankR'].z - 0.03 * s) - 0.02 * s      # set the lower foot on the ground
+    if act != 'sit':
+        for n in J: J[n] = J[n] - Vector((0, 0, drop))
+    return J
+
+def sticks(name, joints, bones, radii, mat, poses=None, parent=None, sub=2):
+    names = [n for n in joints if any(n in b for b in bones)]; idx = {n: i for i, n in enumerate(names)}
+    me = bpy.data.meshes.new(name); me.from_pydata([tuple(joints[n]) for n in names], [(idx[a], idx[b]) for a, b in bones], []); me.update(); me.materials.append(mat)
+    ob = bpy.data.objects.new(name, me); scene.collection.objects.link(ob); sk = ob.modifiers.new('skin', 'SKIN'); sk.use_smooth_shade = True
+    if not len(me.skin_vertices): raise RuntimeError('no skin layer on ' + name)
+    seen = set()
+    for i, n in enumerate(names):   # one root for each separate piece
+        r = radii[n]; me.skin_vertices[0].data[i].radius = r if isinstance(r, tuple) else (r, r); root = n not in seen
+        if root:
+            grow = [n]
+            while grow:
+                c = grow.pop(); seen.add(c)
+                for a, b in bones:
+                    for u, v in ((a, b), (b, a)):
+                        if u == c and v not in seen: grow.append(v)
+        me.skin_vertices[0].data[i].use_root = root
+    ss = ob.modifiers.new('smooth', 'SUBSURF'); ss.levels = sub; ss.render_levels = sub
+    if poses:
+        ob.shape_key_add(name='rest')
+        for k, pz in enumerate(poses):
+            kb = ob.shape_key_add(name='p%d' % k); kb.value = 0.0      # a new pose starts switched off (Blender 5 adds it switched on)
+            for i, n in enumerate(names): kb.data[i].co = pz[n]
+    if parent: ob.parent = parent
+    return ob
+
+def stride(ob, period):
+    # blend through the eight poses of a stride, over and over, for the length of the recording
+    frames = FLAGS['--clip']; blocks = ob.data.shape_keys.key_blocks; n = len(blocks) - 1; step = period / n; keys('LINEAR')
+    if not frames: return      # a still keeps the pose the figure was built in, caught in mid-step
+    for k in range(n):
+        kb = blocks[k + 1]; t = 1 + k * step - period
+        while t < frames + period:
+            for f, v in ((t - step, 0.0), (t, 1.0), (t + step, 0.0)): kb.value = v; kb.keyframe_insert('value', frame=f)
+            t += period
+        kb.value = 0.0
+
+def head(s, who, skin, r, parent, at):
+    h = Make('head'); R = 0.098 * s
+    h.ball((0, 0, 0), R, skin, scale=(0.96, 0.82, 1.12), seg=24); h.ball((0.022 * s, 0, -0.05 * s), 0.07 * s, skin, scale=(0.95, 0.86, 0.95), seg=18)                   # skull and jaw
+    h.rod((0.082 * s, 0, 0.012 * s), (0.112 * s, 0, -0.026 * s), 0.011 * s, skin, rb=0.017 * s, seg=8); h.ball((0.108 * s, 0, -0.03 * s), 0.016 * s, skin, scale=(0.9, 1.25, 0.8), seg=10)   # nose
+    for side in (-1, 1):
+        h.ball((0.082 * s, side * 0.034 * s, 0.014 * s), 0.012 * s, WHITE, scale=(0.6, 1.2, 0.62), seg=10); h.ball((0.0875 * s, side * 0.033 * s, 0.014 * s), 0.0078 * s, EYE, seg=8)                # eyes
+        h.rod((0.091 * s, side * 0.014 * s, 0.036 * s), (0.08 * s, side * 0.058 * s, 0.032 * s), 0.0065 * s, EYE, rb=0.004 * s, seg=6)                                    # brows
+        h.ball((0.0, side * 0.081 * s, -0.004 * s), 0.024 * s, skin, scale=(0.55, 0.4, 1.0), seg=10)                                                                    # ears
+        h.ball((0.05 * s, side * 0.05 * s, -0.022 * s), 0.028 * s, skin, scale=(0.8, 0.7, 0.8), seg=10)                                                                   # cheekbones
+    h.rod((0.083 * s, -0.024 * s, -0.057 * s), (0.083 * s, 0.024 * s, -0.057 * s), 0.0075 * s, LIP, seg=6)                                                              # mouth
+    style = r.choice(['roach', 'roach', 'lock']) if who in ('man', 'boy') else 'tail'
+    if style == 'roach':        # the crest along the middle, the sides shaved
+        for k in range(11): a = math.radians(72 - k * 15); h.ball((R * 0.97 * math.cos(a), 0, R * 1.14 * math.sin(a)), 0.03 * s, HAIR, scale=(1.0, 0.45, 1.0), seg=8)
+        h.rod((-0.08 * s, 0, -0.03 * s), (-0.1 * s, 0, -0.2 * s), 0.016 * s, HAIR, rb=0.008 * s, seg=6)
+    else:                       # hair over the crown and the back of the head, clear of the face
+        cap = bmesh.ops.create_uvsphere(h.bm, u_segments=24, v_segments=14, radius=R * 1.06)['verts']; bmesh.ops.scale(h.bm, verts=cap, vec=(0.98, 0.86, 1.13)); bmesh.ops.translate(h.bm, verts=cap, vec=(-0.008 * s, 0, 0.006 * s))
+        gone = [v for v in cap if v.co.x > 0.035 * s and v.co.z < 0.068 * s]; h.paint([v for v in cap if v not in gone], HAIR); bmesh.ops.delete(h.bm, geom=gone, context='VERTS')
+        if style == 'tail':     # tied in a bunch down the back
+            h.rod((-0.085 * s, 0, -0.02 * s), (-0.1 * s, 0, -0.16 * s), 0.04 * s, HAIR, rb=0.034 * s, seg=8); h.rod((-0.1 * s, 0, -0.16 * s), (-0.105 * s, 0, -0.42 * s), 0.034 * s, HAIR, rb=0.014 * s, seg=8); h.rod((-0.1 * s, 0, -0.15 * s), (-0.1 * s, 0, -0.18 * s), 0.043 * s, RED, seg=8)
+        else:                   # a braided lock at the side
+            h.rod((-0.02 * s, 0.085 * s, -0.01 * s), (0.0, 0.1 * s, -0.24 * s), 0.02 * s, HAIR, rb=0.009 * s, seg=6); h.rod((-0.08 * s, 0, -0.03 * s), (-0.095 * s, 0, -0.14 * s), 0.035 * s, HAIR, rb=0.02 * s, seg=8)
+    if who == 'man' and r.random() < 0.6:   # young men painted their faces
+        for side in (-1, 1): h.rod((0.094 * s, 0, -0.008 * s), (0.07 * s, side * 0.066 * s, -0.012 * s), 0.0075 * s, PAINT, seg=6)
+    o = h.done(at, 0, parent=parent); return o
+
+def person(at, turn, who='man', act='stand', walk=False, dress=0, seed=0, load=None):
+    # who: man, woman, boy, girl, child. act: stand, sit, carry. walk: strides along the way it faces (a child with
+    # walk=2 runs). dress picks between the choices each kind of person has. Returns the handle the whole figure hangs from.
+    r = random.Random(seed * 131 + 7); s = SIZE[who] * r.uniform(0.97, 1.04); skin = SKINS[seed % len(SKINS)]; woman = who in ('woman', 'girl')
+    root = bpy.data.objects.new('person', None); scene.collection.objects.link(root); root.location = at; root.rotation_euler = (0, 0, turn)
+    swing = 0.62 if walk == 2 else 0.42; period = (15 if walk == 2 else 25) * (0.8 + 0.2 * s)
+    poses = [skeleton(s, k * math.tau / 8, act, swing) for k in range(8)] if walk else None; rest = skeleton(s, 0.9, act, swing) if walk else skeleton(s, None, act)
+    thin = 0.9 if who in ('boy', 'girl', 'child') else 1.0
+    rad = {'hip': 0.128 * s, 'waist': (0.105 if woman else 0.118) * s * thin, 'chest': (0.138 if woman else 0.152) * s * thin, 'neck': 0.05 * s, 'head': 0.045 * s}
+    for n in 'LR': rad.update({'hip' + n: 0.088 * s * thin, 'th' + n: 0.078 * s * thin, 'knee' + n: 0.054 * s, 'ank' + n: 0.04 * s, 'toe' + n: 0.034 * s, 'sh' + n: 0.05 * s * thin, 'el' + n: 0.042 * s, 'wr' + n: 0.032 * s, 'ha' + n: 0.036 * s})
+    parts = [sticks('body', rest, BONES, rad, skin, poses, root)]
+    fat = lambda d, names: {n: (rad[n] + d * s) for n in names}
+    def wear(name, bones, d, mat):
+        names = sorted({n for b in bones for n in b}); parts.append(sticks(name, {n: rest[n] for n in names}, bones, fat(d, names), mat, [{n: p[n] for n in names} for p in poses] if poses else None, root, 1))
+    legs = lambda top: [b for n in 'LR' for b in (([('th' + n, 'knee' + n)] if top else []) + [('knee' + n, 'ank' + n)])]
+    wear('moccasins', [('ank' + n, 'toe' + n) for n in 'LR'], 0.012, DEER2)
+    cloth = [DEER, RED, BLUE][dress % 3]
+    if woman:
+        wear('leggings', legs(False), 0.01, DEER)                                             # a woman's leggings come to just above the knee
+        wear('dress', [('hip', 'waist'), ('waist', 'chest'), ('chest', 'shL'), ('chest', 'shR'), ('shL', 'elL'), ('shR', 'elR')], 0.018, DEER if dress % 2 == 0 else LINEN)
+        sk = Make('skirt'); hz_ = rest['hip'].z; top, low = hz_ + 0.1 * s, hz_ - (0.5 if who == 'woman' else 0.36) * s
+        sk.rod((0, 0, top), (0.01 * s, 0, low), 0.15 * s, cloth, rb=(0.25 if not walk else 0.3) * s, seg=20); sk.rod((0.01 * s, 0, low + 0.045 * s), (0.01 * s, 0, low + 0.02 * s), 0.292 * s if walk else 0.245 * s, QUILL, seg=20)
+        sk.rod((0, 0, top + 0.01 * s), (0, 0, top - 0.03 * s), 0.153 * s, DEER2, seg=20); parts.append(sk.done((0, 0, 0), 0, parent=root))
+    else:
+        if who == 'man' or dress % 2 == 0: wear('leggings', legs(True), 0.012, DEER)          # a man's leggings run up the thigh to his belt
+        if dress % 3 == 1 and who == 'man': wear('shirt', [('hip', 'waist'), ('waist', 'chest'), ('chest', 'shL'), ('chest', 'shR'), ('shL', 'elL'), ('shR', 'elR')], 0.018, LINEN)
+        bc = Make('breechcloth'); hz_ = rest['hip'].z; fl = cloth if cloth is not DEER else DEER2
+        bc.rod((0, 0, hz_ + 0.085 * s), (0, 0, hz_ + 0.055 * s), 0.142 * s, DEER2, seg=18)                                                       # the belt
+        for sx in (1, -1): bc.box((sx * 0.128 * s, 0, hz_ - 0.3 * s), (0.016 * s, 0.2 * s, 0.38 * s), fl); bc.box((sx * 0.131 * s, 0, hz_ - 0.3 * s), (0.014 * s, 0.2 * s, 0.03 * s), QUILL)   # the flaps, front and back, with a worked edge
+        bc.rod((0, 0, hz_ + 0.03 * s), (0, 0, hz_ - 0.1 * s), 0.132 * s, fl, rb=0.118 * s, seg=18); parts.append(bc.done((0, 0, 0), 0, parent=root))
+    head(s, who, skin, r, root, tuple(rest['head'] + Vector((0.012 * s, 0, 0.075 * s))))
+    if load == 'wood':      # an armful of firewood
+        w = Make('wood'); c = (rest['wrL'] + rest['wrR']) / 2
+        for k in range(6): w.rod(c + Vector((0.02 * s * (k % 3), -0.36 * s, 0.03 * s * (k // 3) + 0.02)), c + Vector((0.02 * s * (k % 3), 0.36 * s, 0.03 * s * (k // 3) + 0.03)), 0.028 * s, BARK, seg=6)
+        w.done((0, 0, 0), 0, parent=root)
+    elif load == 'basket':  # a basket held in both arms
+        b = Make('basket'); c = (rest['wrL'] + rest['wrR']) / 2 + Vector((0.03 * s, 0, 0.0)); b.rod(c + Vector((0, 0, -0.1 * s)), c + Vector((0, 0, 0.1 * s)), 0.13 * s, flat('#b79a62', 0.95), rb=0.17 * s, seg=14); b.ball(c + Vector((0, 0, 0.1 * s)), 0.15 * s, flat('#d9c65a', 0.9), scale=(1, 1, 0.35), seg=12); b.done((0, 0, 0), 0, parent=root)
+    frames = FLAGS['--clip']
+    if walk:
+        for ob in parts:
+            if ob.data.shape_keys: stride(ob, period)
+        if frames:
+            speed = 4 * 0.85 * s * math.sin(swing) * 24 / period      # a foot on the ground travels one step back in half a stride: move the body forward to match, so the feet do not slide
+            keys('LINEAR'); end = Vector(at) + Vector((math.cos(turn), math.sin(turn), 0)) * speed * frames / 24
+            if HZ: end.z = HZ(end.x, end.y)
+            root.keyframe_insert('location', frame=1); root.location = end; root.keyframe_insert('location', frame=frames)
+    return root
 
 def smoke(at, tall=8.0, wide=1.0, lean=(0.9, 0.3)):
     # a thin column of wood smoke: a tall soft shape that fades at its edges and toward its top, with a cloudy pattern that climbs through it in a recording
@@ -240,7 +375,7 @@ def canoe(at, turn):
     o = c.done(at, turn); o.rotation_euler = (math.radians(random.uniform(8, 16)), 0, turn); o.modifiers.new('thick', 'SOLIDIFY').thickness = 0.014; return o
 
 ELM = photo('elm', 'bark_brown_02', 0.35, tint='#b9a88f')
-def longhouse(at, turn, length):
+def longhouse(at, turn, length, emblem=False):
     h = Make('longhouse'); w, tall = 3.0, 5.6; n = int(length / 1.0); NA = 14; pole = flat('#6a5238', 0.9)
     prof = lambda a: (-w * math.copysign(abs(math.cos(a)) ** 0.62, math.cos(a)), tall * math.sin(a) ** 0.85)
     rows = [[h.bm.verts.new((-length / 2 + i * length / n, prof(math.pi * j / NA)[0], prof(math.pi * j / NA)[1] + random.uniform(-0.03, 0.03))) for j in range(NA + 1)] for i in range(n + 1)]
@@ -250,7 +385,13 @@ def longhouse(at, turn, length):
     for end in (0, n):   # the end walls, with a low door
         mid = h.bm.verts.new((rows[end][0].co.x, 0, 2.2)); ring = rows[end]
         for j in range(NA): h.bm.faces.new((ring[j], ring[j + 1], mid) if end else (ring[j + 1], ring[j], mid))
-        h.bm.faces.new((ring[0], ring[NA], mid) if end else (ring[NA], ring[0], mid)); h.paint([mid], ELM); sx = -1 if end == 0 else 1; h.box((rows[end][0].co.x + sx * 0.03, 0, 0), (0.08, 1.0, 1.7), flat('#1a1410', 0.9)); h.box((rows[end][0].co.x + sx * 0.06, 0.3, 0.25), (0.05, 0.5, 1.45), flat('#6f5a44', 0.95))
+        h.bm.faces.new((ring[0], ring[NA], mid) if end else (ring[NA], ring[0], mid)); h.paint([mid], ELM); sx = -1 if end == 0 else 1; h.box((rows[end][0].co.x + sx * 0.03, 0, 0), (0.08, 1.0, 1.7), flat('#1a1410', 0.9)); dx = rows[end][0].co.x; dv = h.box((dx + sx * 0.45, 0, 0.5), (0.06, 1.05, 1.5), ELM); bmesh.ops.rotate(h.bm, verts=dv, cent=(dx, 0, 1.95), matrix=Matrix.Rotation(sx * -0.5, 3, 'Y'))   # the door: a sheet of bark hung from the top and propped open
+        if emblem:   # a clan animal painted on the end of the house, in red and black: a turtle, seen from above
+            ex = dx + sx * 0.05; red_, blk_ = flat('#9a2a20', 0.9), flat('#15100d', 0.9); h.ball((ex, 0, 3.5), 0.52, blk_, scale=(0.06, 1.0, 1.25), seg=16); h.ball((ex + sx * 0.02, 0, 3.5), 0.44, red_, scale=(0.06, 1.0, 1.25), seg=16); h.ball((ex + sx * 0.02, 0, 4.22), 0.17, red_, scale=(0.08, 1.0, 1.2), seg=10)
+            for sy_, sz_ in ((-1, 0.38), (1, 0.38), (-1, -0.38), (1, -0.38)): h.ball((ex + sx * 0.02, sy_ * 0.5, 3.5 + sz_), 0.15, red_, scale=(0.08, 1.3, 0.8), seg=8)
+            h.rod((ex + sx * 0.02, 0, 2.95), (ex + sx * 0.02, 0, 2.7), 0.05, red_, rb=0.01, seg=5)
+        for k in range(9): h.rod((dx + sx * (0.5 + 0.22 * (k % 3)), 1.5, 0.12 + 0.2 * (k // 3)), (dx + sx * (0.5 + 0.22 * (k % 3)), 2.9, 0.12 + 0.2 * (k // 3)), 0.1, BARK, seg=6)    # firewood stacked by the door
+        for k in range(2): h.rod((dx + sx * 0.7, -1.7 - k * 0.85, 0.0), (dx + sx * 0.7, -1.7 - k * 0.85, 0.95), 0.36, ELM, rb=0.33, seg=12); h.ball((dx + sx * 0.7, -1.7 - k * 0.85, 0.95), 0.33, flat('#d9c65a', 0.9), scale=(1, 1, 0.3), seg=10)   # barrels of elm bark, full of corn
     for i in range(0, n + 1, 2):   # hoops and long poles lashed outside, holding the bark down
         for j in range(NA): a0, a1 = math.pi * j / NA, math.pi * (j + 1) / NA; x = -length / 2 + i * length / n; p0, p1 = prof(a0), prof(a1); h.rod((x, p0[0] * 1.02, p0[1] * 1.01), (x, p1[0] * 1.02, p1[1] * 1.01), 0.045, pole, seg=5)
     for a in (0.22, 0.42, 0.62, 1 - 0.42, 1 - 0.22, 0.5): p = prof(math.pi * a); h.rod((-length / 2 - 0.3, p[0] * 1.03, p[1] * 1.02), (length / 2 + 0.3, p[0] * 1.03, p[1] * 1.02), 0.04, pole, seg=5)
@@ -305,7 +446,17 @@ LEAVES = [spray('oakleaf', '#4f7a2f'), spray('mapleleaf', '#6a8f34'), spray('bee
 def species():
     return [tree('oak', 22, 'leaf', LEAVES[0]), tree('maple', 19, 'leaf', LEAVES[1]), tree('beech', 25, 'leaf', LEAVES[2]), tree('maple2', 16, 'leaf', LEAVES[1]), tree('oak2', 27, 'leaf', LEAVES[0]), tree('maple3', 21, 'leaf', LEAVES[1]), tree('pine', 32, 'pine', LEAVES[3])]
 
-if SHOT == 'aerial':
+if SHOT == 'people':
+    # A line-up, close, to check faces, dress and the walk. Not used on the site.
+    g, hz = ground(40); HZ = hz; sky_and_sun(48)
+    row = [('man', 'stand', False, 0, None), ('man', 'stand', False, 1, None), ('woman', 'stand', False, 0, None), ('woman', 'carry', False, 1, 'basket'), ('boy', 'stand', False, 1, None), ('girl', 'stand', False, 2, None), ('child', 'stand', False, 0, None), ('man', 'stand', True, 2, None), ('woman', 'carry', True, 2, 'wood'), ('woman', 'sit', False, 1, None)]
+    for k, (who, act, walk, dress, load) in enumerate(row): x = (k - 4.5) * 0.95; person((x, 6.0, hz(x, 6.0) + (0.0 if act != 'sit' else 0.0)), -math.pi / 2 + (0.5 if walk else 0.12 * ((k % 3) - 1)), who, act, walk, dress, k, load)
+    if FLAGS['--view']: camera((0.3, 3.2, 1.45), (-0.9, 6.0, 1.35), 60)
+    else: camera((0.0, -4.5, 1.5), (0.0, 6.0, 0.9), 50, to=(0.0, -4.5, 1.5), look_to=(0.0, 6.0, 0.9))
+    bpy.context.view_layer.update(); dg = bpy.context.evaluated_depsgraph_get()
+    for o in scene.objects:
+        if o.name.startswith('body'): e = o.evaluated_get(dg); bb = [e.matrix_world @ Vector(c) for c in e.bound_box]; print('BODY', o.name, 'keys', bool(o.data.shape_keys), 'x %.2f..%.2f z %.2f..%.2f' % (min(v.x for v in bb), max(v.x for v in bb), min(v.z for v in bb), max(v.z for v in bb)))
+elif SHOT == 'aerial':
     # Above the bay: the real lie of the land and the first-mapped shore (the same ground as the 3D world page), from the
     # data file that tools/blender/export-moments.js writes. One unit is one metre; heights are true, not stretched.
     import json
@@ -352,7 +503,7 @@ elif SHOT == 'village':
     g, hz = ground(-30); HZ = hz; sky_and_sun(62)      # the light travels north-east: an afternoon sun behind the viewer's left shoulder
     Q = math.pi / 2   # the houses stand end-on to the viewer, in two loose rows with a lane between
     houses = [((-9, 30), Q + 0.06, 24), ((9.5, 36), Q - 0.08, 28), ((-10, 62), Q - 0.04, 26), ((10, 72), Q + 0.1, 22), ((-30, 44), Q + 0.2, 20), ((31, 50), Q - 0.22, 22), ((-28, 78), Q + 0.05, 18), ((30, 86), Q - 0.1, 20)]
-    for (x, y), turn, L in houses: longhouse((x, y, hz(x, y) - 0.05), turn, L)
+    for k, ((x, y), turn, L) in enumerate(houses): longhouse((x, y, hz(x, y) - 0.05), turn, L, emblem=k in (0, 1, 3, 4))
     clear = lambda x, y: (x * x / 70 ** 2 + (y - 55) ** 2 / 62 ** 2) > 1                     # no trees in the clearing
     print('trees', woods(hz, clear, 9, species()))
     pal = Make('palisade'); log = flat('#6f5840', 0.95)
@@ -370,9 +521,32 @@ elif SHOT == 'village':
             sx, sy = x + random.uniform(-0.2, 0.2), y + random.uniform(-0.2, 0.2); top = random.uniform(1.6, 2.3); corn.rod((sx, sy, z), (sx, sy, z + top), 0.02, stalk, seg=4)
             for l in range(5): a = random.uniform(0, math.tau); zz = z + top * (0.25 + 0.15 * l); mid = (sx + math.cos(a) * 0.3, sy + math.sin(a) * 0.3, zz + 0.2); corn.rod((sx, sy, zz), mid, 0.03, leafm, rb=0.045, seg=4); corn.rod(mid, (sx + math.cos(a) * 0.62, sy + math.sin(a) * 0.62, zz - random.uniform(0.0, 0.25)), 0.045, leafm, rb=0.004, seg=4)
     corn.done()
-    # who is in the lane: place, the way they face, shirt, woman, carrying, sitting, walking speed (metres a second)
-    W = 1.25; folk = [((-2.2, 17), 1.52, '#d9cfb8', False, False, False, W), ((2.4, 36), -1.6, '#3f5f86', True, True, False, W), ((6, 27), -1.2, '#a8352b', False, False, False, 0), ((-9, 26), 1.4, '#d9cfb8', True, False, False, 0), ((-3, 30), -0.4, '#a8352b', True, False, True, 0), ((-4.2, 30.6), 2.2, '#d9cfb8', False, False, True, 0), ((17, 40), 3.0, '#3f5f86', False, False, False, W), ((-16, 40), 0.3, '#d9cfb8', True, True, False, W), ((1, 52), -1.5, '#a8352b', False, False, False, W)]
-    for (x, y), turn, cloth, woman, carry, sit, walk in folk: figure((x, y, hz(x, y)), turn, cloth, woman, carry, sit, walk)
+    # Who is in the lane. Each: place, the way they face, who, what they are doing, walking (2 is running), dress, what they carry.
+    # Nobody here is a known person; who is where, and doing what, is our picture of an ordinary afternoon at harvest.
+    folk = [((-2.2, 18), 1.55, 'man', 'stand', True, 0, None), ((2.6, 46), -1.6, 'woman', 'carry', True, 1, 'wood'), ((-1.2, 41), -1.55, 'woman', 'stand', True, 2, None), ((-2.2, 41.6), -1.5, 'girl', 'stand', True, 1, None),
+            ((-9.5, 31), 0.1, 'boy', 'stand', 2, 0, None), ((5.6, 22), 0.6, 'man', 'stand', False, 1, None), ((6.6, 22.7), -2.5, 'man', 'stand', False, 2, None), ((6.2, 27.5), -1.3, 'woman', 'carry', False, 0, 'basket'),
+            ((-2.9, 30.3), -0.5, 'woman', 'sit', False, 0, None), ((-4.5, 29.9), 0.4, 'woman', 'sit', False, 2, None), ((-3.7, 31.0), -1.5, 'child', 'stand', False, 0, None), ((3.4, 60), -1.55, 'man', 'stand', True, 1, None),
+            ((17, 40), 3.0, 'man', 'carry', True, 0, 'wood'), ((-15, 44), 0.2, 'girl', 'stand', 2, 0, None), ((1.5, 70), -1.6, 'woman', 'carry', True, 0, 'basket')]
+    for k, ((x, y), turn, who, act, walk, dress, load) in enumerate(folk): person((x, y, hz(x, y)), turn, who, act, walk, dress, k + 3, load)
+    seat = Make('seats')    # the logs the two women sit on by the fire
+    for (x, y), a in (((-2.9, 30.3), 1.07), ((-4.5, 29.9), 1.97)): seat.rod((x - math.cos(a) * 0.8 - 0.1, y - math.sin(a) * 0.8, hz(x, y) + 0.2), (x + math.cos(a) * 0.8 - 0.1, y + math.sin(a) * 0.8, hz(x, y) + 0.2), 0.2, BARK, seg=8)
+    seat.done()
+    things = Make('things'); pot = flat('#5b4032', 0.9); fx, fy = -3.6, 29.2; gz = hz(fx, fy)
+    for a in (0.3, 2.4, 4.5): things.ball((fx + math.cos(a) * 0.33, fy + math.sin(a) * 0.33, gz + 0.1), 0.14, flat('#8a857c', 1.0), seg=8)                       # three stones round the fire, and a clay pot on them
+    things.ball((fx, fy, gz + 0.42), 0.27, pot, scale=(1, 1, 0.9), seg=14); things.rod((fx, fy, gz + 0.58), (fx, fy, gz + 0.68), 0.2, pot, rb=0.24, seg=14)
+    for (x, y) in ((3.5, 25.5), (-6.0, 47.0)):     # storage pits: a hole lined with bark, its bark cover lying beside it
+        z = hz(x, y); things.rod((x, y, z + 0.01), (x, y, z + 0.05), 0.8, flat('#1b140f', 1.0), seg=16); things.rod((x, y, z + 0.0), (x, y, z + 0.09), 0.92, ELM, rb=0.86, seg=16); things.rod((x, y, z + 0.06), (x, y, z + 0.1), 0.78, flat('#1b140f', 1.0), seg=16)
+        c = things.box((x + 1.5, y + 0.4, z + 0.02), (1.7, 1.5, 0.06), ELM, turn=0.5)
+    for (x, y), a in (((4.6, 30.5), 0.1), ((-5.2, 39.0), 1.5), ((4.4, 49), 0.0)):   # braids of corn hung up to dry on a pole between two forked posts
+        z = hz(x, y); ex, ey = math.cos(a) * 1.5, math.sin(a) * 1.5
+        for sgn in (-1, 1): things.rod((x + sgn * ex, y + sgn * ey, z), (x + sgn * ex, y + sgn * ey, z + 2.1), 0.06, BARK, seg=6)
+        things.rod((x - ex, y - ey, z + 2.05), (x + ex, y + ey, z + 2.05), 0.045, BARK, seg=6)
+        for k in range(9): t = -0.85 + k * 0.21; things.rod((x + t * ex, y + t * ey, z + 2.0), (x + t * ex, y + t * ey, z + 1.25 + 0.1 * (k % 2)), 0.075, flat('#d8b93f', 0.85), rb=0.05, seg=7)
+    for (x, y), a in (((-5.6, 24.5), 0.3),):       # a bear skin drying over a pole
+        z = hz(x, y); ex, ey = math.cos(a) * 1.0, math.sin(a) * 1.0
+        for sgn in (-1, 1): things.rod((x + sgn * ex, y + sgn * ey, z), (x + sgn * ex, y + sgn * ey, z + 1.5), 0.05, BARK, seg=6)
+        things.rod((x - ex, y - ey, z + 1.45), (x + ex, y + ey, z + 1.45), 0.04, BARK, seg=6); things.box((x, y, z + 0.55), (1.5, 0.08, 0.95), flat('#2a201a', 1.0), turn=a)
+    things.done()
     fire = Make('fire'); fx, fy = -3.6, 29.2
     for k in range(7): a = k * 0.9; fire.rod((fx + math.cos(a) * 0.5, fy + math.sin(a) * 0.5, hz(fx, fy) + 0.05), (fx - math.cos(a) * 0.2, fy - math.sin(a) * 0.2, hz(fx, fy) + 0.22), 0.06, flat('#3a2a1e', 1.0), seg=5)
     fire.done(); smoke((fx, fy, hz(fx, fy) + 0.2), 6.0, 0.45)
@@ -403,8 +577,12 @@ else:
     except Exception: pass
     print('trees', woods(hz, lambda x, y: y > 13 + 5 * math.sin(x * 0.06) and not (-34 < x < -14 and y < 40), 7.5, species()))   # a gap in the trees where the camera comes down
     for (x, y), turn in (((7, 3.2), 0.35), ((12.5, 4.6), 0.2), ((19, 3.0), 0.5), ((30, 5.2), 0.1), ((44, 3.6), 0.4)): canoe((x, y, hz(x, y) + 0.05), turn)
-    W = 1.25
-    for (x, y), turn, cloth, woman, carry, sit, walk in (((9.5, 1.4), 0.05, '#d9cfb8', False, False, False, W), ((27, 2.2), 3.1, '#a8352b', False, False, False, W), ((28.4, 1.5), 3.12, '#3f5f86', True, True, False, W), ((24, 4.8), -0.6, '#d9cfb8', False, False, True, 0), ((16, 4.4), -1.2, '#a8352b', False, False, False, 0), ((46, 2.0), 3.1, '#a8352b', False, False, False, W), ((62, 3.0), 3.1, '#d9cfb8', True, False, False, W)): figure((x, y, hz(x, y)), turn, cloth, woman, carry, sit, walk)
+    # Who is on the beach (see the note on the village lane: none of them is a known person).
+    folk = [((9.5, 1.4), 0.05, 'man', 'stand', True, 0, None), ((30, 2.6), 3.1, 'man', 'stand', True, 2, None), ((31.3, 1.7), 3.12, 'woman', 'carry', True, 1, 'basket'), ((24, 4.8), -0.9, 'woman', 'sit', False, 0, None),
+            ((16.5, 4.6), -1.3, 'man', 'stand', False, 1, None), ((17.6, 5.0), -2.2, 'boy', 'stand', False, 1, None), ((44, 0.4), 3.12, 'boy', 'stand', 2, 0, None), ((48, 1.0), 3.1, 'girl', 'stand', 2, 2, None),
+            ((56, 2.4), 3.1, 'man', 'carry', True, 0, 'wood'), ((66, 3.0), 3.1, 'woman', 'stand', True, 0, None)]
+    for k, ((x, y), turn, who, act, walk, dress, load) in enumerate(folk): person((x, y, hz(x, y)), turn, who, act, walk, dress, k + 20, load)
+    seat = Make('seat'); seat.rod((23.2, 4.3, hz(24, 4.8) + 0.2), (24.8, 5.3, hz(24, 4.8) + 0.2), 0.2, BARK, seg=8); seat.done()
     tufts(hz, lambda x, y: y > 9.5 + 4 * math.sin(x * 0.06) + random.uniform(0, 6), 1800, (-60, 110, 8, 40))
     drift = Make('drift'); wood = photo('driftwood', 'bark_brown_02', 0.8, tint='#cfc4b0')
     for k in range(9): x, y = random.uniform(2, 70), random.uniform(-0.5, 6); a = random.uniform(0, math.pi); L = random.uniform(1.5, 4.5); drift.rod((x, y, hz(x, y) + 0.1), (x + math.cos(a) * L, y + math.sin(a) * L * 0.4, hz(x, y) + 0.16), random.uniform(0.07, 0.16), wood, seg=7)

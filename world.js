@@ -89,6 +89,10 @@ YP.PIECES = [
 YP.LOG = [
   {
     date: '2026-11-14',
+    text: 'The people in Reconstructing Toronto are remade, and the village has more in it. Men, women and children are now jointed figures with faces, who bend their knees and swing their arms when they walk. Their dress and hair follow written descriptions of Seneca and other Haudenosaunee people: breechcloth, leggings and moccasins, a crest of hair along a shaved head, women in long dresses with their hair tied down the back. The longhouses now have bark doors hung from the top, a clan animal painted on the end, barrels of bark and firewood by the doors; there are braids of corn drying, a storage pit, a clay pot on the fire. Under each recording is a new list, Things to spot, with one fact for each thing and the source it came from. Where the picture changes something so that it can be seen, the list says so.'
+  },
+  {
+    date: '2026-11-14',
     text: 'The three recordings in Reconstructing Toronto now move. Before, the camera only drifted a few metres and it looked as if nothing was happening. Now it walks along the beach toward the canoes, walks up the lane between the longhouses, and from the air swings a quarter of the way round the bay while coming down toward it.'
   },
   {
