@@ -60,7 +60,8 @@ window.YP = window.YP || {};
     if (video.readyState >= 1) seek(); else { video.addEventListener('loadedmetadata', seek, { once: true }); video.load(); }
   }
   video.poster = DIR + 'tl-1800.jpg' + q; video.src = DIR + 'toronto-1800-2025.mp4' + q;
-  play.addEventListener('click', () => { if (video.ended) video.currentTime = 0; if (video.paused) video.play().catch(() => {}); else video.pause(); });
+  // Play brings the film to the middle of the window first, so it is watched whole
+  play.addEventListener('click', () => { if (video.ended) video.currentTime = 0; if (video.paused) { if (!short) box.scrollIntoView({ behavior: still() ? 'auto' : 'smooth', block: 'center' }); video.play().catch(() => {}); } else video.pause(); });
   video.addEventListener('click', () => play.click());
   for (const ev of ['timeupdate', 'play', 'pause', 'ended', 'seeked', 'loadedmetadata']) video.addEventListener(ev, tick);
   (function smooth() { if (!video.paused) tick(); requestAnimationFrame(smooth); })();   // the clock counts every year, not four times a second

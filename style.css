@@ -882,9 +882,12 @@ html.still .sub-card { transition: none; }
 #rec-about .real { font-size: 0.92rem; color: var(--muted); }
 
 /* The time lapse page (town.html): the film, and the timeline under it */
-.world3d.tl, body.shore .world3d.tl { height: auto; min-height: 0; aspect-ratio: 16 / 9; max-height: 84vh; background: #e9dcc0; }
+/* The film fills the page: as wide as the window, or as wide as its height allows, and in the middle either way.
+   (Limiting only the height, as before, shrank the box and left it against the left edge.) */
+.world3d.tl, body.shore .world3d.tl { height: auto; min-height: 0; aspect-ratio: 16 / 9; width: min(100%, calc(94vh * 16 / 9)); margin-left: auto; margin-right: auto; background: #e9dcc0; }
+@supports (height: 1svh) { .world3d.tl, body.shore .world3d.tl { width: min(100%, calc(94svh * 16 / 9)); } }
 .world3d.tl video { object-fit: contain; }
-html.short .world3d.tl { aspect-ratio: auto; max-height: none; background: #e9dcc0; }
+html.short .world3d.tl { aspect-ratio: auto; width: 100%; background: #e9dcc0; }
 html.short .world3d.tl video { object-fit: cover; }   /* the tall story frame shows the middle of the picture, where the city is */
 .town-line { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 26px; }
 .town-line .era { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; padding-top: 22px; border-top: 1px solid var(--rule); }
@@ -902,6 +905,12 @@ html.short .world3d.tl video { object-fit: cover; }   /* the tall story frame sh
 .town-line .era-facts strong::after { content: '.'; }
 .town-line .era-facts a, .town-line .era-facts span { color: var(--muted); font-size: 0.86rem; }
 @media (max-width: 720px) { .town-line .era { grid-template-columns: 1fr; gap: 12px; } }
+/* A phone held upright: the film stands tall, like the stories, and shows the middle of the picture, where the city is. */
+@media (max-width: 720px) and (orientation: portrait) {
+  .world3d.tl, body.shore .world3d.tl { aspect-ratio: 9 / 16; width: auto; height: min(86vh, 900px); max-width: 100%; }
+  @supports (height: 1svh) { .world3d.tl, body.shore .world3d.tl { width: auto; height: min(86svh, 900px); } }
+  .world3d.tl video { object-fit: cover; }
+}
 @media (max-width: 820px) {   /* on a phone the film is small: a smaller clock, and Play back in the bottom corner */
   .world3d.tl .town-clock { right: 8px; top: 8px; padding: 4px 10px 6px; }
   .world3d.tl .town-clock b { font-size: 1.7rem; }
