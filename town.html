@@ -4,26 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f2e9d7">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261113a">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261113a">
-<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261113a">
-<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261113a">
-<title>Toronto, 1700 to 1850: a town taking shape · The York Project</title>
-<meta name="description" content="A 3D timelapse of the ground Toronto stands on, from forest in 1700 to a city of thirty thousand in 1850: Fort Rouillé, the founding of York, the Battle of York, the City of Toronto. Dates and counts from sources; houses and streets drawn to match them.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20261113b">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=20261113b">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png?v=20261113b">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=20261113b">
+<title>Toronto, 1800 to 2025: a city taking shape · The York Project</title>
+<meta name="description" content="A time lapse of Toronto’s harbour and downtown from 1800 to 2025, drawn in blue ink like an architect’s sketch: forest, a town, a city of brick and rail, then towers. With a timeline of what happened in each period, every entry from a named source.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anek+Latin:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,500..650;1,9..144,500..650&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261113a">
+<link rel="stylesheet" href="style.css?v=20261113b">
 <script>try { if (localStorage.getItem('yp-motion') === 'off' || (localStorage.getItem('yp-motion') == null && matchMedia('(prefers-reduced-motion: reduce)').matches)) document.documentElement.classList.add('still'); } catch (e) {}</script>
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-} }
-</script>
-<script src="short.js?v=20261113a"></script>
+<script src="short.js?v=20261113b"></script>
 </head>
-<body class="shore world17 town" data-world="town">
+<body class="shore town">
 <div class="wrap">
   <header class="bar">
     <div class="brand">
@@ -38,56 +32,55 @@
       <a href="./#stories"><span>04</span> Stories</a>
     </nav>
   </header>
-  <nav class="crumbs" aria-label="Breadcrumb">
-    <a href="./">Home</a><span aria-hidden="true">/</span><a href="world.html">Toronto, c.1700</a><span aria-hidden="true">/</span><span aria-current="page">1700 to 1850</span>
+    <nav class="crumbs" aria-label="Breadcrumb">
+    <a href="./">Home</a><span aria-hidden="true">/</span><a href="world.html">Toronto, c.1700</a><span aria-hidden="true">/</span><span aria-current="page">1800 to 2025</span>
   </nav>
 
   <div class="shore-head">
-    <div class="mono">03 / Reconstructing Toronto · 1700 to 1850 · in progress</div>
-    <h1>A town <em>taking shape.</em></h1>
-    <p>Forest in 1700, a city of thirty thousand by 1850. Press play and watch it happen.</p>
+    <div class="mono">03 / Reconstructing Toronto · 1800 to 2025 · a drawn film</div>
+    <h1>A city <em>taking shape.</em></h1>
+    <p>One place, seen from the air for 225 years. Press Play and watch the forest become a town, and the town become the city you know.</p>
   </div>
 </div>
 
-<div class="world3d" id="w17">
-  <canvas id="w17-gl" aria-label="3D timelapse of the Toronto shore from 1700 to 1850"></canvas>
-  <div class="labels" id="w17-labels" aria-hidden="true"></div>
-  <div class="view-tag" id="w17-tag"></div>
-  <div class="town-clock" aria-live="off"><b id="town-year">1700</b><span id="town-pop">No town</span></div>
-  <div class="world-track" id="w17-track" role="progressbar" aria-label="Progress from 1700 to 1850"><span></span></div>
-  <button class="world-play" id="w17-play" type="button" aria-pressed="true">Pause</button>
-  <div class="views" id="w17-views" role="group" aria-label="Camera views"></div>
-  <div class="glfail" id="w17-fail" hidden>This view needs WebGL, which isn't available in this browser. The notes below say what it shows.</div>
+<div class="world3d rec tl" id="tl">
+  <video muted playsinline preload="none" aria-label="A drawn time lapse of Toronto’s harbour and downtown from 1800 to 2025"></video>
+  <div class="town-clock" aria-live="off"><b id="town-year">1800</b><span id="town-pop">The Town of York</span></div>
+  <div class="world-track" role="progressbar" aria-label="Progress from 1800 to 2025"><span></span></div>
+  <button class="world-play" id="tl-play" type="button" aria-pressed="false">Play</button>
 </div>
 
 <div class="wrap">
-  <p class="town-intro">One camera, a hundred and fifty years. In 1700 the forest ran down to the bay. In 1751 the French built a small fort and in 1759 burned it. In 1793 a garrison and ten blocks of town were laid out; by 1850 about thirty thousand people lived in a city with wharves reaching into the bay. Play the timelapse, or drag the years yourself. The dates and the counts of people are from sources; the houses and streets are drawn to match them, and the page says which is which.</p>
   <div class="town-years">
     <label for="town-range" class="mono">Year</label>
-    <input type="range" id="town-range" min="1700" max="1850" step="1" value="1700" aria-label="Year, from 1700 to 1850">
-    <span class="mono">1700</span><span class="mono" style="margin-left:auto">1850</span>
-    <button class="btn dark town-play2" id="town-play2" type="button">Play the timelapse from 1700</button>
+    <input type="range" id="town-range" min="1800" max="2025" step="1" value="1800" aria-label="Year, from 1800 to 2025">
+    <span class="mono">1800</span><span class="mono" style="margin-left:auto">2025</span>
   </div>
-  <div class="views cards" id="town-eras" role="group" aria-label="Jump to a moment"></div>
-  <div class="about" id="w17-about" aria-live="polite"></div>
-  <p class="help" style="padding:0">The timelapse runs from 1700 to 1850 and starts again, and the camera goes to wherever the change is. Drag the year, or pick a moment, to stop it · drag the picture to take the camera yourself · scroll or pinch to zoom · Play picks it up again</p>
+  <p class="town-intro">The camera never moves: it hangs over the lake, looking across the islands to the town. Every picture is drawn from a 3D model of the real ground and turned into blue ink on old paper, the way an architect sketches a plan. The film takes 72 seconds to go from 1800 to 2025, about three years every second, and then rises to look straight down on the city today. Drag the year to go where you like. There is no sound.</p>
+  <p class="town-intro"><b>Read this before you trust it.</b> The shore, the ground, today’s buildings and the dated landmarks come from records. The year each <em>ordinary</em> building appears does not: nobody has a list of when every building in Toronto went up, so the film works it out from how far a building stands from the first town and how tall it is. The notes at the bottom say exactly which is which.</p>
+
+  <section class="notes">
+    <div class="sec-head"><h2>The timeline, period by period</h2></div>
+    <p class="fine" style="max-width:70ch">Each period starts with what the film draws in those years. Under it are things that happened then, each with the source it was taken from. Press a picture to play the film from that period.</p>
+    <ol class="town-line" id="town-line"></ol>
+  </section>
 
   <section class="notes">
     <div class="sec-head"><h2>What's real here, and what is drawn</h2></div>
     <ul class="log">
-      <li><span class="mono">Real</span><span>The ground, the shore, the sandbar, the marsh and the creeks. They are the same as in <a href="world.html">the c.1700 world</a>, from today’s elevation and the earliest maps. The shore is held as it was then for the whole timelapse; the filling of the waterfront came later and is not shown.</span></li>
-      <li><span class="mono">Real</span><span>The dates. The French storehouse on the Humber (1720), the trading post of 1750 and Fort Rouillé (1751, burned by its own garrison in 1759); the Toronto Purchase (1787, revised 1805); the founding of York on 27 August 1793; parliament meeting in June 1797 and the extension west to Peter Street; the market (1803); the first church and first brick house (1807); the Battle of York (27 April 1813); incorporation as Toronto (6 March 1834); gas lamps (1841); the Cathedral Fire (7 April 1849). From <a href="https://en.wikipedia.org/wiki/York,_Upper_Canada" target="_blank" rel="noopener">Wikipedia, York, Upper Canada</a>, <a href="https://en.wikipedia.org/wiki/History_of_Toronto" target="_blank" rel="noopener">Wikipedia, History of Toronto</a> and <a href="https://friendsoffortyork.ca/history/" target="_blank" rel="noopener">The Friends of Fort York</a>.</span></li>
-      <li><span class="mono">Real</span><span>The lighthouse on Gibraltar Point: begun in 1808, lit in 1809, 52 feet tall and raised to 82 in 1832, a six-sided stone tower (<a href="https://en.wikipedia.org/wiki/Gibraltar_Point_Lighthouse" target="_blank" rel="noopener">Wikipedia</a>). It is placed at its recorded position.</span></li>
-      <li><span class="mono">Mixed</span><span>The number of people. The counts used are 3 in 1793, about 240 in 1799, about 500 in 1808, 720 in 1813, 1,600 in 1825, 2,860 in 1830, 5,500 in 1832, 9,250 in 1834 and about 30,000 in 1851, from the two Wikipedia pages above. Those pages also give 600 for 1796 and 1,460 for 1812, which do not fit the others and are left out. Between counts the model fills in smoothly.</span></li>
-      <li><span class="mono">Mixed</span><span>Where the named places stand. Fort York and Fort Rouillé are at their sites; the parliament is on the east side of the first town plot, the market and the church near King and Church streets. Their shapes are simple stand-ins: no plan or picture of any of them was used.</span></li>
-      <li><span class="mono">Mixed</span><span>Eight buildings that still stand: The Grange (1817), the Bank of Upper Canada (1827), Osgoode Hall (1832), Little Trinity (1843), the city hall on Front Street (1844), the Church of the Holy Trinity (1847), St Michael’s Cathedral (1848) and St Lawrence Hall (1850). Their years and addresses are from <a href="https://en.wikipedia.org/wiki/List_of_oldest_buildings_and_structures_in_Toronto" target="_blank" rel="noopener">Wikipedia’s list of the oldest buildings in Toronto</a>. Each is placed at its address today by eye, good to about a block. Their shapes only say what kind of building each is.</span></li>
-      <li><span class="mono">Drawn</span><span>Every ordinary house. There are <span id="town-count"></span> of them by 1850, and each goes up as the population grows. A small town still has to be seen, so one drawn house stands for about <span id="town-per-early"></span> people in 1800 and about <span id="town-per"></span> in 1850. Early ones are low and of wood; later ones are more often brick, and taller along the main streets. Where each stands is not from any map.</span></li>
-      <li><span class="mono">Drawn</span><span>The streets, as a regular grid turned the way Front Street runs. The first town was ten blocks and did follow a grid, but the real streets were not this even. Yonge Street is drawn running north from the 1790s.</span></li>
-      <li><span class="mono">Drawn</span><span>How fast the forest was cut. The first two steps follow the record (ten blocks in 1793, west to Peter Street in 1797); after that the clearing is drawn to keep ahead of the houses. <span id="town-trees"></span> trees stand in 1700 on ground that is bare by 1850.</span></li>
-      <li><span class="mono">Drawn</span><span>The wharves and the ships: how many there were in each year, and where. Buildings, like everything in this world, are drawn 1.5 times life size so they can be seen from the air.</span></li>
-      <li><span class="mono">Not yet</span><span>The Mississaugas of the Credit, on whose land the town was built, are named but not shown: no source read for this project places their camps. Nothing here has been reviewed by them. Also not yet: the 1837 rebellion, the railways of the 1850s, street names, and people at street level.</span></li>
+      <li><span class="mono">Real</span><span>The ground and the three shores: as first mapped in 1802, as mapped in 1834, and as it is today. They are the same data as in <a href="world.html">the c.1700 world</a> and <a href="shore.html">today’s shoreline</a>: today’s elevation, the University of Toronto’s Historical Hydrography of Toronto, and OpenStreetMap.</span></li>
+      <li><span class="mono">Real</span><span>Every building that stands at the end of the film: about 9,000 footprints with their heights, from OpenStreetMap. Where a height is not recorded it is estimated from the number of storeys, or set to 6 m.</span></li>
+      <li><span class="mono">Real</span><span>Today’s main roads, railways and subway tracks, from OpenStreetMap.</span></li>
+      <li><span class="mono">Real</span><span>The years of fifteen landmarks, which go up in the film in the year they opened or were finished: St Lawrence Hall (1850), St James Cathedral (1853), the Gooderham Building (1892), Old City Hall (1899), Union Station (1927), the Royal York (1929), the Bank of Commerce tower (1931), City Hall (1965), the TD tower (1967), Commerce Court West (1972), First Canadian Place (1975), the CN Tower (1976), Scotia Plaza (1988), SkyDome (1989) and the arena now called Scotiabank Arena (1999). Most are in the timeline above with their sources. The years for St James Cathedral, the Gooderham Building, Commerce Court West, First Canadian Place, Scotia Plaza and the arena are from their Wikipedia articles and have not been checked against another source.</span></li>
+      <li><span class="mono">Real</span><span>The first train (1853), the storm that cut the peninsula into islands (1858), and the subway under Yonge Street (1954): see the timeline. The University line (1963), the Bloor–Danforth line (1966) and the Spadina line (1978) are drawn in the years given by Wikipedia’s articles on the lines, not checked elsewhere.</span></li>
+      <li><span class="mono">Mixed</span><span>The number of people under the year. From 1834 it follows the census counts on the <a href="notes.html">notes page</a>, joined by straight lines; the area counted grew over time, so the figure is for a bigger Toronto in later years than the film shows. Before 1834 no number is given.</span></li>
+      <li><span class="mono">Model</span><span>The year each ordinary building appears. A building’s year is set from how far it is from the first ten blocks of the town (the city’s edge is taken to reach 850 m by 1834, 1.75 km by 1861, 3.6 km by 1901), from its height (the taller, the later; nothing over 90 m before 1967 except the landmarks), and from when the land under it was made. Two buildings side by side may be decades out. The <em>pattern</em> is the point: outward first, then upward.</span></li>
+      <li><span class="mono">Model</span><span>The small houses of the 1800s. None of them is in the data, so about 24,000 are drawn on a regular grid turned the way Toronto’s streets run, one and a half times life size so they can be seen. Each is pulled down in the year the building that stands there today goes up. Where each stood is not from any map.</span></li>
+      <li><span class="mono">Model</span><span>How fast the forest was cut, the year each road appears, and the year each piece of new land was filled between the 1834 shore and today’s. The filling is drawn spreading evenly outward from the 1834 shore between 1855 and 1967; the real work went in bursts.</span></li>
+      <li><span class="mono">Drawn</span><span>The look: blue ink, hatching for shade, the red ruled lines, the old paper and its stains. The subway runs underground and is marked in red on the surface, as a plan would mark it. The railways appear all at once in the 1850s though they were built over decades.</span></li>
+      <li><span class="mono">Not yet</span><span>Wharves and ships, bridges, parks, street names, and anything outside the piece of downtown the building data covers: beyond it the film shows only the small houses and the main roads. The Mississaugas of the Credit, on whose land the town was built, are named in the timeline but not shown. Nothing here has been reviewed by them.</span></li>
     </ul>
-    <p class="src" style="margin-top:18px">The shoreline, marsh and creek data are adapted from the University of Toronto’s Historical Hydrography of Toronto, CC BY-SA 4.0.</p>
+    <p class="src" style="margin-top:18px">The shoreline data are adapted from the University of Toronto’s Historical Hydrography of Toronto, CC BY-SA 4.0. Buildings, roads and railways © OpenStreetMap contributors, ODbL. The idea of one fixed view across the harbour through the years follows a time lapse shared by Toronto Culture; nothing from it is used here.</p>
   </section>
 
   <nav class="pager" aria-label="Where to go next">
@@ -115,21 +108,8 @@
   </footer>
 </div>
 
-<script src="data/history.js?v=20261113a"></script>
-<script src="data/terrain.js?v=20261113a"></script>
-<script type="module" src="world1700.js?v=20261113a"></script>
-<script>
-// The counts in the notes, read from the model itself, so the page cannot drift from what was built.
-(function () {
-  document.getElementById('town-play2').addEventListener('click', function () { var w = window.YP && window.YP.w17; if (!w) return; w.town.cam.auto = true; w.town.jump(1700); w.setPlaying(true); window.YP.w17focus(); });
-  var t = setInterval(function () {
-    var w = window.YP && window.YP.w17; if (!w || !w.town || !w.town.houses) return; clearInterval(t);
-    document.getElementById('town-count').textContent = w.town.houses(1850).toLocaleString('en-CA');
-    document.getElementById('town-per').textContent = Math.round(w.town.perAt(1850)); document.getElementById('town-per-early').textContent = Math.round(w.town.perAt(1800));
-    document.getElementById('town-trees').textContent = (window.YP.w17townTrees || 0).toLocaleString('en-CA');
-  }, 300);
-  setTimeout(function () { if (!window.YP || !window.YP.w17) document.getElementById('w17-fail').hidden = false; }, 9000);
-})();
-</script>
+<script src="records.js?v=20261113b"></script>
+<script src="scenery.js?v=20261113b"></script>
+<script src="town.js?v=20261113b"></script>
 </body>
 </html>

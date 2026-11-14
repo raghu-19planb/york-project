@@ -31,11 +31,22 @@ scene.fog = new THREE.Fog(PAPER, 16000, 45000);
 
 const camera = new THREE.PerspectiveCamera(42, 16 / 9, 10, 60000);
 const controls = new OrbitControls(camera, canvas);
-// OrbitControls switches off the browser's own touch scrolling on the canvas (it sets touch-action: none on it,
-// which beats the stylesheet). On a phone the model can fill the screen, and then a finger on it could only turn
-// the model and the page could not be moved at all. So an up-or-down swipe is given back to the page: a sideways
-// swipe turns the model, and two fingers tilt and zoom it. The story frame has no page to scroll and keeps every gesture.
-if (!document.documentElement.classList.contains('short')) { canvas.style.touchAction = 'pan-y'; controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE; }
+// A finger on the model must never stop the page from scrolling. OrbitControls switches the browser's own touch
+// scrolling off on the canvas (touch-action: none, set on the element, which beats the stylesheet), and on a phone
+// the model can fill the screen, so the page could not be moved at all. A first fix gave only up-and-down swipes
+// back to the page, but a swipe that started a little sideways still turned the model and the page stayed put.
+// So now one finger ALWAYS scrolls the page, whichever way it starts, and a pinch zooms. To turn the model by touch
+// a visitor presses the button, which hands the canvas to their finger until they press it again or scroll the
+// model mostly out of view. A mouse is not affected. The story frame has no page to scroll and keeps every gesture.
+if (!document.documentElement.classList.contains('short')) {
+  controls.touches.TWO = THREE.TOUCH.DOLLY_ROTATE;
+  const hand = document.createElement('button'); hand.type = 'button'; hand.className = 'world-hand'; canvas.after(hand);
+  const hold = on => { canvas.style.touchAction = on ? 'none' : 'pan-x pan-y'; controls.touches.ONE = on ? THREE.TOUCH.ROTATE : -1; hand.setAttribute('aria-pressed', String(on)); hand.textContent = on ? 'Done turning' : 'Turn with a finger'; };
+  hand.addEventListener('click', () => hold(hand.getAttribute('aria-pressed') !== 'true'));
+  // scrolling the model mostly off the screen gives the finger back to the page
+  window.addEventListener('scroll', () => { if (hand.getAttribute('aria-pressed') !== 'true') return; const b = canvas.getBoundingClientRect(), seen = Math.min(b.bottom, innerHeight) - Math.max(b.top, 0); if (seen < b.height * 0.5) hold(false); }, { passive: true });
+  hold(false);
+}
 controls.enableDamping = true;
 controls.maxPolarAngle = Math.PI / 2 - 0.04;
 controls.minDistance = 150;

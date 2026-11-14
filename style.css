@@ -157,7 +157,7 @@ html.still .btn { transition: none; }
 .band-film .mega span { color: #dcae8c; }
 .band-film .fine { color: rgba(255, 246, 229, 0.72); }
 .film { position: relative; margin: clamp(30px, 5vw, 56px) var(--gutter) 0; background: #2a1512; overflow: hidden; }
-.film canvas { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 82vh; touch-action: pan-y; cursor: grab; }
+.film canvas { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 82vh; }
 .film canvas:active { cursor: grabbing; }
 .film-labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .film-labels span { position: absolute; left: 0; top: 0; white-space: nowrap; opacity: 0; font: 600 0.62rem var(--body); letter-spacing: 0.14em; text-transform: uppercase; color: var(--chalk); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); }
@@ -216,8 +216,14 @@ html.still .btn { transition: none; }
 .viewer { display: grid; grid-template-columns: minmax(0, 1fr) clamp(200px, 22vw, 300px); gap: 14px; margin: clamp(30px, 5vw, 56px) var(--gutter) 0; }
 .world3d { position: relative; height: min(68vh, 640px); min-height: 360px; background: var(--sand); overflow: hidden; }
 body.shore .world3d { height: min(72vh, 760px); border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-.world3d canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
-body.home .world3d canvas { touch-action: pan-y; }
+/* A finger on a model scrolls the page, from the first moment and even if the script never loads (world1700.js and shore.js say why). Only the story frame, which has no page to scroll, keeps every gesture. */
+.world3d canvas { width: 100%; height: 100%; display: block; touch-action: pan-x pan-y; cursor: grab; }
+html.short .world3d canvas { touch-action: none; }
+.world-hand { display: none; position: absolute; left: 16px; top: 84px; z-index: 3; background: var(--chalk); color: var(--ink); border: 1px solid var(--ink); padding: 9px 14px; min-height: 40px; font: 600 0.68rem var(--body); letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; }
+.world-hand[aria-pressed="true"] { background: var(--lake); color: var(--chalk); border-color: var(--lake); }
+@media (any-pointer: coarse) { .world-hand { display: block; } }
+/* sliders: a finger moving up or down on one scrolls the page; only sideways moves the slider */
+input[type="range"] { touch-action: pan-y; }
 .world3d canvas:active { cursor: grabbing; }
 .labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .labels span { position: absolute; left: 0; top: 0; white-space: nowrap; font: 600 0.62rem var(--body); letter-spacing: 0.12em; text-transform: uppercase; background: var(--chalk); color: var(--ink); padding: 2px 7px; }
@@ -462,7 +468,7 @@ body.game footer { margin-top: 48px; }
   .card h3 { font-size: 1rem; }
   .overlay h1 { font-size: 1.8rem; margin: 2px 0 4px; }
   .overlay p { font-size: 0.85rem; margin-bottom: 8px; }
-  body.shore .world3d canvas { height: 100vh; height: 100dvh; }
+  body.shore .world3d canvas { height: 78vh; height: 78dvh; } /* never the whole screen: there is always page above or below to take hold of */
 }
 
 /* the town page (town.html): the year on the picture, the year slider under it, the five stills */
@@ -874,3 +880,31 @@ html.still .sub-card { transition: none; }
 #rec-about h3 { font: 550 1.6rem var(--display); letter-spacing: -0.03em; margin: 0 0 8px; }
 #rec-about p { margin: 0 0 8px; max-width: 62ch; font-size: 1.05rem; line-height: 1.5; }
 #rec-about .real { font-size: 0.92rem; color: var(--muted); }
+
+/* The time lapse page (town.html): the film, and the timeline under it */
+.world3d.tl, body.shore .world3d.tl { height: auto; min-height: 0; aspect-ratio: 16 / 9; max-height: 84vh; background: #e9dcc0; }
+.world3d.tl video { object-fit: contain; }
+html.short .world3d.tl { aspect-ratio: auto; max-height: none; background: #e9dcc0; }
+html.short .world3d.tl video { object-fit: cover; }   /* the tall story frame shows the middle of the picture, where the city is */
+.town-line { list-style: none; margin: 22px 0 0; padding: 0; display: grid; gap: 26px; }
+.town-line .era { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 20px; padding-top: 22px; border-top: 1px solid var(--rule); }
+.town-line .era.on { border-top-color: var(--ink); }
+.town-line .era-pic { position: relative; display: block; padding: 0; border: 1px solid var(--ink); background: #e9dcc0; cursor: pointer; align-self: start; }
+.town-line .era-pic img { display: block; width: 100%; height: auto; }
+.town-line .era-go { position: absolute; left: 0; bottom: 0; background: var(--ink); color: var(--chalk); font: 600 0.66rem var(--body); letter-spacing: 0.1em; text-transform: uppercase; padding: 7px 10px; }
+.town-line .era.on .era-go { background: var(--lake); }
+.town-line h3 { font: 550 1.7rem var(--display); letter-spacing: -0.03em; margin: 2px 0 8px; }
+.town-line .era-draws { margin: 0 0 12px; max-width: 64ch; font-size: 1.04rem; line-height: 1.5; }
+.town-line .era-facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 0.95rem; line-height: 1.45; max-width: 70ch; }
+.town-line .era-facts li { padding-left: 3.6em; position: relative; }
+.town-line .era-facts b { position: absolute; left: 0; top: 0; font: 600 0.82rem var(--mono, monospace); font-variant-numeric: tabular-nums; }
+.town-line .era-facts strong { font-weight: 600; }
+.town-line .era-facts strong::after { content: '.'; }
+.town-line .era-facts a, .town-line .era-facts span { color: var(--muted); font-size: 0.86rem; }
+@media (max-width: 720px) { .town-line .era { grid-template-columns: 1fr; gap: 12px; } }
+@media (max-width: 820px) {   /* on a phone the film is small: a smaller clock, and Play back in the bottom corner */
+  .world3d.tl .town-clock { right: 8px; top: 8px; padding: 4px 10px 6px; }
+  .world3d.tl .town-clock b { font-size: 1.7rem; }
+  .world3d.tl .town-clock span { font-size: 0.56rem; }
+  body.town .world3d.tl .world-play { top: auto; bottom: 12px; right: 8px; }
+}

@@ -40,9 +40,9 @@ YP.PIECES = [
     id: 'town-1850',
     kind: 'Watch',
     status: 'building',
-    title: 'A town taking shape, 1700 to 1850',
-    line: 'A 3D timelapse of the same ground: forest, Fort Rouillé, York, the battle of 1813, the city of 1834, and thirty thousand people by 1850.',
-    body: 'One camera and a hundred and fifty years. The dates, the counts of people and the places of the forts, parliament, market, church and lighthouse are from sources. Every ordinary house and street is drawn to keep pace with them, and the page says so.',
+    title: 'A city taking shape, 1800 to 2025',
+    line: 'A drawn time lapse of the harbour and downtown: forest, a town, a city of brick and rail, then towers, in blue ink like an architect’s sketch.',
+    body: 'One fixed view and 225 years. The ground, the shores of 1802, 1834 and today, today’s buildings and fifteen dated landmarks are from records. The year each ordinary building appears is worked out from where it stands and how tall it is, and the page says so.',
     href: 'town.html',
     cta: 'Play the timelapse'
   },
@@ -87,6 +87,14 @@ YP.PIECES = [
 ];
 
 YP.LOG = [
+  {
+    date: '2026-11-13',
+    text: 'The time lapse is a new film. It ran from 1700 to 1850 as a live 3D model; it is now a drawing in blue ink on old paper that runs from 1800 to 2025: one fixed view over the lake, across the islands to downtown, 72 seconds for the 225 years and then a rise to a plan of the city today. Forest is cut back, small houses spread, the shore is filled, the railway and the subway arrive, and fifteen landmarks go up in their true years. Under it is a timeline in seven periods, every entry from a named source. The year each ordinary building appears is a model, not a record, and the page says how it is worked out.'
+  },
+  {
+    date: '2026-11-13',
+    text: 'Scrolling with a finger: on a phone, a finger on any of the 3D models now always scrolls the page, whichever way the swipe starts. Before, a swipe that began a little sideways turned the model and the page stayed put, and while a model was still loading the page could not be moved from it at all. To turn a model by touch, press Turn with a finger on it; it lets go again when you press Done or scroll on. Held sideways, a phone no longer gives the whole screen to the model, and sliders let an up-or-down swipe through.'
+  },
   {
     date: '2026-11-13',
     text: 'Section 3 of the home page, Reconstructing Toronto, is now three short recordings and six pictures from a new, more lifelike model built in Blender: above the bay and its sand bar, down onto the beach where bark canoes are drawn up, and along the lane between the longhouses of Teiaiagon. The ground, sand and bark are photographs; the trees have real branches and leaves. What rests on the record and what is our drawing is said under each picture, in plain words. The live 3D world you can walk around is still on the Explore page.'
